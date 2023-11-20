@@ -1,0 +1,3 @@
+[submodule "MainProject-Back-Data"]
+	path = MainProject-Back-Data
+	url = https://github.com/KostaMiniProject/MainProject-Back-Data

@@ -1,14 +1,22 @@
 package kosta.main.users.entity;
 import jakarta.persistence.*;
-import kosta.main.blockedusers.entity.BlockedUsers;
+import kosta.main.audit.Auditable;
+import kosta.main.blockedusers.entity.BlockedUser;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 @Entity
 @Table(name = "users")
-public class Users {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class User extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "user_id")
+    private Integer userId;
 
     @Column(unique = true, length = 255)
     private String email;
@@ -29,10 +37,14 @@ public class Users {
     private String profileImage;
 
     @Column(length = 20, nullable = false)
-    private String status;
+    private UserStatus userStatus;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<BlockedUsers> blockedUsers; // 클래스 이름을 단수형으로 변경
+    private List<BlockedUser> blockedUsers; // 클래스 이름을 단수형으로 변경
+
+    public enum UserStatus{
+        ACTIVATE, BANNED ,DELETED
+    }
     // 게터와 세터
     // 생략...
 }

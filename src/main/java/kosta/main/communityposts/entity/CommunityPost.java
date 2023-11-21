@@ -1,20 +1,29 @@
 package kosta.main.communityposts.entity;
 
 import jakarta.persistence.*;
-import kosta.main.users.entity.Users;
+import kosta.main.audit.Auditable;
+import kosta.main.users.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "community_posts")
-public class CommunityPosts {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class CommunityPost extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer communityPostId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @Column(length = 255)
     private String title;
@@ -26,17 +35,16 @@ public class CommunityPosts {
     private Integer view;
 
     @Column(length = 20, nullable = false)
-    private String status;
+    private CommunityPostStatus communityPostStatus = CommunityPostStatus.PUBLIC;
 
     @Column(length = 255)
     private String imageUrl;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 
     // 게터와 세터
     // 생략...
+
+    public enum CommunityPostStatus {
+        PUBLIC, PRIVATE, REPORTED, DELETED
+    }
 }

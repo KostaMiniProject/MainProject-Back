@@ -1,25 +1,32 @@
 package kosta.main.reviews.entity;
 
 import jakarta.persistence.*;
-import kosta.main.users.entity.Users;
+import kosta.main.audit.Auditable;
+import kosta.main.users.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reviews")
-public class Reviews {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class Review extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer reviewId;
 
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
-    private Users reviewer;
+    private User reviewer;
 
     @ManyToOne
     @JoinColumn(name = "reviewed_user_id")
-    private Users reviewedUser;
+    private User reviewedUser;
 
     @Column(nullable = false)
     private Integer rating;
@@ -27,8 +34,6 @@ public class Reviews {
     @Column(columnDefinition = "TEXT")
     private String review;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
 
     // 게터와 세터
     // 생략...

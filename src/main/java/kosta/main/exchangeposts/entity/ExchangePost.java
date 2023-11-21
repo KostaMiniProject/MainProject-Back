@@ -1,26 +1,34 @@
 package kosta.main.exchangeposts.entity;
 
 import jakarta.persistence.*;
-import kosta.main.items.entity.Items;
-import kosta.main.users.entity.Users;
+import kosta.main.audit.Auditable;
+import kosta.main.items.entity.Item;
+import kosta.main.users.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "exchange_posts")
-public class ExchangePosts {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class ExchangePost extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer exchangePostId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
-    private Items item;
+    private Item item;
 
     @Column(length = 255)
     private String title;
@@ -35,13 +43,12 @@ public class ExchangePosts {
     private String content;
 
     @Column(length = 20, nullable = false)
-    private String status;
+    private ExchangePostStatus exchangePostStatus = ExchangePostStatus.EXCHANGING;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    public enum ExchangePostStatus {
+        EXCHANGING , RESERVATION, COMPLETED, DELETED
+    }
 
     // 게터와 세터
     // 생략...

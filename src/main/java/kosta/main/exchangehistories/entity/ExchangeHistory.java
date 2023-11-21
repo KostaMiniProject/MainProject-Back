@@ -1,28 +1,35 @@
 package kosta.main.exchangehistories.entity;
 
 import jakarta.persistence.*;
-import kosta.main.exchangeposts.entity.ExchangePosts;
-import kosta.main.items.entity.Items;
+import kosta.main.audit.Auditable;
+import kosta.main.exchangeposts.entity.ExchangePost;
+import kosta.main.items.entity.Item;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "exchange_histories")
-public class ExchangeHistories {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class ExchangeHistory extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer exchangeHistoryId;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
-    private Items item;
+    private Item item;
 
     @ManyToOne
     @JoinColumn(name = "exchange_post_id", nullable = false)
-    private ExchangePosts exchangePost;
+    private ExchangePost exchangePost;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime exchangeDate;
 
     // 게터와 세터

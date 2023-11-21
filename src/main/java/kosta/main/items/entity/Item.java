@@ -1,30 +1,38 @@
 package kosta.main.items.entity;
 
 import jakarta.persistence.*;
-import kosta.main.bids.entity.Bids;
-import kosta.main.categories.entity.Categories;
-import kosta.main.users.entity.Users;
-import java.time.LocalDateTime;
+import kosta.main.audit.Auditable;
+import kosta.main.bids.entity.Bid;
+import kosta.main.categories.entity.Category;
+import kosta.main.users.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+
 
 @Entity
 @Table(name = "items")
-public class Items {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class Item extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer itemId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "bid_id")
-    private Bids bid;
+    private Bid bid;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private Categories category;
+    private Category category;
 
     @Column(length = 255)
     private String title;
@@ -33,16 +41,15 @@ public class Items {
     private String description;
 
     @Column(length = 20, nullable = false)
-    private String status;
+    private ItemStatus itemStatus = ItemStatus.PUBLIC;
 
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    public enum ItemStatus {
+        PUBLIC, PRIVATE, DELETED
+    }
 
     // 게터와 세터
     // 생략...

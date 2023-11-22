@@ -5,16 +5,13 @@ import kosta.main.audit.Auditable;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "exchange_posts")
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 public class ExchangePost extends Auditable {
 
@@ -45,6 +42,17 @@ public class ExchangePost extends Auditable {
     @Column(length = 20, nullable = false)
     private ExchangePostStatus exchangePostStatus = ExchangePostStatus.EXCHANGING;
 
+    @Builder
+    public ExchangePost(Integer exchangePostId, User user, Item item, String title, String preferItems, String address, String content, ExchangePostStatus exchangePostStatus) {
+        this.exchangePostId = exchangePostId;
+        this.user = user;
+        this.item = item;
+        this.title = title;
+        this.preferItems = preferItems;
+        this.address = address;
+        this.content = content;
+        this.exchangePostStatus = exchangePostStatus;
+    }
 
     public enum ExchangePostStatus {
         EXCHANGING , RESERVATION, COMPLETED, DELETED

@@ -24,29 +24,34 @@ public class ExchangePostsController {
     return exchangePostsService.findAllExchangePosts();
   }
 
-  @GetMapping("/{id}") // 정상동작 확인 완료
+  @GetMapping("/{id}")
   public ResponseEntity<ExchangePost> getExchangePostById(@PathVariable Integer id) {
-    return exchangePostsService.findExchangePostById(id)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+    ExchangePost exchangePost = exchangePostsService.findExchangePostById(id);
+    if (exchangePost == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(exchangePost);
   }
+
 
   @PostMapping// 정상 동작 확인 완료
   public ExchangePost createExchangePost(@RequestBody ExchangePostDTO exchangePostDTO) {
     return exchangePostsService.createExchangePost(exchangePostDTO);
   }
+
 //  @PutMapping("/{id}")
 //  public ResponseEntity<ExchangePost> updateExchangePost(@PathVariable Integer id, @RequestBody ExchangePostDTO exchangePostDTO) {
 //    return ResponseEntity.ok(exchangePostsService.updateExchangePost(id, exchangePostDTO));
 //  }
 
-  @DeleteMapping("/{id}") // 정상 동작 확인 완료
+  @DeleteMapping("/{id}") // status를 변경하는 방식으로 수정예정
   public ResponseEntity<?> deleteExchangePost(@PathVariable Integer id) {
-    return exchangePostsService.findExchangePostById(id)
-        .map(exchangePost -> {
-          exchangePostsService.deleteExchangePost(id);
-          return ResponseEntity.ok().build();
-        })
-        .orElse(ResponseEntity.notFound().build());
+    ExchangePost exchangePost = exchangePostsService.findExchangePostById(id);
+    if (exchangePost == null) {
+      return ResponseEntity.notFound().build();
+    }
+    exchangePostsService.deleteExchangePost(id);
+    return ResponseEntity.ok().build();
   }
+
 }

@@ -7,25 +7,19 @@ import kosta.main.items.entity.Item;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ExchangePostsService {
 
   private final ExchangePostsRepository exchangePostRepository;
   private final UsersRepository usersRepository;
   private final ItemsRepository itemsRepository;
 
-  @Autowired
-  public ExchangePostsService(ExchangePostsRepository exchangePostRepository, UsersRepository usersRepository, ItemsRepository itemsRepository) {
-    this.exchangePostRepository = exchangePostRepository;
-    this.usersRepository = usersRepository;
-    this.itemsRepository = itemsRepository;
-  }
   public ExchangePost createExchangePost(ExchangePostDTO exchangePostDTO) {
     User user = usersRepository.findById(exchangePostDTO.getUserId())
         .orElseThrow(() -> new RuntimeException("User not found"));
@@ -49,9 +43,10 @@ public class ExchangePostsService {
     return exchangePostRepository.findAll();
   }
 
-  public Optional<ExchangePost> findExchangePostById(Integer id) {
-    return exchangePostRepository.findById(id);
+  public ExchangePost findExchangePostById(Integer id) { // 기존에 Optional로 처리하던 NUll을 수동으로 처리
+    return exchangePostRepository.findById(id).orElse(null); // or .orElseThrow(...)
   }
+
 
 //  public ExchangePost updateExchangePost(Integer id, ExchangePostDTO exchangePostDTO) {
 //    return exchangePostRepository.findById(id).map(existingPost -> {

@@ -1,6 +1,5 @@
 package kosta.main.communityposts.service;
 
-import kosta.main.communityposts.dto.CommuntiyPostUpdateDto;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
 import lombok.RequiredArgsConstructor;

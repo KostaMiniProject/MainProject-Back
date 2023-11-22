@@ -1,4 +1,8 @@
 package kosta.main.communityposts.repository;
 
-public interface CommunityPostsRepository {
+import kosta.main.communityposts.entity.CommunityPost;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CommunityPostsRepository extends JpaRepository<CommunityPost,Integer> {
+
 }

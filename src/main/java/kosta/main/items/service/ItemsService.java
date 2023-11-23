@@ -56,13 +56,13 @@ public class ItemsService {
 
   //  물건 삭제
     public void deleteItem(Integer itemId) {
-      //    Item item = itemsRepository.findById(itemDeleteDto.getItemId()).orElseThrow(() -> new RuntimeException("아이템을 찾을 수 없습니다."));
-//    item.setItemStatus();
-
 //    1. Controller에서 받아온 ItemDeleteDto 중 itemId를 찾는다.
 //    2. ItemsRepository에 findById 메서드를 이용하여 Item 테이블 내에 itemId를 찾는다.
 //    3. Item 엔티티는 itemStatus의 SETTER를 추가한다.
 //    4. Item 엔티티 itemId의 itemStatus를 DELETED로 변경한다.
+
+      Item item = itemsRepository.findById(itemId).orElseThrow(() -> new RuntimeException("아이템을 찾을 수 없습니다."));
+      item.setItemStatus(Item.ItemStatus.DELETED);
     }
 
 

@@ -1,6 +1,7 @@
 package kosta.main.items.controller;
 
 import kosta.main.items.entity.Item;
+import kosta.main.items.entity.ItemSaveDto;
 import kosta.main.items.service.ItemsService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,11 +17,10 @@ public class ItemsController {
   private final ItemsService itemsService;
 
   //  물건 생성
-//  @PostMapping
-//  public String addItem(@RequestBody Item item) {
-//    String res = itemsService.addItem(item);
-//    return res;
-//  }
+  @PostMapping
+  public void addItem(@RequestBody ItemSaveDto itemSaveDto) {
+    itemsService.addItem(itemSaveDto);
+  }
 
   //  물건 목록 조회
   @GetMapping
@@ -43,7 +43,7 @@ public class ItemsController {
 
   //  물건 삭제
   @DeleteMapping("/{itemId}")
-  public void deleteItem(@PathVariable int itemId) {
+  public void deleteItem(@PathVariable Integer itemId) {
     itemsService.deleteItem(itemId);
   }
 

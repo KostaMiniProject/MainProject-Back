@@ -2,6 +2,8 @@ package kosta.main.items.service;
 
 
 import kosta.main.items.entity.Item;
+import kosta.main.items.entity.ItemDeleteDto;
+import kosta.main.items.entity.ItemSaveDto;
 import kosta.main.items.repository.ItemsRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +21,13 @@ public class ItemsService {
   private final ItemsRepository itemsRepository;
 
   //  물건 생성
-//  public String addItem(Item item) {
-//    Item addItem = itemsRepository.save(item);
-//    log.info(String.valueOf(addItem));
-//    return "물건 생성 완료";
-//  }
+  public void addItem(ItemSaveDto itemSaveDto) {
+//    1. Item 엔티티의 title, description, itemStatus, imageUrl의  SETTER를 추가한다.
+    //builder패턴에 대해서 공부해보면 좋음
+
+//    2. Controller에서 받아온 ItemSaveDto를 ItemsRepository에 save 메서드를 이용하여 Item 테이블에 추가한다.
+//    반환 타입 void
+  }
 
   //  물건 목록 조회
   public List<Item> getItems() {
@@ -38,17 +42,30 @@ public class ItemsService {
   }
 
   //  물건 수정
-//  public String updateItem(@PathVariable int itemId) {
+  public void updateItem() {
+
+//  1. Controller에서 받아온 itemId와 ItemSaveDto를 받아온다.
+//  2. ItemsRepository에 findById 메서드를 이용하여 Item 테이블 내에 itemId를 찾는다.
+//  3. 해당항목을 확인 후
+//  title, description, itemStatus, imageUrl
+//  4. "수정 완료" 문자열을 리턴한다.
+//item.setItemStatus();
 //
-//    return "수정 완료";
-//  }
+  }
 
 
   //  물건 삭제
-  public String deleteItem(int itemId) {
-    itemsRepository.deleteById(itemId);
-    return "삭제 완료";
-  }
+    public void deleteItem(Integer itemId) {
+      //    Item item = itemsRepository.findById(itemDeleteDto.getItemId()).orElseThrow(() -> new RuntimeException("아이템을 찾을 수 없습니다."));
+//    item.setItemStatus();
+
+//    1. Controller에서 받아온 ItemDeleteDto 중 itemId를 찾는다.
+//    2. ItemsRepository에 findById 메서드를 이용하여 Item 테이블 내에 itemId를 찾는다.
+//    3. Item 엔티티는 itemStatus의 SETTER를 추가한다.
+//    4. Item 엔티티 itemId의 itemStatus를 DELETED로 변경한다.
+    }
+
+
 
   //  물건 검색
   //  ex - /items/search?name=메롱!
@@ -56,3 +73,5 @@ public class ItemsService {
 //    return null;
 //  }
 }
+
+

@@ -2,8 +2,7 @@ package kosta.main.items.service;
 
 
 import kosta.main.items.entity.Item;
-import kosta.main.items.entity.ItemSaveDto;
-import kosta.main.items.entity.ItemUpdateDto;
+import kosta.main.items.dto.ItemDto;
 import kosta.main.items.repository.ItemsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,11 +18,11 @@ public class ItemsService {
 
 
   //  물건 생성
-  public void addItem(ItemSaveDto itemSaveDto) {
+  public void addItem(ItemDto itemDto) {
     Item newItem = new Item();
-    newItem.setTitle(itemSaveDto.getTitle());
-    newItem.setDescription(itemSaveDto.getDescription());
-    newItem.setImageUrl(itemSaveDto.getImageUrl());
+    newItem.setTitle(itemDto.getTitle());
+    newItem.setDescription(itemDto.getDescription());
+    newItem.setImageUrl(itemDto.getImageUrl());
 
     //    TODO : userId를 받아와서 newItem에 추가
     //    TODO : bidId를 받아와서 newItem에 추가
@@ -46,20 +45,20 @@ public class ItemsService {
 
 
   //  물건 수정
-  public void updateItem(Integer itemId, ItemUpdateDto itemUpdateDto) {
+  public void updateItem(Integer itemId, ItemDto itemDto) {
     Item updateItem = getFindById(itemId);
 
-    if (itemUpdateDto.getTitle() != null) {
-      updateItem.setTitle(itemUpdateDto.getTitle());
+    if (itemDto.getTitle() != null) {
+      updateItem.setTitle(itemDto.getTitle());
     }
-    if (itemUpdateDto.getDescription() != null) {
-      updateItem.setDescription(itemUpdateDto.getDescription());
+    if (itemDto.getDescription() != null) {
+      updateItem.setDescription(itemDto.getDescription());
     }
-    if (itemUpdateDto.getImageUrl() != null) {
-      updateItem.setImageUrl(itemUpdateDto.getImageUrl());
+    if (itemDto.getImageUrl() != null) {
+      updateItem.setImageUrl(itemDto.getImageUrl());
     }
-    if (itemUpdateDto.getItemStatus() != null) {
-      updateItem.setItemStatus(itemUpdateDto.getItemStatus());
+    if (itemDto.getItemStatus() != null) {
+      updateItem.setItemStatus(itemDto.getItemStatus());
     }
     itemsRepository.save(updateItem);
   }

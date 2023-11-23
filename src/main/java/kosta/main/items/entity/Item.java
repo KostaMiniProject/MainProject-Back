@@ -53,4 +53,8 @@ public class Item extends Auditable {
 
     // 게터와 세터
     // 생략...
+
+    public void setItemStatus(ItemStatus itemStatus) {
+        this.itemStatus = itemStatus;
+    }
 }

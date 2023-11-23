@@ -25,7 +25,7 @@ public class HealthController {
 
     private int count = 0;
 
-    @GetMapping
+    @GetMapping("/loadcheck")
     public ResponseEntity<Map<String, Integer>> count() {
         count ++;
         Map<String, Integer> data = new HashMap<>();

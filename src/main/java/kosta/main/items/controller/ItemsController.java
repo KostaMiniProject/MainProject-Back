@@ -2,6 +2,7 @@ package kosta.main.items.controller;
 
 import kosta.main.items.entity.Item;
 import kosta.main.items.entity.ItemSaveDto;
+import kosta.main.items.entity.ItemUpdateDto;
 import kosta.main.items.service.ItemsService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -36,9 +37,11 @@ public class ItemsController {
   }
 
   //  물건 수정
-//  @PutMapping("/{itemId}")
-//  public void updateItem(@PathVariable int itemId) {
-//  }
+  @PutMapping("/{itemId}")
+  public void updateItem(@PathVariable int itemId,
+                         @RequestBody ItemUpdateDto itemUpdateDto) {
+    itemsService.updateItem(itemId, itemUpdateDto);
+  }
 
 
   //  물건 삭제

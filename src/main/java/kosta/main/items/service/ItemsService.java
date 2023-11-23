@@ -19,16 +19,22 @@ public class ItemsService {
 
   //  물건 생성
   public void addItem(ItemDto itemDto) {
-    Item newItem = new Item();
-    newItem.setTitle(itemDto.getTitle());
-    newItem.setDescription(itemDto.getDescription());
-    newItem.setImageUrl(itemDto.getImageUrl());
+//    Item newItem = new Item();
+//    newItem.setTitle(itemDto.getTitle());
+//    newItem.setDescription(itemDto.getDescription());
+//    newItem.setImageUrl(itemDto.getImageUrl());
+
+    Item newItem2 = Item.builder()
+        .title(itemDto.getTitle())
+        .description(itemDto.getDescription())
+        .imageUrl(itemDto.getImageUrl())
+        .build();
 
     //    TODO : userId를 받아와서 newItem에 추가
     //    TODO : bidId를 받아와서 newItem에 추가
     //    TODO : categoryId를 받아와서 newItem에 추가
 
-    itemsRepository.save(newItem);
+    itemsRepository.save(newItem2);
   }
 
 
@@ -60,6 +66,14 @@ public class ItemsService {
     if (itemDto.getItemStatus() != null) {
       updateItem.setItemStatus(itemDto.getItemStatus());
     }
+
+//    Item updateItem2 = Item.builder()
+//        .title(itemDto.getTitle())
+//        .description(itemDto.getDescription())
+//        .imageUrl(itemDto.getImageUrl())
+//        .itemStatus(itemDto.getItemStatus())
+//        .build();
+
     itemsRepository.save(updateItem);
   }
 

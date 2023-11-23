@@ -78,10 +78,9 @@ public class ExchangePostsService {
 
     return exchangePostRepository.save(existingPost);
   }
-  public ExchangePost findExchangePostById(Integer id) { // 기존에 Optional로 처리하던 NUll을 수동으로 처리
-    return exchangePostRepository.findById(id).orElse(null); // or .orElseThrow(...)
+  public ExchangePost findExchangePostById(Integer exchangePostId) { // 기존에 Optional로 처리하던 NUll을 수동으로 처리
+    return exchangePostRepository.findById(exchangePostId)
+            .orElseThrow(() -> new RuntimeException("물물교환게시글을 찾을 수 없습니다.")); // or .orElseThrow(...)
   }
-
-
 
 }

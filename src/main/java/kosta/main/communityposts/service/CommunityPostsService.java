@@ -1,11 +1,14 @@
 package kosta.main.communityposts.service;
 
+import kosta.main.communityposts.dto.CommunityPostCreateDto;
+import kosta.main.communityposts.dto.CommunityPostUpdateDto;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,13 +30,32 @@ public class CommunityPostsService {
     }
 
     /* 커뮤니티 게시글 작성 */
-    public void addPost(CommunityPost communityPost) {
-        communityPostsRepository.save(communityPost);
+    public CommunityPost addPost(CommunityPostCreateDto communityPostCreateDto) {
+        CommunityPost communityPost = CommunityPost.builder()
+                .title(communityPostCreateDto.getTitle())
+                .content(communityPostCreateDto.getContent())
+                .imageUrl(communityPostCreateDto.getImageUrl())
+                .communityPostStatus(CommunityPost.CommunityPostStatus.PUBLIC)
+                .build();
+        return communityPostsRepository.save(communityPost);
     }
 
     /* 커뮤니티 게시글 수정 */
-//    public void updatePost(Integer communityPostId, CommuntiyPostUpdateDto communtiyPostUpdateDto) throws Exception {
-//        CommunityPost communityPost = communityPostsRepository.findById(communityPostId).orElseThrow(() -> new Exception("게시글이 존재하지 않습니다.");
-//        communityPost.setTitle(communtiyPostUpdateDto.getTitle());
+    public CommunityPost updatePost(Integer communityPostId, CommunityPostUpdateDto communtiyPostUpdateDto) throws Exception {
+        communityPostsRepository.findById(communityPostId).orElseThrow(() -> new Exception("게시글이 존재하지 않습니다."));
+        CommunityPost communityPost = CommunityPost.builder()
+                .title(communtiyPostUpdateDto.getTitle())
+                .content(communtiyPostUpdateDto.getContent())
+                .imageUrl(communtiyPostUpdateDto.getImageUrl())
+                .communityPostStatus(CommunityPost.CommunityPostStatus.PUBLIC)
+                        .build();
+        return communityPostsRepository.save(communityPost);
+    }
+
+    /* 커뮤니티 게시글 삭제 */
+//    public void deletePost(Integer communityPostId) throws Exception {
+//        CommunityPost communityPost = communityPostsRepository.findById(communityPostId).orElseThrow(() -> new Exception("게시글이 존재하지 않습니다."));
+//        communityPost.setCommunityPostStatus(CommunityPost.CommunityPostStatus.DELETED);
+//        communityPostsRepository.save(communityPost);
 //    }
 }

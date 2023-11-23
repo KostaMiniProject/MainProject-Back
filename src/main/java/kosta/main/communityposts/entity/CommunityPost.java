@@ -3,10 +3,8 @@ package kosta.main.communityposts.entity;
 import jakarta.persistence.*;
 import kosta.main.audit.Auditable;
 import kosta.main.users.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class CommunityPost extends Auditable {
 
     @Id
@@ -32,9 +31,9 @@ public class CommunityPost extends Auditable {
     private String content;
 
     @Column
-    private Integer view;
+    private Integer views;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20)
     private CommunityPostStatus communityPostStatus = CommunityPostStatus.PUBLIC;
 
     @Column(length = 255)

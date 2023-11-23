@@ -50,31 +50,22 @@ public class ExchangePostsService {
       throw new RuntimeException("ExchangePost not found");
     }
 
-    // 기존 값들을 기본값으로 사용, 만약 값이 넘어온다면 넘어온값을 사용함
-    String title = exchangePostDTO.getTitle() != null ? exchangePostDTO.getTitle() : existingPost.getTitle();
-    String preferItems = exchangePostDTO.getPreferItems() != null ? exchangePostDTO.getPreferItems() : existingPost.getPreferItems();
-    String address = exchangePostDTO.getAddress() != null ? exchangePostDTO.getAddress() : existingPost.getAddress();
-    String content = exchangePostDTO.getContent() != null ? exchangePostDTO.getContent() : existingPost.getContent();
-    ExchangePost.ExchangePostStatus status = exchangePostDTO.getExchangePostStatus() != null ? exchangePostDTO.getExchangePostStatus() : existingPost.getExchangePostStatus();
-
     // Item 객체 가져오기 (필요한 경우)
-    Item item = null;
-    if (exchangePostDTO.getItemId() != null) {
-      item = itemsRepository.findById(exchangePostDTO.getItemId())
-              .orElseThrow(() -> new RuntimeException("Item not found"));
-    } else {
-      item = existingPost.getItem(); // 기존 item 유지
-    }
+    Item item = (exchangePostDTO.getItemId() != null)
+            ? itemsRepository.findById(exchangePostDTO.getItemId()).orElseThrow(() -> new RuntimeException("Item not found"))
+            : existingPost.getItem();
 
     // ExchangePost 업데이트
-    existingPost.updateExchangePost(
-            item,
-            title,
-            preferItems,
-            address,
-            content,
-            status
-    );
+    ExchangePost updatedPost = ExchangePost.builder()
+            .exchangePostId(existingPost.getExchangePostId())
+            .user(existingPost.getUser()) // 혹은 DTO로부터 새로운 사용자를 설정
+            .item(item)
+            .title((exchangePostDTO.getTitle() != null) ? exchangePostDTO.getTitle() : existingPost.getTitle())
+            .preferItems((exchangePostDTO.getPreferItems() != null) ? exchangePostDTO.getPreferItems() : existingPost.getPreferItems())
+            .address((exchangePostDTO.getAddress() != null) ? exchangePostDTO.getAddress() : existingPost.getAddress())
+            .content((exchangePostDTO.getContent() != null) ? exchangePostDTO.getContent() : existingPost.getContent())
+            .exchangePostStatus((exchangePostDTO.getExchangePostStatus() != null) ? exchangePostDTO.getExchangePostStatus() : existingPost.getExchangePostStatus())
+            .build();
 
     return exchangePostRepository.save(existingPost);
   }

@@ -46,13 +46,19 @@ public class Item extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
+    @Column(length = 20, nullable = false)
+    private IsBiding isBiding = IsBiding.NOT_BIDING;
 
     public enum ItemStatus {
         PUBLIC, PRIVATE, DELETED
     }
 
-    // 게터와 세터
-    // 생략...
+    public enum IsBiding {
+        BIDING, NOT_BIDING
+    }
+    public void setIsBiding(IsBiding isBiding) {
+        this.isBiding = isBiding;
+    }
 
     public void setItemStatus(ItemStatus itemStatus) {
         this.itemStatus = itemStatus;

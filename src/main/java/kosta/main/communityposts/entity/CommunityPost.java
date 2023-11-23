@@ -32,7 +32,7 @@ public class CommunityPost extends Auditable {
     private String content;
 
     @Column
-    private Integer view;
+    private Integer views;
 
     @Column(length = 20, nullable = false)
     private CommunityPostStatus communityPostStatus = CommunityPostStatus.PUBLIC;

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/exchangePosts")
+@RequestMapping("/api/exchange-posts")
 public class ExchangePostsController {
 
   private final ExchangePostsService exchangePostsService;
@@ -24,7 +24,7 @@ public class ExchangePostsController {
     return exchangePostsService.findAllExchangePosts();
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/{exchangePostId}")
   public ResponseEntity<ExchangePost> getExchangePostById(@PathVariable Integer id) {
     ExchangePost exchangePost = exchangePostsService.findExchangePostById(id);
     if (exchangePost == null) {
@@ -32,26 +32,29 @@ public class ExchangePostsController {
     }
     return ResponseEntity.ok(exchangePost);
   }
+  @PutMapping("/{exchangePostId}") // setter를 사용하지 않고 생성자를 활용하는 방식으로 수정
+  public ResponseEntity<ExchangePost> updateExchangePost(@PathVariable Integer exchangePostId, @RequestBody ExchangePostDTO exchangePostDTO) {
+    try {
+      ExchangePost updatedPost = exchangePostsService.updateExchangePost(exchangePostId, exchangePostDTO);
+      return ResponseEntity.ok(updatedPost);
+    } catch (RuntimeException e) {
+      return ResponseEntity.notFound().build();
+    }
+  }
+  @DeleteMapping("/{exchangePostId}") // softdelete로 수정 완료
+  public ResponseEntity<ExchangePost> deleteExchangePost(@PathVariable Integer exchangePostId, @RequestBody ExchangePostDTO exchangePostDTO) {
+    try {
+      ExchangePost updatedPost = exchangePostsService.updateExchangePost(exchangePostId, exchangePostDTO);
+      return ResponseEntity.ok(updatedPost);
+    } catch (RuntimeException e) {
+      return ResponseEntity.notFound().build();
+    }
+  }
 
 
   @PostMapping// 정상 동작 확인 완료
   public ExchangePost createExchangePost(@RequestBody ExchangePostDTO exchangePostDTO) {
     return exchangePostsService.createExchangePost(exchangePostDTO);
-  }
-
-//  @PutMapping("/{id}")
-//  public ResponseEntity<ExchangePost> updateExchangePost(@PathVariable Integer id, @RequestBody ExchangePostDTO exchangePostDTO) {
-//    return ResponseEntity.ok(exchangePostsService.updateExchangePost(id, exchangePostDTO));
-//  }
-
-  @DeleteMapping("/{id}") // status를 변경하는 방식으로 수정예정
-  public ResponseEntity<?> deleteExchangePost(@PathVariable Integer id) {
-    ExchangePost exchangePost = exchangePostsService.findExchangePostById(id);
-    if (exchangePost == null) {
-      return ResponseEntity.notFound().build();
-    }
-    exchangePostsService.deleteExchangePost(id);
-    return ResponseEntity.ok().build();
   }
 
 }

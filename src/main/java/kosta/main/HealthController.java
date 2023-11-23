@@ -1,7 +1,12 @@
 package kosta.main;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class HealthController {
@@ -10,5 +15,22 @@ public class HealthController {
     @GetMapping
     public String healthCheck(){
         return "health ok!!!";
+    }
+
+    private final Integer serverNumber;
+
+    private HealthController(@Value("${server-number}") final int serverNumber) {
+        this.serverNumber = serverNumber;
+    }
+
+    private int count = 0;
+
+    @GetMapping
+    public ResponseEntity<Map<String, Integer>> count() {
+        count ++;
+        Map<String, Integer> data = new HashMap<>();
+        data.put("Server Number", serverNumber);
+        data.put("Visiting Count", count);
+        return ResponseEntity.ok(data);
     }
 }

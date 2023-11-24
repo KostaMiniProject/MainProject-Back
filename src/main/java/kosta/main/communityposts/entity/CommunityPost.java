@@ -1,11 +1,9 @@
 package kosta.main.communityposts.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.global.audit.Auditable;
 import kosta.main.users.entity.User;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "community_posts")

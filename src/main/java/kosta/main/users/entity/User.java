@@ -1,6 +1,8 @@
 package kosta.main.users.entity;
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.dibs.entity.Dib;
+import kosta.main.exchangehistories.entity.ExchangeHistory;
+import kosta.main.global.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.users.dto.UserCreateDto;
 import kosta.main.users.dto.UserUpdateDto;
@@ -50,6 +52,14 @@ public class User extends Auditable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BlockedUser> blockedUsers = new ArrayList<>(); // 클래스 이름을 단수형으로 변경
 
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ExchangeHistory> exchangeHistories = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Dib> dibs = new ArrayList<>();
+
 
     public User updateUser(UserUpdateDto userUpdateDto) {
         this.userStatus = !nullCheck(userUpdateDto.getUserStatus()) ? userUpdateDto.getUserStatus(): this.userStatus;
@@ -83,19 +93,12 @@ public class User extends Auditable {
                 .address(userCreateDto.getAddress())
                 .build();
     }
-    public static User createUser(UserUpdateDto userUpdateDto){
-        return User.builder()
-                .password(userUpdateDto.getPassword())
-                .name(userUpdateDto.getName())
-                .phone(userUpdateDto.getPhone())
-                .address(userUpdateDto.getAddress())
-                .profileImage(userUpdateDto.getProfileImage())
-                .userStatus(userUpdateDto.getUserStatus())
-                .build();
-    }
 
     public void deleteUser(){
         this.userStatus = UserStatus.DELETED;
+    }
+    public void addBlockedUser(BlockedUser blockedUser){
+        this.blockedUsers.add(blockedUser);
     }
 
 }

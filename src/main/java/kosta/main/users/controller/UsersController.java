@@ -2,6 +2,7 @@ package kosta.main.users.controller;
 
 import kosta.main.users.dto.UserCreateDto;
 import kosta.main.users.dto.UserUpdateDto;
+import kosta.main.reports.dto.CreateReportDto;
 import kosta.main.users.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,37 @@ public class UsersController {
         usersService.withdrawalUser(userId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+    @PostMapping("/users/report/{reportedUserId}/{reporterUserId}")
+    public ResponseEntity reportUser(@PathVariable("reportedUserId") Integer reportedUserId,
+                                     @PathVariable("reporterUserId") Integer reporterUserId,
+                                     @RequestBody CreateReportDto createReportDto){
+        usersService.reportUser(reportedUserId, reporterUserId, createReportDto);
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @PutMapping("/users/block/{blockUserId}/{userId}")
+    public ResponseEntity blockUser(@PathVariable("blockUserId") Integer blockUserId,
+                                    @PathVariable("userId") Integer userId){
+        usersService.blockUser(blockUserId,userId);
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/users/exchange-history/{userId}")
+    public ResponseEntity getExchangeHistories(@PathVariable("userId") Integer userId){
+        return new ResponseEntity(usersService.findMyExchangeHistory(userId), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/dibs/{userId}")
+    public ResponseEntity getDibs(@PathVariable("userId") Integer userId){
+        return new ResponseEntity(usersService.findMyDibs(userId),HttpStatus.OK);
+    }
+//
+//    @PostMapping("/users/reivews/{userId}")
+//    public ResponseEntity createReviews(@PathVariable("userId") Integer userId,
+//                                     @RequestBody CreateReportDto createReportDto){
+//        usersService.reportUser(reportedUserId, reporterUserId, createReportDto);
+//        return new ResponseEntity(HttpStatus.CREATED);
+//    }
 
 
 

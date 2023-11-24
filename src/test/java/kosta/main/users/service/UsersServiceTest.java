@@ -33,8 +33,6 @@ class UsersServiceTest {
     @Mock
     private UsersRepository usersRepository;
 
-    @Mock
-    private UsersRepositoryCustom usersRepositoryCustom;
 
 
     private UserStubData userStubData;
@@ -50,7 +48,7 @@ class UsersServiceTest {
         Integer userId = USER_ID;
         User user = userStubData.getUser();
         UsersResponseDto usersResponseDto = userStubData.getUsersResponseDto();
-        given(usersRepositoryCustom.findUserByUserId(Mockito.anyInt())).willReturn(Optional.of(usersResponseDto));
+        given(usersRepository.findUserByUserId(Mockito.anyInt())).willReturn(Optional.of(usersResponseDto));
         //when
         UsersResponseDto result = usersService.findMyProfile(userId);
         //then

@@ -1,4 +1,4 @@
-package kosta.main.config;
+package kosta.main.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

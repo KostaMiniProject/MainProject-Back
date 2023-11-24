@@ -1,11 +1,9 @@
 package kosta.main.exchangeposts.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
-import kosta.main.exchangeposts.dto.ExchangePostDTO;
+import kosta.main.global.audit.Auditable;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

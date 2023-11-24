@@ -25,10 +25,8 @@ class UsersRepositoryImplTest {
     EntityManager em;
 
     @Autowired
-    private UsersRepositoryImpl usersRepository;
+    private UsersRepository usersRepository;
 
-    @Autowired
-    private UsersRepository jpaUsersRepository;
 
     private UserStubData userStubData;
 
@@ -38,7 +36,7 @@ class UsersRepositoryImplTest {
         userStubData = new UserStubData();
         //setUp
         user = userStubData.getUser();
-        jpaUsersRepository.save(user);
+        usersRepository.save(user);
     }
 
     @Test

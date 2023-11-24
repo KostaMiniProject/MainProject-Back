@@ -1,7 +1,6 @@
 package kosta.main.likes.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;

@@ -25,6 +25,5 @@ public class UserCreateDto {
 
     private String profileImage;
 
-    private User.UserStatus userStatus;
 
 }

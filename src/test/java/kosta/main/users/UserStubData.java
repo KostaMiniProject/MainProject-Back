@@ -64,7 +64,6 @@ public class UserStubData {
                 .address(ADDRESS)
                 .phone(PHONE)
                 .profileImage(PROFILE_IMAGE)
-                .userStatus(USER_STATUS)
                 .build();
     }
 

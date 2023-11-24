@@ -38,8 +38,9 @@ public class User extends Auditable {
     @Column(length = 20)
     private String phone;
 
+    @Builder.Default
     @Column(length = 255)
-    private String profileImage;
+    private String profileImage = "기본이미지";
 
     @Builder.Default
     @Column(length = 20, nullable = false)
@@ -50,7 +51,21 @@ public class User extends Auditable {
     private List<BlockedUser> blockedUsers = new ArrayList<>(); // 클래스 이름을 단수형으로 변경
 
 
-    public void updateUser(UserUpdateDto userUpdateDto) {
+    public User updateUser(UserUpdateDto userUpdateDto) {
+        this.userStatus = !nullCheck(userUpdateDto.getUserStatus()) ? userUpdateDto.getUserStatus(): this.userStatus;
+        this.address = !nullCheck(userUpdateDto.getAddress()) ? userUpdateDto.getAddress(): this.address;
+        this.phone = !nullCheck(userUpdateDto.getPhone()) ? userUpdateDto.getPhone() : this.phone;
+        this.password = !nullCheck(userUpdateDto.getPassword()) ? userUpdateDto.getPassword() : this.password;
+        this.profileImage = !nullCheck(userUpdateDto.getProfileImage()) ? userUpdateDto.getProfileImage() : this.profileImage;
+        this.name = !nullCheck(userUpdateDto.getName()) ? userUpdateDto.getName() : this.name;
+        return this;
+    }
+
+    private boolean nullCheck(UserStatus userStatus) {
+        return userStatus == null;
+    }
+    private boolean nullCheck(String string) {
+        return string == null;
     }
 
     public enum UserStatus{

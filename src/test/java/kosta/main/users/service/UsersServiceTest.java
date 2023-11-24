@@ -7,8 +7,7 @@ import kosta.main.users.dto.UserUpdateDto;
 import kosta.main.users.dto.UsersResponseDto;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
-import kosta.main.utils.CustomBeanUtils;
-import org.assertj.core.api.Assertions;
+import kosta.main.users.repository.UsersRepositoryCustom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +34,8 @@ class UsersServiceTest {
     private UsersRepository usersRepository;
 
     @Mock
-    private CustomBeanUtils<User> customBeanUtils;
+    private UsersRepositoryCustom usersRepositoryCustom;
+
 
     private UserStubData userStubData;
 
@@ -49,7 +49,8 @@ class UsersServiceTest {
         //given
         Integer userId = USER_ID;
         User user = userStubData.getUser();
-        given(usersRepository.findById(Mockito.anyInt())).willReturn(Optional.of(user));
+        UsersResponseDto usersResponseDto = userStubData.getUsersResponseDto();
+        given(usersRepositoryCustom.findUserByUserId(Mockito.anyInt())).willReturn(Optional.of(usersResponseDto));
         //when
         UsersResponseDto result = usersService.findMyProfile(userId);
         //then
@@ -86,7 +87,7 @@ class UsersServiceTest {
         UserUpdateDto userUpdateDto = userStubData.getUserUpdateDto();
 
         given(usersRepository.findById(Mockito.anyInt())).willReturn(Optional.of(new User()));
-        given(customBeanUtils.copyNonNullProperties(Mockito.any(User.class),Mockito.any(User.class))).willReturn(updateUser);
+        given(usersRepository.save(Mockito.any(User.class))).willReturn(updateUser);
 
         //when
         UsersResponseDto result = usersService.updateUser(userId, userUpdateDto);

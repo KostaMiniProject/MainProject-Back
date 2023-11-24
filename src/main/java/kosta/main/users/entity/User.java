@@ -2,16 +2,21 @@ package kosta.main.users.entity;
 import jakarta.persistence.*;
 import kosta.main.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
+import kosta.main.users.dto.UserCreateDto;
+import kosta.main.users.dto.UserUpdateDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class User extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,18 +38,64 @@ public class User extends Auditable {
     @Column(length = 20)
     private String phone;
 
+    @Builder.Default
     @Column(length = 255)
-    private String profileImage;
+    private String profileImage = "기본이미지";
 
+    @Builder.Default
     @Column(length = 20, nullable = false)
-    private UserStatus userStatus;
+    private UserStatus userStatus = UserStatus.ACTIVATE;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<BlockedUser> blockedUsers; // 클래스 이름을 단수형으로 변경
+    private List<BlockedUser> blockedUsers = new ArrayList<>(); // 클래스 이름을 단수형으로 변경
+
+
+    public User updateUser(UserUpdateDto userUpdateDto) {
+        this.userStatus = !nullCheck(userUpdateDto.getUserStatus()) ? userUpdateDto.getUserStatus(): this.userStatus;
+        this.address = !nullCheck(userUpdateDto.getAddress()) ? userUpdateDto.getAddress(): this.address;
+        this.phone = !nullCheck(userUpdateDto.getPhone()) ? userUpdateDto.getPhone() : this.phone;
+        this.password = !nullCheck(userUpdateDto.getPassword()) ? userUpdateDto.getPassword() : this.password;
+        this.profileImage = !nullCheck(userUpdateDto.getProfileImage()) ? userUpdateDto.getProfileImage() : this.profileImage;
+        this.name = !nullCheck(userUpdateDto.getName()) ? userUpdateDto.getName() : this.name;
+        return this;
+    }
+
+    private boolean nullCheck(UserStatus userStatus) {
+        return userStatus == null;
+    }
+    private boolean nullCheck(String string) {
+        return string == null;
+    }
 
     public enum UserStatus{
         ACTIVATE, BANNED ,DELETED
     }
     // 게터와 세터
     // 생략...
+
+    public static User createUser(UserCreateDto userCreateDto){
+        return User.builder()
+                .name(userCreateDto.getName())
+                .password(userCreateDto.getPassword())
+                .email(userCreateDto.getEmail())
+                .phone(userCreateDto.getPhone())
+                .address(userCreateDto.getAddress())
+                .build();
+    }
+    public static User createUser(UserUpdateDto userUpdateDto){
+        return User.builder()
+                .password(userUpdateDto.getPassword())
+                .name(userUpdateDto.getName())
+                .phone(userUpdateDto.getPhone())
+                .address(userUpdateDto.getAddress())
+                .profileImage(userUpdateDto.getProfileImage())
+                .userStatus(userUpdateDto.getUserStatus())
+                .build();
+    }
+
+    public void deleteUser(){
+        this.userStatus = UserStatus.DELETED;
+    }
+
 }

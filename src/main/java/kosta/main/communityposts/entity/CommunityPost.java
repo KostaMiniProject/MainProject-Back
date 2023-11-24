@@ -3,10 +3,7 @@ package kosta.main.communityposts.entity;
 import jakarta.persistence.*;
 import kosta.main.audit.Auditable;
 import kosta.main.users.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 

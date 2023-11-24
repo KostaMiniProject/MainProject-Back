@@ -1,9 +1,13 @@
 package kosta.main.items.service;
 
 
+import kosta.main.bids.entity.Bid;
+import kosta.main.categories.entity.Category;
+import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.entity.Item;
-import kosta.main.items.dto.ItemDto;
+import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.repository.ItemsRepository;
+import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,21 +22,33 @@ public class ItemsService {
 
 
   //  물건 생성
-  public void addItem(ItemDto itemDto) {
-//    Item newItem = new Item();
-//    newItem.setTitle(itemDto.getTitle());
-//    newItem.setDescription(itemDto.getDescription());
-//    newItem.setImageUrl(itemDto.getImageUrl());
+  public void addItem(ItemSaveDto itemSaveDto) {
+//    # sudo 코드
+//    1. Controller에서 ItemSaveDto값을 받아온다.
+//    2. 추가할 내용을 담는 용도로 Item 객체(newItem)를 생성한다.
+//    3. ItemSaveDto 내에서 getter을 이용해 추가하고 싶은 값을 꺼낸다.
+//    4. 꺼낸값을 newItem 객체의 setter를 통해 값을 넣어준다.
+//    5. 3번 4번 과정을 반복한다.
+//      (user, bid, category, title, description, imageUrl)
 
+//    # SETTER 사용
+//    Item newItem1 = new Item();
+//    newItem1.setTitle(itemSaveDto.getTitle());
+//    newItem1.setDescription(itemSaveDto.getDescription());
+//    newItem1.setImageUrl(itemSaveDto.getImageUrl());
+
+//    # Builder 사용
     Item newItem2 = Item.builder()
-        .title(itemDto.getTitle())
-        .description(itemDto.getDescription())
-        .imageUrl(itemDto.getImageUrl())
+        //    TODO : userId를 받아와서 추가
+        .user(new User())
+        //    TODO : bidId를 받아와서 추가
+        .bid(new Bid())
+        //    TODO : categoryId를 받아와서 추가
+        .category(new Category())
+        .title(itemSaveDto.getTitle())
+        .description(itemSaveDto.getDescription())
+        .imageUrl(itemSaveDto.getImageUrl())
         .build();
-
-    //    TODO : userId를 받아와서 newItem에 추가
-    //    TODO : bidId를 받아와서 newItem에 추가
-    //    TODO : categoryId를 받아와서 newItem에 추가
 
     itemsRepository.save(newItem2);
   }
@@ -51,30 +67,39 @@ public class ItemsService {
 
 
   //  물건 수정
-  public void updateItem(Integer itemId, ItemDto itemDto) {
-    Item updateItem = getFindById(itemId);
+  public void updateItem(Integer itemId, ItemUpdateDto itemUpdateDto) {
+//    # sudo 코드
+//    1. Controller에서 itemId와 ItemUpdateDto값을 받아온다.
+//    2. 수정할 내용을 담는 용도인 Item 객체(updateItem)를 생성한다.
+//    3. itemRepository의 getFindById 메서드와 itemId를 이용해 수정하고 싶은 객체에 초기화한다.
+//    3. itemUpdateDto를
 
-    if (itemDto.getTitle() != null) {
-      updateItem.setTitle(itemDto.getTitle());
-    }
-    if (itemDto.getDescription() != null) {
-      updateItem.setDescription(itemDto.getDescription());
-    }
-    if (itemDto.getImageUrl() != null) {
-      updateItem.setImageUrl(itemDto.getImageUrl());
-    }
-    if (itemDto.getItemStatus() != null) {
-      updateItem.setItemStatus(itemDto.getItemStatus());
-    }
+//    # SETTER 사용
+//    Item updateItem1 = getFindById(itemId);
+//
+//    if (itemUpdateDto.getTitle() != null) {
+//      updateItem1.setTitle(itemUpdateDto.getTitle());
+//    }
+//    if (itemUpdateDto.getDescription() != null) {
+//      updateItem1.setDescription(itemUpdateDto.getDescription());
+//    }
+//    if (itemUpdateDto.getImageUrl() != null) {
+//      updateItem1.setImageUrl(itemUpdateDto.getImageUrl());
+//    }
+//    if (itemUpdateDto.getItemStatus() != null) {
+//      updateItem1.setItemStatus(itemUpdateDto.getItemStatus());
+//    }
 
-//    Item updateItem2 = Item.builder()
-//        .title(itemDto.getTitle())
-//        .description(itemDto.getDescription())
-//        .imageUrl(itemDto.getImageUrl())
-//        .itemStatus(itemDto.getItemStatus())
-//        .build();
+//    # Builder 사용
+    Item updateItem2 = Item.builder()
+        .itemId(itemId)
+        .title(itemUpdateDto.getTitle())
+        .description(itemUpdateDto.getDescription())
+        .imageUrl(itemUpdateDto.getImageUrl())
+        .itemStatus(itemUpdateDto.getItemStatus())
+        .build();
 
-    itemsRepository.save(updateItem);
+    itemsRepository.save(updateItem2);
   }
 
 

@@ -62,13 +62,13 @@ public class UsersController {
     public ResponseEntity getDibs(@PathVariable("userId") Integer userId){
         return new ResponseEntity(usersService.findMyDibs(userId),HttpStatus.OK);
     }
-
-    @PostMapping("/users/reivews/{userId}")
-    public ResponseEntity createReviews(@PathVariable("userId") Integer userId,
-                                     @RequestBody CreateReportDto createReportDto){
-        usersService.reportUser(reportedUserId, reporterUserId, createReportDto);
-        return new ResponseEntity(HttpStatus.CREATED);
-    }
+//
+//    @PostMapping("/users/reivews/{userId}")
+//    public ResponseEntity createReviews(@PathVariable("userId") Integer userId,
+//                                     @RequestBody CreateReportDto createReportDto){
+//        usersService.reportUser(reportedUserId, reporterUserId, createReportDto);
+//        return new ResponseEntity(HttpStatus.CREATED);
+//    }
 
 
 

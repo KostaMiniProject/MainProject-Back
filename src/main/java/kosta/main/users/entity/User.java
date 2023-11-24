@@ -41,9 +41,11 @@ public class User extends Auditable {
     @Column(length = 255)
     private String profileImage;
 
+    @Builder.Default
     @Column(length = 20, nullable = false)
-    private UserStatus userStatus;
+    private UserStatus userStatus = UserStatus.ACTIVATE;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BlockedUser> blockedUsers = new ArrayList<>(); // 클래스 이름을 단수형으로 변경
 

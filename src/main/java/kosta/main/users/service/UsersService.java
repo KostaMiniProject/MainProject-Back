@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class UsersService {
 
     private final UsersRepository usersRepository;
-    private final CustomBeanUtils customBeanUtils;
+    private final CustomBeanUtils<User> customBeanUtils;
     public UsersResponseDto findMyProfile(Integer userId) {
 
         return UsersResponseDto.of(findUserByUserId(userId));
@@ -30,7 +30,7 @@ public class UsersService {
     }
 
     public UsersResponseDto updateUser(Integer userId, UserUpdateDto userUpdateDto) {
-        User user = (User) customBeanUtils.copyNonNullProperties(findUserByUserId(userId), User.createUser(userUpdateDto));
+        User user = customBeanUtils.copyNonNullProperties(findUserByUserId(userId), User.createUser(userUpdateDto));
         return UsersResponseDto.of(user);
     }
 

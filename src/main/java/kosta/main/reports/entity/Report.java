@@ -1,21 +1,21 @@
 package kosta.main.reports.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.global.audit.Auditable;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reports")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class Report extends Auditable {
 
     @Id
@@ -43,8 +43,13 @@ public class Report extends Auditable {
     private String reason;
 
     @Column(length = 20)
-    private String result;
+    @Builder.Default
+    private ReportStatus result = ReportStatus.REPORTING;
 
+
+    public enum ReportStatus{
+        REPORTING,RECEIVED,APPLIED
+    }
     // 게터와 세터
     // 생략...
 }

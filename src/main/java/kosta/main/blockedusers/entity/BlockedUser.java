@@ -1,18 +1,18 @@
 package kosta.main.blockedusers.entity;
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.global.audit.Auditable;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "blocked_users")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class BlockedUser extends Auditable {
 
     @Id

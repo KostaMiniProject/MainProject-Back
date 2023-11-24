@@ -43,24 +43,44 @@ public class ExchangePostsService {
     return exchangePostRepository.findAll();
   }
 
-  public ExchangePost findExchangePostById(Integer id) { // 기존에 Optional로 처리하던 NUll을 수동으로 처리
-    return exchangePostRepository.findById(id).orElse(null); // or .orElseThrow(...)
+  public ExchangePost updateExchangePost(Integer exchangePostId, ExchangePostDTO exchangePostDTO) {
+    ExchangePost existingPost = findExchangePostById(exchangePostId);
+
+    if (existingPost == null) {
+      throw new RuntimeException("ExchangePost not found");
+    }
+
+    // 기존 값들을 기본값으로 사용, 만약 값이 넘어온다면 넘어온값을 사용함
+    String title = exchangePostDTO.getTitle() != null ? exchangePostDTO.getTitle() : existingPost.getTitle();
+    String preferItems = exchangePostDTO.getPreferItems() != null ? exchangePostDTO.getPreferItems() : existingPost.getPreferItems();
+    String address = exchangePostDTO.getAddress() != null ? exchangePostDTO.getAddress() : existingPost.getAddress();
+    String content = exchangePostDTO.getContent() != null ? exchangePostDTO.getContent() : existingPost.getContent();
+    ExchangePost.ExchangePostStatus status = exchangePostDTO.getExchangePostStatus() != null ? exchangePostDTO.getExchangePostStatus() : existingPost.getExchangePostStatus();
+
+    // Item 객체 가져오기 (필요한 경우)
+    Item item = null;
+    if (exchangePostDTO.getItemId() != null) {
+      item = itemsRepository.findById(exchangePostDTO.getItemId())
+              .orElseThrow(() -> new RuntimeException("Item not found"));
+    } else {
+      item = existingPost.getItem(); // 기존 item 유지
+    }
+
+    // ExchangePost 업데이트
+    existingPost.updateExchangePost(
+            item,
+            title,
+            preferItems,
+            address,
+            content,
+            status
+    );
+
+    return exchangePostRepository.save(existingPost);
+  }
+  public ExchangePost findExchangePostById(Integer exchangePostId) { // 기존에 Optional로 처리하던 NUll을 수동으로 처리
+    return exchangePostRepository.findById(exchangePostId)
+            .orElseThrow(() -> new RuntimeException("물물교환게시글을 찾을 수 없습니다.")); // or .orElseThrow(...)
   }
 
-
-//  public ExchangePost updateExchangePost(Integer id, ExchangePostDTO exchangePostDTO) {
-//    return exchangePostRepository.findById(id).map(existingPost -> {
-//      // 필요한 경우, User와 Item 객체도 업데이트
-//      existingPost.setTitle(exchangePostDTO.getTitle());
-//      existingPost.setPreferItems(exchangePostDTO.getPreferItems());
-//      existingPost.setAddress(exchangePostDTO.getAddress());
-//      existingPost.setContent(exchangePostDTO.getContent());
-//      existingPost.setExchangePostStatus(exchangePostDTO.getExchangePostStatus());
-//      return exchangePostRepository.save(existingPost);
-//    }).orElseThrow(() -> new RuntimeException("ExchangePost not found"));
-//  }
-
-  public void deleteExchangePost(Integer id) {
-    exchangePostRepository.deleteById(id);
-  }
 }

@@ -1,13 +1,11 @@
 package kosta.main.reviews.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.global.audit.Auditable;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reviews")

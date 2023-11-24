@@ -6,7 +6,7 @@ import kosta.main.users.dto.UserUpdateDto;
 import kosta.main.users.dto.UsersResponseDto;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
-import kosta.main.utils.CustomBeanUtils;
+import kosta.main.users.repository.UsersRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +15,9 @@ import org.springframework.stereotype.Service;
 public class UsersService {
 
     private final UsersRepository usersRepository;
-    private final CustomBeanUtils<User> customBeanUtils;
+    private final UsersRepositoryCustom usersRepositoryCustom;
     public UsersResponseDto findMyProfile(Integer userId) {
-
-        return UsersResponseDto.of(findUserByUserId(userId));
+        return usersRepositoryCustom.findUserByUserId(userId).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
     }
 
     private User findUserByUserId(Integer userId) {
@@ -30,11 +29,13 @@ public class UsersService {
     }
 
     public UsersResponseDto updateUser(Integer userId, UserUpdateDto userUpdateDto) {
-        User user = customBeanUtils.copyNonNullProperties(findUserByUserId(userId), User.createUser(userUpdateDto));
-        return UsersResponseDto.of(user);
+
+        return UsersResponseDto.of(usersRepository.save(findUserByUserId(userId).updateUser(userUpdateDto)));
     }
 
     public void withdrawalUser(Integer userId) {
-        findUserByUserId(userId).deleteUser();
+        User user = findUserByUserId(userId);
+        user.deleteUser();
+        usersRepository.save(user);
     }
 }

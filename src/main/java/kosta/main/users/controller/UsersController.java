@@ -1,6 +1,5 @@
 package kosta.main.users.controller;
 
-import kosta.main.blockedusers.dto.CreateBlockedUserDto;
 import kosta.main.users.dto.UserCreateDto;
 import kosta.main.users.dto.UserUpdateDto;
 import kosta.main.reports.dto.CreateReportDto;

@@ -30,6 +30,7 @@ public class ItemsService {
 //    4. 꺼낸값을 newItem 객체의 setter를 통해 값을 넣어준다.
 //    5. 3번 4번 과정을 반복한다.
 //      (user, bid, category, title, description, imageUrl)
+//    6. itemsRepository의 save 메서드를 이용해서 newItem을 DB에 적용시켜준다.
 
 //    # SETTER 사용
 //    Item newItem1 = new Item();
@@ -71,8 +72,12 @@ public class ItemsService {
 //    # sudo 코드
 //    1. Controller에서 itemId와 ItemUpdateDto값을 받아온다.
 //    2. 수정할 내용을 담는 용도인 Item 객체(updateItem)를 생성한다.
-//    3. itemRepository의 getFindById 메서드와 itemId를 이용해 수정하고 싶은 객체에 초기화한다.
-//    3. itemUpdateDto를
+//    3. itemRepository의 getFindById 메서드와 itemId를 이용해 updateItem 객체를 초기화한다.
+//    4. itemUpdateDto에 포함된 요소를 한개씩 getter를 통해서 꺼내 null인지 확인한다.
+//    5. 만약 null이 아니라면 updateItem 객체의 setter를 통해 값을 넣어준다.
+//    6. 4번 5번 과정을 반복한다.
+//      (title, description, imageUrl, itemStatus)
+//    7. itemsRepository의 save 메서드를 이용해서 updateItem을 DB에 적용시켜준다.
 
 //    # SETTER 사용
 //    Item updateItem1 = getFindById(itemId);
@@ -89,14 +94,23 @@ public class ItemsService {
 //    if (itemUpdateDto.getItemStatus() != null) {
 //      updateItem1.setItemStatus(itemUpdateDto.getItemStatus());
 //    }
-
+    
+    
 //    # Builder 사용
+    Item item = getFindById(itemId);
+    
+//    itemUpdateDto 요소 null값 체크
+    String title = itemUpdateDto.getTitle() != null ? itemUpdateDto.getTitle() : item.getTitle();
+    String description = itemUpdateDto.getDescription() != null ? itemUpdateDto.getDescription() : item.getDescription();
+    String imageUrl = itemUpdateDto.getImageUrl() != null ? itemUpdateDto.getImageUrl() : item.getImageUrl();
+    Item.ItemStatus itemStatus = itemUpdateDto.getItemStatus() != null ? itemUpdateDto.getItemStatus() : item.getItemStatus();
+
     Item updateItem2 = Item.builder()
         .itemId(itemId)
-        .title(itemUpdateDto.getTitle())
-        .description(itemUpdateDto.getDescription())
-        .imageUrl(itemUpdateDto.getImageUrl())
-        .itemStatus(itemUpdateDto.getItemStatus())
+        .title(title)
+        .description(description)
+        .imageUrl(imageUrl)
+        .itemStatus(itemStatus)
         .build();
 
     itemsRepository.save(updateItem2);
@@ -106,9 +120,8 @@ public class ItemsService {
   //  물건 삭제
   public void deleteItem(Integer itemId) {
     Item item = getFindById(itemId);
-    item.setItemStatus(Item.ItemStatus.DELETED);
+    item.itemStatusUpdate(Item.ItemStatus.DELETED);
   }
-
 
   //  물건 검색
   //  ex - /items/search?name=메롱!

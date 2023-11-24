@@ -5,81 +5,64 @@ import kosta.main.audit.Auditable;
 import kosta.main.bids.entity.Bid;
 import kosta.main.categories.entity.Category;
 import kosta.main.users.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 
 
 @Entity
 @Table(name = "items")
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
-
+@Builder
 public class Item extends Auditable {
-    @Builder
-    public Item(String title, String description, String imageUrl, ItemStatus itemStatus) {
-        this.title = title;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.itemStatus = itemStatus;
-    }
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer itemId;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
+  @ManyToOne
+  @JoinColumn(name = "bid_id")
+  private Bid bid;
+
+  @ManyToOne
+  @JoinColumn(name = "category_id")
+  private Category category;
+
+  @Column(length = 255)
+  private String title;
+
+  @Column(columnDefinition = "TEXT")
+  private String description;
+
+  @Column(length = 20, nullable = false)
+  @Builder.Default
+  private ItemStatus itemStatus = ItemStatus.PUBLIC;
+
+  @Column(columnDefinition = "TEXT")
+  private String imageUrl;
+
+  @Column(length = 20, nullable = false)
+  @Builder.Default
+  private IsBiding isBiding = IsBiding.NOT_BIDING;
 
 
+  public enum ItemStatus {
+    PUBLIC, PRIVATE, DELETED
+  }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer itemId;
+  // 게터와 세터
+  // 생략...
+  public void itemStatusUpdate(ItemStatus itemStatus) {
+    this.itemStatus = itemStatus;
+  }
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+  public enum IsBiding {
+    BIDING, NOT_BIDING
+  }
 
-    @ManyToOne
-    @JoinColumn(name = "bid_id")
-    private Bid bid;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    @Column(length = 255)
-    private String title;
-
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    @Column(length = 20, nullable = false)
-    private ItemStatus itemStatus = ItemStatus.PUBLIC;
-
-    @Column(columnDefinition = "TEXT")
-    private String imageUrl;
-
-
-    public enum ItemStatus {
-        PUBLIC, PRIVATE, DELETED
-    }
-
-    // 게터와 세터
-    // 생략...
-
-    public void setItemStatus(ItemStatus itemStatus) {
-        this.itemStatus = itemStatus;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 
 //    static public class Builder {
 //        private String title;

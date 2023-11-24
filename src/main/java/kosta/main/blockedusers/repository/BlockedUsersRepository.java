@@ -1,4 +1,7 @@
 package kosta.main.blockedusers.repository;
 
-public interface BlockedUsersRepository {
+import kosta.main.blockedusers.entity.BlockedUser;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BlockedUsersRepository extends JpaRepository<BlockedUser,Integer> {
 }

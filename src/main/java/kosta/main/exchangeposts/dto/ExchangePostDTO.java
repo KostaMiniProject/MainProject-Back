@@ -1,5 +1,6 @@
 package kosta.main.exchangeposts.dto;
 
+import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.entity.ExchangePost.ExchangePostStatus;
 import lombok.Getter;
 

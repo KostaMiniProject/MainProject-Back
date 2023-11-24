@@ -1,9 +1,10 @@
 package kosta.main.items.controller;
 
+import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.entity.Item;
+import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.service.ItemsService;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,11 +17,10 @@ public class ItemsController {
   private final ItemsService itemsService;
 
   //  물건 생성
-//  @PostMapping
-//  public String addItem(@RequestBody Item item) {
-//    String res = itemsService.addItem(item);
-//    return res;
-//  }
+  @PostMapping
+  public void addItem(@RequestBody ItemSaveDto itemSaveDto) {
+    itemsService.addItem(itemSaveDto);
+  }
 
   //  물건 목록 조회
   @GetMapping
@@ -36,14 +36,16 @@ public class ItemsController {
   }
 
   //  물건 수정
-//  @PutMapping("/{itemId}")
-//  public void updateItem(@PathVariable int itemId) {
-//  }
+  @PutMapping("/{itemId}")
+  public void updateItem(@PathVariable int itemId,
+                         @RequestBody ItemUpdateDto itemUpdateDto) {
+    itemsService.updateItem(itemId, itemUpdateDto);
+  }
 
 
   //  물건 삭제
   @DeleteMapping("/{itemId}")
-  public void deleteItem(@PathVariable int itemId) {
+  public void deleteItem(@PathVariable Integer itemId) {
     itemsService.deleteItem(itemId);
   }
 
@@ -53,4 +55,5 @@ public class ItemsController {
 //  public Item searchItems() {
 //    return null;
 //  }
+
 }

@@ -1,6 +1,6 @@
 package kosta.main.chatrooms.entity;
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.global.audit.Auditable;
 import kosta.main.chats.entity.Chat;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.users.entity.User;
@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "chat_rooms")

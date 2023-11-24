@@ -2,6 +2,7 @@ package kosta.main.communityposts.controller;
 
 
 import kosta.main.communityposts.dto.CommunityPostCreateDto;
+import kosta.main.communityposts.dto.CommunityPostResponseDto;
 import kosta.main.communityposts.dto.CommunityPostUpdateDto;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
@@ -23,7 +24,7 @@ public class CommunityPostsController {
 
     /* 커뮤니티 목록 조회 */
     /* 테스트 성공 확인 */
-    @GetMapping("/")
+    @GetMapping
     public List<CommunityPost> findPosts() {
         List<CommunityPost>  communityPosts = new ArrayList<>(communityPostsService.findPosts());
         return communityPosts;
@@ -32,7 +33,7 @@ public class CommunityPostsController {
     /* 커뮤니티 게시글 상세 조회 */
     /* 테스트 성공 확인 */
     @GetMapping("/{communityPostId}")
-    public ResponseEntity<CommunityPost> findPost(@PathVariable Integer communityPostId) throws Exception {
+    public ResponseEntity<CommunityPost> findPost(@PathVariable("communityPostId") Integer communityPostId) throws Exception {
         CommunityPost communityPost = communityPostsService.findPost(communityPostId);
         return ResponseEntity.ok(communityPost);
     }
@@ -46,9 +47,13 @@ public class CommunityPostsController {
     }
 
     /* 커뮤니티 게시글 수정 */
-    @GetMapping("/community-posts/{communityPostId}")
-    public ResponseEntity<CommunityPost> updatePost(@PathVariable Integer communityPostId, @RequestBody CommunityPostUpdateDto communityPostUpdateDto) throws Exception {
-        CommunityPost communityPost = communityPostsService.updatePost(communityPostId, communityPostUpdateDto);
-        return ResponseEntity.ok(communityPost);
+    @PutMapping("/{communityPostId}")
+    public ResponseEntity<CommunityPostResponseDto> updatePost(@PathVariable("communityPostId") Integer communityPostId, @RequestBody CommunityPostUpdateDto communityPostUpdateDto){
+        return new ResponseEntity<>(communityPostsService.updatePost(communityPostId, communityPostUpdateDto), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{communityPostId}")
+    public void deletePost(@PathVariable("communityPostId") Integer communityPostId) {
+        communityPostsService.deletePost(communityPostId);
     }
 }

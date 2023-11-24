@@ -2,6 +2,7 @@ package kosta.main.communityposts.entity;
 
 import jakarta.persistence.*;
 import kosta.main.audit.Auditable;
+import kosta.main.communityposts.dto.CommunityPostUpdateDto;
 import kosta.main.users.entity.User;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -33,17 +34,26 @@ public class CommunityPost extends Auditable {
     @Column
     private Integer views;
 
+    @Builder.Default
     @Column(length = 20)
     private CommunityPostStatus communityPostStatus = CommunityPostStatus.PUBLIC;
 
     @Column(length = 255)
     private String imageUrl;
 
+    public CommunityPost updateCommunityPost( CommunityPostUpdateDto communityPostUpdateDto) {
+        this.content = communityPostUpdateDto.getContent() != null ? communityPostUpdateDto.getContent() : this.content;
+        this.title = communityPostUpdateDto.getContent() != null ? communityPostUpdateDto.getTitle() : this.title;
+        this.imageUrl = communityPostUpdateDto.getImageUrl() != null ? communityPostUpdateDto.getImageUrl() : this.imageUrl;
+        return this;
+    }
 
-    // 게터와 세터
-    // 생략...
 
     public enum CommunityPostStatus {
         PUBLIC, PRIVATE, REPORTED, DELETED
+    }
+
+    public void updateCommunityPostStatus(CommunityPost.CommunityPostStatus communityPostStatus) {
+        this.communityPostStatus = communityPostStatus;
     }
 }

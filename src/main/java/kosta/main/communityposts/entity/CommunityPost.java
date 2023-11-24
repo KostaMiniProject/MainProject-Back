@@ -1,16 +1,11 @@
 package kosta.main.communityposts.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
 import kosta.main.communityposts.dto.CommunityPostUpdateDto;
 import kosta.main.users.entity.User;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
 
-import java.time.LocalDateTime;
 import kosta.main.global.audit.Auditable;
-import kosta.main.users.entity.User;
-import lombok.*;
 
 @Entity
 @Table(name = "community_posts")
@@ -59,5 +54,4 @@ public class CommunityPost extends Auditable {
     public void updateCommunityPostStatus(CommunityPost.CommunityPostStatus communityPostStatus) {
         this.communityPostStatus = communityPostStatus;
     }
-}
 }

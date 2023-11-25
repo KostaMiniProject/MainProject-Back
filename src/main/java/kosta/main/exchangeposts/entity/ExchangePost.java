@@ -53,27 +53,6 @@ public class ExchangePost extends Auditable {
         this.exchangePostStatus = exchangePostStatus;
     }
 
-    public void updateExchangePost(Item item, String title, String preferItems, String address, String content, ExchangePostStatus exchangePostStatus) {
-        if (item != null) {
-            this.item = item;
-        }
-        if (title != null) {
-            this.title = title;
-        }
-        if (preferItems != null) {
-            this.preferItems = preferItems;
-        }
-        if (address != null) {
-            this.address = address;
-        }
-        if (content != null) {
-            this.content = content;
-        }
-        if (exchangePostStatus != null) {
-            this.exchangePostStatus = exchangePostStatus;
-        }
-    }
-
 
     public enum ExchangePostStatus {
         EXCHANGING , RESERVATION, COMPLETED, DELETED

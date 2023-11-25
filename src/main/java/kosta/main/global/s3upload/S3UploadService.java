@@ -17,6 +17,9 @@ public class S3UploadService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    //로직 해체, 에러발생 가능성 처리 및 다중 파일 업로드 기능 구현 필요
+    //이름 겹칠때의 문제도 고려하여 UUID 설정 필요
+    //CDN 서버 적용 및 보안요소 고려 필요
     public String saveFile(MultipartFile multipartFile) throws IOException {
         String originalFilename = multipartFile.getOriginalFilename();
 

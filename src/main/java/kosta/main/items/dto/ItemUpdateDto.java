@@ -1,35 +1,20 @@
-package kosta.main.items.entity;
+package kosta.main.items.dto;
 
 import jakarta.persistence.*;
 import kosta.main.audit.Auditable;
 import kosta.main.bids.entity.Bid;
 import kosta.main.categories.entity.Category;
+import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
-@Entity
-@Table(name = "items")
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
-public class ItemSaveDto {
-
-  @Id
-  private Integer itemId;
-
-  @Column(length = 255)
+public class ItemUpdateDto {
   private String title;
-
-  @Column(columnDefinition = "TEXT")
   private String description;
-
-  @Column(length = 20, nullable = false)
   private Item.ItemStatus itemStatus;
-
-  @Column(columnDefinition = "TEXT")
   private String imageUrl;
-
 }

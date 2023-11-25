@@ -1,7 +1,7 @@
 package kosta.main.exchangeposts.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.global.audit.Auditable;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
 import lombok.Builder;

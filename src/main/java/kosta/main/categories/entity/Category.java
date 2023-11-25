@@ -1,7 +1,7 @@
 package kosta.main.categories.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.global.audit.Auditable;
 import kosta.main.items.entity.Item;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

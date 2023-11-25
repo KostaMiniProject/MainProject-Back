@@ -1,9 +1,10 @@
 package kosta.main.exchangehistories.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.global.audit.Auditable;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.entity.Item;
+import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,9 +25,12 @@ public class ExchangeHistory extends Auditable {
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "exchange_post_id", nullable = false)
+    @JoinColumn(name = "exchange_post_id")
     private ExchangePost exchangePost;
 
     @Column

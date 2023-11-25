@@ -1,10 +1,10 @@
 package kosta.main.items.controller;
 
+import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.entity.Item;
-import kosta.main.items.entity.ItemSaveDto;
+import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.service.ItemsService;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,9 +36,11 @@ public class ItemsController {
   }
 
   //  물건 수정
-//  @PutMapping("/{itemId}")
-//  public void updateItem(@PathVariable int itemId) {
-//  }
+  @PutMapping("/{itemId}")
+  public void updateItem(@PathVariable int itemId,
+                         @RequestBody ItemUpdateDto itemUpdateDto) {
+    itemsService.updateItem(itemId, itemUpdateDto);
+  }
 
 
   //  물건 삭제
@@ -53,4 +55,5 @@ public class ItemsController {
 //  public Item searchItems() {
 //    return null;
 //  }
+
 }

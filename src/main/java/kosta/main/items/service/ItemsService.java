@@ -1,71 +1,127 @@
 package kosta.main.items.service;
 
 
+import kosta.main.bids.entity.Bid;
+import kosta.main.categories.entity.Category;
+import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.entity.Item;
-import kosta.main.items.entity.ItemDeleteDto;
-import kosta.main.items.entity.ItemSaveDto;
+import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.repository.ItemsRepository;
+import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor
 public class ItemsService {
   private final ItemsRepository itemsRepository;
 
+
   //  물건 생성
   public void addItem(ItemSaveDto itemSaveDto) {
-//    1. Item 엔티티의 title, description, itemStatus, imageUrl의  SETTER를 추가한다.
-    //builder패턴에 대해서 공부해보면 좋음
+//    # sudo 코드
+//    1. Controller에서 ItemSaveDto값을 받아온다.
+//    2. 추가할 내용을 담는 용도로 Item 객체(newItem)를 생성한다.
+//    3. ItemSaveDto 내에서 getter을 이용해 추가하고 싶은 값을 꺼낸다.
+//    4. 꺼낸값을 newItem 객체의 setter를 통해 값을 넣어준다.
+//    5. 3번 4번 과정을 반복한다.
+//      (user, bid, category, title, description, imageUrl)
+//    6. itemsRepository의 save 메서드를 이용해서 newItem을 DB에 적용시켜준다.
 
-//    2. Controller에서 받아온 ItemSaveDto를 ItemsRepository에 save 메서드를 이용하여 Item 테이블에 추가한다.
-//    반환 타입 void
+//    # SETTER 사용
+//    Item newItem1 = new Item();
+//    newItem1.setTitle(itemSaveDto.getTitle());
+//    newItem1.setDescription(itemSaveDto.getDescription());
+//    newItem1.setImageUrl(itemSaveDto.getImageUrl());
+
+//    # Builder 사용
+    Item newItem2 = Item.builder()
+        //    TODO : userId를 받아와서 추가
+        .user(new User())
+        //    TODO : bidId를 받아와서 추가
+        .bid(new Bid())
+        //    TODO : categoryId를 받아와서 추가
+        .category(new Category())
+        .title(itemSaveDto.getTitle())
+        .description(itemSaveDto.getDescription())
+        .imageUrl(itemSaveDto.getImageUrl())
+        .build();
+
+    itemsRepository.save(newItem2);
   }
+
 
   //  물건 목록 조회
   public List<Item> getItems() {
-    List<Item> allItems = itemsRepository.findAll();
-    return allItems;
+    return itemsRepository.findAll();
   }
+
 
   //  물건 상세 조회
   public Item getFindById(int itemId) {
-//    error
     return itemsRepository.findById(itemId).orElseThrow(() -> new RuntimeException("아이디를 찾지 못했습니다."));
   }
 
-  //  물건 수정
-  public void updateItem() {
 
-//  1. Controller에서 받아온 itemId와 ItemSaveDto를 받아온다.
-//  2. ItemsRepository에 findById 메서드를 이용하여 Item 테이블 내에 itemId를 찾는다.
-//  3. 해당항목을 확인 후
-//  title, description, itemStatus, imageUrl
-//  4. "수정 완료" 문자열을 리턴한다.
-//item.setItemStatus();
+  //  물건 수정
+  public void updateItem(Integer itemId, ItemUpdateDto itemUpdateDto) {
+//    # sudo 코드
+//    1. Controller에서 itemId와 ItemUpdateDto값을 받아온다.
+//    2. 수정할 내용을 담는 용도인 Item 객체(updateItem)를 생성한다.
+//    3. itemRepository의 getFindById 메서드와 itemId를 이용해 updateItem 객체를 초기화한다.
+//    4. itemUpdateDto에 포함된 요소를 한개씩 getter를 통해서 꺼내 null인지 확인한다.
+//    5. 만약 null이 아니라면 updateItem 객체의 setter를 통해 값을 넣어준다.
+//    6. 4번 5번 과정을 반복한다.
+//      (title, description, imageUrl, itemStatus)
+//    7. itemsRepository의 save 메서드를 이용해서 updateItem을 DB에 적용시켜준다.
+
+//    # SETTER 사용
+//    Item updateItem1 = getFindById(itemId);
 //
+//    if (itemUpdateDto.getTitle() != null) {
+//      updateItem1.setTitle(itemUpdateDto.getTitle());
+//    }
+//    if (itemUpdateDto.getDescription() != null) {
+//      updateItem1.setDescription(itemUpdateDto.getDescription());
+//    }
+//    if (itemUpdateDto.getImageUrl() != null) {
+//      updateItem1.setImageUrl(itemUpdateDto.getImageUrl());
+//    }
+//    if (itemUpdateDto.getItemStatus() != null) {
+//      updateItem1.setItemStatus(itemUpdateDto.getItemStatus());
+//    }
+    
+    
+//    # Builder 사용
+    Item item = getFindById(itemId);
+    
+//    itemUpdateDto 요소 null값 체크
+    String title = itemUpdateDto.getTitle() != null ? itemUpdateDto.getTitle() : item.getTitle();
+    String description = itemUpdateDto.getDescription() != null ? itemUpdateDto.getDescription() : item.getDescription();
+    String imageUrl = itemUpdateDto.getImageUrl() != null ? itemUpdateDto.getImageUrl() : item.getImageUrl();
+    Item.ItemStatus itemStatus = itemUpdateDto.getItemStatus() != null ? itemUpdateDto.getItemStatus() : item.getItemStatus();
+
+    Item updateItem2 = Item.builder()
+        .itemId(itemId)
+        .title(title)
+        .description(description)
+        .imageUrl(imageUrl)
+        .itemStatus(itemStatus)
+        .build();
+
+    itemsRepository.save(updateItem2);
   }
 
 
   //  물건 삭제
-    public void deleteItem(Integer itemId) {
-      //    Item item = itemsRepository.findById(itemDeleteDto.getItemId()).orElseThrow(() -> new RuntimeException("아이템을 찾을 수 없습니다."));
-//    item.setItemStatus();
-
-//    1. Controller에서 받아온 ItemDeleteDto 중 itemId를 찾는다.
-//    2. ItemsRepository에 findById 메서드를 이용하여 Item 테이블 내에 itemId를 찾는다.
-//    3. Item 엔티티는 itemStatus의 SETTER를 추가한다.
-//    4. Item 엔티티 itemId의 itemStatus를 DELETED로 변경한다.
-    }
-
-
+  public void deleteItem(Integer itemId) {
+    Item item = getFindById(itemId);
+    item.itemStatusUpdate(Item.ItemStatus.DELETED);
+  }
 
   //  물건 검색
   //  ex - /items/search?name=메롱!

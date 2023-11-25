@@ -1,4 +1,4 @@
-package kosta.main.audit;
+package kosta.main.global.audit;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

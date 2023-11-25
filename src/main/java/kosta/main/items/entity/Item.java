@@ -1,21 +1,19 @@
 package kosta.main.items.entity;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
+import kosta.main.global.audit.Auditable;
 import kosta.main.bids.entity.Bid;
 import kosta.main.categories.entity.Category;
 import kosta.main.users.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 
 
 @Entity
 @Table(name = "items")
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
+@Builder
 public class Item extends Auditable {
 
     @Id

@@ -3,10 +3,9 @@ package kosta.main.users.service;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
 import kosta.main.dibs.dto.DibResponseDto;
-import kosta.main.dibs.entity.Dib;
 import kosta.main.dibs.repository.DibsRepository;
 import kosta.main.exchangehistories.dto.ExchangeHistoryResponseDto;
-import kosta.main.exchangehistories.entity.ExchangeHistory;
+import kosta.main.global.s3upload.S3UploadService;
 import kosta.main.reports.dto.CreateReportDto;
 import kosta.main.reports.entity.Report;
 import kosta.main.reports.repository.ReportsRepository;
@@ -16,7 +15,9 @@ import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -27,6 +28,7 @@ public class UsersService {
     private final ReportsRepository reportsRepository;
     private final BlockedUsersRepository blockedUsersRepository;
     private final DibsRepository dibsRepository;
+    private final S3UploadService s3UploadService;
 
     @Transactional(readOnly = true)
     public UsersResponseDto findMyProfile(Integer userId) {
@@ -39,8 +41,8 @@ public class UsersService {
     }
 
     @Transactional
-    public UsersResponseDto updateUser(Integer userId, UserUpdateDto userUpdateDto) {
-
+    public UsersResponseDto updateUser(Integer userId, UserUpdateDto userUpdateDto, MultipartFile file) throws IOException {
+        userUpdateDto.updateProfileImage(s3UploadService.saveFile(file));
         return UsersResponseDto.of(usersRepository.save(findUserByUserId(userId).updateUser(userUpdateDto)));
     }
     @Transactional

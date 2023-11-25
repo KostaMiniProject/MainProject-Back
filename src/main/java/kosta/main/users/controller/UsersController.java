@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +31,9 @@ public class UsersController {
 
     @PutMapping("/users/{userId}")
     public ResponseEntity updateMyInfo(@PathVariable("userId") Integer userId,
-                                       @RequestBody UserUpdateDto userUpdateDto){
-        return ResponseEntity.ok(usersService.updateUser(userId, userUpdateDto));
+                                       @ModelAttribute UserUpdateDto userUpdateDto,
+                                       @RequestPart(value = "file") MultipartFile file) throws IOException {
+        return ResponseEntity.ok(usersService.updateUser(userId, userUpdateDto,file));
     }
 
     @PutMapping("/users/withdrawal/{userId}")

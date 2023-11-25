@@ -58,7 +58,7 @@ public class Item extends Auditable {
         this.isBiding = isBiding;
     }
 
-    public void setItemStatus(ItemStatus itemStatus) {
+    public void itemStatusUpdate(ItemStatus itemStatus) {
         this.itemStatus = itemStatus;
     }
 }

@@ -1,10 +1,10 @@
 package kosta.main.bids.controller;
 
+import kosta.main.bids.dto.BidResponseDTO;
 import kosta.main.bids.dto.BidsDto;
-import kosta.main.bids.entity.Bid;
+import kosta.main.bids.dto.BidListDTO;
 import kosta.main.bids.service.BidService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,24 +17,23 @@ public class BidController {
 
     private final BidService bidService;
 
-
     @PostMapping("/{exchangePostId}/bids")
-    public ResponseEntity<Bid> createBid(@RequestBody BidsDto bidDTO) {
+    public ResponseEntity<BidResponseDTO> createBid(@PathVariable("exchangePostId") Integer exchangePostId, @RequestBody BidsDto bidDTO) {
         return ResponseEntity.ok(bidService.createBid(bidDTO));
     }
 
     @GetMapping("/{exchangePostId}/bids")
-    public List<Bid> getAllBids() {
-        return bidService.findAllBids();
+    public ResponseEntity<List<BidListDTO>> getAllBidsForPost(@PathVariable("exchangePostId") Integer exchangePostId) {
+        return ResponseEntity.ok(bidService.findAllBidsForPost(exchangePostId));
     }
 
     @GetMapping("/bids/{bidId}")
-    public ResponseEntity<Bid> getBidById(@PathVariable("bidId") Integer bidId) {
+    public ResponseEntity<BidResponseDTO> getBidById(@PathVariable("bidId") Integer bidId) {
         return ResponseEntity.ok(bidService.findBidById(bidId));
     }
 
     @PutMapping("/bids/{bidId}")
-    public ResponseEntity<Bid> updateBid(@PathVariable("bidId") Integer bidId, @RequestBody BidsDto bidDTO) {
+    public ResponseEntity<BidResponseDTO> updateBid(@PathVariable("bidId") Integer bidId, @RequestBody BidsDto bidDTO) {
         return ResponseEntity.ok(bidService.updateBid(bidId, bidDTO));
     }
 

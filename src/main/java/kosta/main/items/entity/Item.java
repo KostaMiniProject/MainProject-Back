@@ -52,7 +52,7 @@ public class Item extends Auditable {
     }
 
     public enum IsBiding {
-        BIDING, NOT_BIDING
+        NOT_BIDING, BIDING
     }
     public void setIsBiding(IsBiding isBiding) {
         this.isBiding = isBiding;

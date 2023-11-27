@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class ExchangePostDTO {
+public class ExchangePostCreateResponseDTO {
   private String title;
   private String preferItems;
   private String address;
@@ -16,5 +16,4 @@ public class ExchangePostDTO {
   private Integer userId;
   private Integer itemId;
   private ExchangePostStatus exchangePostStatus;
-
 }

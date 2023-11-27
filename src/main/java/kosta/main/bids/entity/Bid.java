@@ -60,8 +60,6 @@ public class Bid extends Auditable {
         // 참고: items 리스트가 비어있는 경우는 리스트를 유지합니다.
         // 만약 items 리스트를 비우고 싶다면, 별도의 로직을 추가해야 합니다.
     }
-
-
     public enum BidStatus {
         BIDDING, DENIED, SELECTED, DELETED
     }

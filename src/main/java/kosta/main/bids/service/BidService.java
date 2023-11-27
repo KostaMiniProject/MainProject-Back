@@ -52,7 +52,11 @@ public class BidService {
                 .items(items)
                 .build();
         // Item 상태 업데이트
-        items.forEach(item -> item.setIsBiding(Item.IsBiding.BIDING));
+        // Items 상태 업데이트
+        items.forEach(item -> {
+            item.setIsBiding(Item.IsBiding.BIDING);
+            itemsRepository.save(item);
+        });
         return bidRepository.save(bid);
     }
 
@@ -107,6 +111,7 @@ public class BidService {
 
         return bidRepository.save(existingBid);
     }
+
 
     public void deleteBid(Integer bidId) {
         bidRepository.deleteById(bidId);

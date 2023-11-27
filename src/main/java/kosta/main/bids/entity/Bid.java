@@ -8,6 +8,7 @@ import kosta.main.users.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name = "bids")
 @NoArgsConstructor
 @Getter
+@Setter
 public class Bid extends Auditable {
 
     @Id
@@ -44,22 +46,6 @@ public class Bid extends Auditable {
         this.items = items;
     }
 
-    public void updateBid(User user, ExchangePost exchangePost, BidStatus status, List<Item> items) {
-        if (user != null) {
-            this.user = user;
-        }
-        if (exchangePost != null) {
-            this.exchangePost = exchangePost;
-        }
-        if (status != null) {
-            this.status = status;
-        }
-        if (items != null && !items.isEmpty()) {
-            this.items = items;
-        }
-        // 참고: items 리스트가 비어있는 경우는 리스트를 유지합니다.
-        // 만약 items 리스트를 비우고 싶다면, 별도의 로직을 추가해야 합니다.
-    }
     public enum BidStatus {
         BIDDING, DENIED, SELECTED, DELETED
     }

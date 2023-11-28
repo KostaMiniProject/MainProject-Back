@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import kosta.main.global.audit.Auditable;
 import kosta.main.bids.entity.Bid;
 import kosta.main.categories.entity.Category;
+import kosta.main.images.entity.Image;
 import kosta.main.users.entity.User;
 import lombok.*;
+
+import java.util.List;
 
 
 @Entity
@@ -41,8 +44,8 @@ public class Item extends Auditable {
     @Column(length = 20, nullable = false)
     private ItemStatus itemStatus = ItemStatus.PUBLIC;
 
-    @Column(columnDefinition = "TEXT")
-    private String imageUrl;
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Image> images; // 아이템의 이미지 리스트
 
     @Column(length = 20, nullable = false)
     private IsBiding isBiding = IsBiding.NOT_BIDING;

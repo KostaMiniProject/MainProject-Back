@@ -41,6 +41,7 @@ public class Item extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Builder.Default
     @Column(length = 20, nullable = false)
     private ItemStatus itemStatus = ItemStatus.PUBLIC;
 

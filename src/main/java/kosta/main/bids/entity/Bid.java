@@ -31,7 +31,6 @@ public class Bid extends Auditable {
     @JoinColumn(name = "exchange_post_id")
     private ExchangePost exchangePost;
 
-    @Builder.Default
     @Column(length = 10, nullable = false)
     private BidStatus status = BidStatus.BIDDING;
 

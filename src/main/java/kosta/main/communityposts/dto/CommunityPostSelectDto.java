@@ -7,7 +7,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CommunityPostResponseDto {
+public class CommunityPostSelectDto { // stackoverflow에러로 인하여 조회 Dto 처리
+    private Integer communityPostId;
+
     private User user;
 
     private String title;
@@ -21,8 +23,9 @@ public class CommunityPostResponseDto {
 
     private Integer likeCount;
 
-    public static CommunityPostResponseDto of(CommunityPost communityPost){ //of : 데이터를 가지고 새로운 객체를 만들때 사용
-        return new CommunityPostResponseDto(
+    public static CommunityPostSelectDto from (CommunityPost communityPost){ //from : 엔티티를 DTO로 생성
+        return new CommunityPostSelectDto (
+                communityPost.getCommunityPostId(),
                 communityPost.getUser(),
                 communityPost.getTitle(),
                 communityPost.getContent(),

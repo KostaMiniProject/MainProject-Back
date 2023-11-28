@@ -1,7 +1,6 @@
 package kosta.main.items.dto;
 
 import jakarta.persistence.*;
-import kosta.main.audit.Auditable;
 import kosta.main.bids.entity.Bid;
 import kosta.main.categories.entity.Category;
 import kosta.main.items.entity.Item;

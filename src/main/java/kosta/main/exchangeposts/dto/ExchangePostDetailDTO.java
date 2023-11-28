@@ -16,4 +16,5 @@ public class ExchangePostDetailDTO {
   private final String address;
   private final String content;
   private final String exchangePostStatus;
+  // 추가해야할거 :  작성자의 item 내역, 거래희망 장소, title
 }

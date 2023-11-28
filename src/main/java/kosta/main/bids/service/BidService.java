@@ -28,7 +28,7 @@ public class BidService {
     private final ItemsRepository itemsRepository;
 
     @Transactional
-    public BidResponseDTO createBid(BidsDto bidDTO) {
+    public Integer createBid(BidsDto bidDTO) {
         ExchangePost exchangePost = exchangePostsRepository.findById(bidDTO.getExchangePostId())
             .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
         User bidder = usersRepository.findById(bidDTO.getUserId())
@@ -53,23 +53,14 @@ public class BidService {
             .status(Bid.BidStatus.BIDDING) // 기본값이 BIDDING이므로 이를 생략할 수도 있습니다.
             .items(items)
             .build();
-        bidRepository.save(bid);
+        Bid savedBid = bidRepository.save(bid); // 아이템값을 변경하기 위해 먼저 객체를 저장한다.
 
-        return BidResponseDTO.builder()
-            .bidId(bid.getBidId())
-            .exchangePostId(exchangePost.getExchangePostId())
-            // ... 다른 필드 설정
-            .build();
-    }
-
-    @Transactional(readOnly = true)
-    public List<BidListDTO> findAllBids() {
-        return bidRepository.findAll().stream()
-            .map(bid -> BidListDTO.builder()
-                .bidId(bid.getBidId())
-                // ... 요약 정보 필드 설정
-                .build())
-            .collect(Collectors.toList());
+        // 사용된 아이템들의 bid 필드를 업데이트
+        items.forEach(item -> {
+            item.setBid(savedBid);
+            itemsRepository.save(item);
+        });
+        return savedBid.getBidId(); // 생성된 입찰의 ID만 반환
     }
 
     @Transactional(readOnly = true)
@@ -144,13 +135,17 @@ public class BidService {
         Bid bid = bidRepository.findById(bidId)
             .orElseThrow(() -> new RuntimeException("Bid not found"));
 
+        // 입찰에 사용된 아이템들의 상태를 NOT_BIDING으로 변경하고, bid 참조를 제거
         for (Item item : bid.getItems()) {
             item.setIsBiding(Item.IsBiding.NOT_BIDING);
+            item.setBid(null); // Bid 참조를 제거하면서 Bid_id 값을 Null로 변경합니다.
             itemsRepository.save(item);
         }
 
-        bidRepository.delete(bid);
+        // Bid 상태를 DELETED로 변경
+        bid.setStatus(Bid.BidStatus.DELETED);
+        bidRepository.save(bid);
     }
 
-    // 추가적인 메서드, 예: 입찰 상태 변경 메서드
+
 }

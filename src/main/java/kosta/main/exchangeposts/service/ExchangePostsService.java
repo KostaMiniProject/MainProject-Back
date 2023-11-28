@@ -66,7 +66,7 @@ public class ExchangePostsService {
     return exchangePostRepository.findAll().stream()
         .map(post -> {
           // 아이템 대표 이미지 URL을 가져오는 로직
-          String imgUrl = post.getItem() != null ? post.getItem().getImageUrl() : null;
+          //String imgUrl = post.getItem() != null ? post.getItem().getImageUrl() : null;
           //해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + Bidstatus가 delete인건  세지 않도록 하는 로직
           Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
 
@@ -77,7 +77,7 @@ public class ExchangePostsService {
               .address(post.getAddress())
               .exchangePostStatus(post.getExchangePostStatus().toString())
               .created_at(post.getCreatedAt())
-              .imgUrl(imgUrl)
+              //.imgUrl(imgUrl)
               .bidCount(bidCount)
               .build();
         })

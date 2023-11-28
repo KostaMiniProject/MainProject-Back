@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import kosta.main.communityposts.dto.CommunityPostUpdateDto;
 import kosta.main.global.audit.Auditable;
 import kosta.main.likes.entity.Like;
+import kosta.main.images.entity.Image;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import java.util.List;
 
 @Entity
@@ -40,8 +43,8 @@ public class CommunityPost extends Auditable {
     @Column(length = 20)
     private CommunityPostStatus communityPostStatus = CommunityPostStatus.PUBLIC;
 
-    @Column(length = 255)
-    private String imageUrl;
+    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Image> images; // 커뮤니티 게시글의 이미지 리스트
 
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.REMOVE)
     private List<Like> likePostList = new ArrayList<>();
@@ -60,7 +63,7 @@ public class CommunityPost extends Auditable {
     public CommunityPost updateCommunityPost( CommunityPostUpdateDto communityPostUpdateDto) {
         this.content = communityPostUpdateDto.getContent() != null ? communityPostUpdateDto.getContent() : this.content;
         this.title = communityPostUpdateDto.getContent() != null ? communityPostUpdateDto.getTitle() : this.title;
-        this.imageUrl = communityPostUpdateDto.getImageUrl() != null ? communityPostUpdateDto.getImageUrl() : this.imageUrl;
+        //this.imageUrl = communityPostUpdateDto.getImageUrl() != null ? communityPostUpdateDto.getImageUrl() : this.imageUrl;
         return this;
     }
 

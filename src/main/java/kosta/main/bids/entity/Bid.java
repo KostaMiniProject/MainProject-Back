@@ -1,20 +1,22 @@
 package kosta.main.bids.entity;
+
 import jakarta.persistence.*;
 import kosta.main.global.audit.Auditable;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(name = "bids")
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
+@Setter
 public class Bid extends Auditable {
 
     @Id
@@ -32,10 +34,19 @@ public class Bid extends Auditable {
     @Column(length = 10, nullable = false)
     private BidStatus status = BidStatus.BIDDING;
 
-    @OneToMany(mappedBy = "bid", cascade = {CascadeType.PERSIST, CascadeType.REMOVE},fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bid", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Item> items;
 
+    @Builder
+    public Bid(Integer bidId, User user, ExchangePost exchangePost, BidStatus status, List<Item> items) {
+        this.bidId = bidId;
+        this.user = user;
+        this.exchangePost = exchangePost;
+        this.status = status;
+        this.items = items;
+    }
+
     public enum BidStatus {
-        DENIED, BIDDING, SELECTED, DELETED
+        BIDDING, DENIED, SELECTED, DELETED
     }
 }

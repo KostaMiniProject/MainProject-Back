@@ -48,7 +48,7 @@ public class ItemsService {
         .category(new Category())
         .title(itemSaveDto.getTitle())
         .description(itemSaveDto.getDescription())
-        .imageUrl(itemSaveDto.getImageUrl())
+        //.imageUrl(itemSaveDto.getImageUrl())
         .build();
 
     itemsRepository.save(newItem2);
@@ -102,14 +102,14 @@ public class ItemsService {
 //    itemUpdateDto 요소 null값 체크
     String title = itemUpdateDto.getTitle() != null ? itemUpdateDto.getTitle() : item.getTitle();
     String description = itemUpdateDto.getDescription() != null ? itemUpdateDto.getDescription() : item.getDescription();
-    String imageUrl = itemUpdateDto.getImageUrl() != null ? itemUpdateDto.getImageUrl() : item.getImageUrl();
+   // String imageUrl = itemUpdateDto.getImageUrl() != null ? itemUpdateDto.getImageUrl() : item.getImageUrl();
     Item.ItemStatus itemStatus = itemUpdateDto.getItemStatus() != null ? itemUpdateDto.getItemStatus() : item.getItemStatus();
 
     Item updateItem2 = Item.builder()
         .itemId(itemId)
         .title(title)
         .description(description)
-        .imageUrl(imageUrl)
+        //.imageUrl(imageUrl)
         .itemStatus(itemStatus)
         .build();
 

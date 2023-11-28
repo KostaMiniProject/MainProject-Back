@@ -17,7 +17,7 @@ public class CommunityPostResponseDto {
     private Integer views;
     private CommunityPost.CommunityPostStatus communityPostStatus;
 
-    private String imageUrl;
+    //private String imageUrl;
 
     private Integer likeCount;
 
@@ -30,6 +30,9 @@ public class CommunityPostResponseDto {
                 communityPost.getCommunityPostStatus(),
                 communityPost.getImageUrl(),
                 communityPost.getLikePostList().size()
+                communityPost.getCommunityPostStatus()
+                //communityPost.getImageUrl()
+ 
         );
     }
 }

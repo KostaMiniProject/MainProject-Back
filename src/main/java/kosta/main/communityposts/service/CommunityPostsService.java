@@ -48,7 +48,7 @@ public class CommunityPostsService {
         CommunityPost communityPost = CommunityPost.builder()
                 .title(communityPostCreateDto.getTitle())
                 .content(communityPostCreateDto.getContent())
-                .imageUrl(communityPostCreateDto.getImageUrl())
+                //.imageUrl(communityPostCreateDto.getImageUrl())
                 .build();
         return communityPostsRepository.save(communityPost);
     }

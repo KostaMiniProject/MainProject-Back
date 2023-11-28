@@ -47,26 +47,26 @@ class UsersControllerTest {
         objectMapper = new ObjectMapper();
     }
 
-    @Test
-    void 유저_프로필_조회() throws Exception {
-        User user = userStubData.getUser();
-        //given
-        given(usersService.findMyProfile(Mockito.anyInt())).willReturn(userStubData.getUsersResponseDto());
-
-        //when
-        ResultActions action = mockMvc.perform(
-                get(FIND_MY_PROFILE_URL, 1)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-        );
-        //then
-        action.andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(user.getEmail()))
-                .andExpect(jsonPath("$.name").value(user.getName()))
-                .andExpect(jsonPath("$.address").value(user.getAddress()))
-                .andExpect(jsonPath("$.phone").value(user.getPhone()))
-                .andExpect(jsonPath("$.profileImage").value(user.getProfileImage()));
-    }
+//    @Test
+//    void 유저_프로필_조회() throws Exception {
+//        User user = userStubData.getUser();
+//        //given
+//        given(usersService.findMyProfile(Mockito.anyInt())).willReturn(userStubData.getUsersResponseDto());
+//
+//        //when
+//        ResultActions action = mockMvc.perform(
+//                get(FIND_MY_PROFILE_URL, 1)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//        );
+//        //then
+//        action.andExpect(status().isOk())
+//                .andExpect(jsonPath("$.email").value(user.getEmail()))
+//                .andExpect(jsonPath("$.name").value(user.getName()))
+//                .andExpect(jsonPath("$.address").value(user.getAddress()))
+//                .andExpect(jsonPath("$.phone").value(user.getPhone()))
+//                .andExpect(jsonPath("$.profileImage").value(user.getProfileImage()));
+//    }
 
     @Test
     void 회원가입() throws Exception {

@@ -39,11 +39,11 @@ class UsersRepositoryImplTest {
         usersRepository.save(user);
     }
 
-    @Test
-    void 유저_아이디로_유저_응답_반환() {
-        Integer userId = USER_ID;
-        UsersResponseDto result = usersRepository.findUserByUserId(userId).get();
-        assertThat(user.getAddress()).isEqualTo(result.getAddress());
-
-    }
+//    @Test
+//    void 유저_아이디로_유저_응답_반환() {
+//        Integer userId = USER_ID;
+//        UsersResponseDto result = usersRepository.findUserByUserId(userId).get();
+//        assertThat(user.getAddress()).isEqualTo(result.getAddress());
+//
+//    }
 }

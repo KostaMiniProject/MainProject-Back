@@ -1,5 +1,6 @@
 package kosta.main.exchangeposts.service;
 
+import kosta.main.bids.repository.BidRepository;
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
 import kosta.main.exchangeposts.dto.ExchangePostDetailDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
@@ -24,6 +25,7 @@ public class ExchangePostsService {
   private final ExchangePostsRepository exchangePostRepository;
   private final UsersRepository usersRepository;
   private final ItemsRepository itemsRepository;
+  private final BidRepository bidRepository;
 
   @Transactional
   public ExchangePostDTO createExchangePost(ExchangePostDTO exchangePostDTO) {
@@ -62,19 +64,26 @@ public class ExchangePostsService {
   @Transactional(readOnly = true)
   public List<ExchangePostListDTO> findAllExchangePosts() {
     return exchangePostRepository.findAll().stream()
-        .map(post -> ExchangePostListDTO.builder()
-            .exchangePostId(post.getExchangePostId())
-            .userId(post.getUser().getUserId())
-            .userName(post.getUser().getName())
-            .itemId(post.getItem().getItemId())
-            .itemTitle(post.getItem().getTitle())
-            .title(post.getTitle())
-            .address(post.getAddress())
-            .created_at(post.getCreatedAt())
-            .exchangePostStatus(post.getExchangePostStatus().toString())
-            .build())
+        .map(post -> {
+          // 아이템 대표 이미지 URL을 가져오는 로직
+          String imgUrl = post.getItem() != null ? post.getItem().getImageUrl() : null;
+          //해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + Bidstatus가 delete인건  세지 않도록 하는 로직
+          Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
+
+          return ExchangePostListDTO.builder()
+              .exchangePostId(post.getExchangePostId())
+              .title(post.getTitle())
+              .preferItem(post.getPreferItems())
+              .address(post.getAddress())
+              .exchangePostStatus(post.getExchangePostStatus().toString())
+              .created_at(post.getCreatedAt())
+              .imgUrl(imgUrl)
+              .bidCount(bidCount)
+              .build();
+        })
         .collect(Collectors.toList());
   }
+
 
   @Transactional(readOnly = true)
   public ExchangePostDetailDTO findExchangePostById(Integer exchangePostId) {

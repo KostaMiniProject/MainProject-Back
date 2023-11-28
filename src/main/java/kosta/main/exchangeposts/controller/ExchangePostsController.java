@@ -28,8 +28,7 @@ public class ExchangePostsController {
 
   @GetMapping("/{exchangePostId}")
   public ResponseEntity<ExchangePostDetailDTO> getExchangePostById(@PathVariable("exchangePostId") Integer exchangePostId) {
-    ExchangePostDetailDTO postDetail = exchangePostsService.findExchangePostById(exchangePostId);
-    return ResponseEntity.ok(postDetail);
+    return ResponseEntity.ok(exchangePostsService.findExchangePostById(exchangePostId));
   }
 
   @PutMapping("/{exchangePostId}") //필요한 데이터만 클라이언트 측으로 전송하도록 변경(23.11.27)

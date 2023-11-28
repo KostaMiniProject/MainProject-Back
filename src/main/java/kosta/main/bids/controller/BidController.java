@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/exchange-posts")
@@ -18,8 +19,8 @@ public class BidController {
     private final BidService bidService;
 
     @PostMapping("/{exchangePostId}/bids")
-    public ResponseEntity<BidResponseDTO> createBid(@PathVariable("exchangePostId") Integer exchangePostId, @RequestBody BidsDto bidDTO) {
-        return ResponseEntity.ok(bidService.createBid(bidDTO));
+    public ResponseEntity<?> createBid(@RequestBody BidsDto bidDTO) {
+        return ResponseEntity.ok(Map.of("message", "Bid created successfully", "bidId", bidService.createBid(bidDTO)));
     }
 
     @GetMapping("/{exchangePostId}/bids")

@@ -16,7 +16,7 @@ public class UsersResponseDto {
 
     private String phone;
 
-//    private String profileImage;
+    private String profileImage;
 
     private User.UserStatus userStatus;
 
@@ -26,7 +26,7 @@ public class UsersResponseDto {
                 user.getName(),
                 user.getAddress(),
                 user.getPhone(),
-                //user.getProfileImage(),
+                user.getProfileImage(),
                 user.getUserStatus()
         );
     }

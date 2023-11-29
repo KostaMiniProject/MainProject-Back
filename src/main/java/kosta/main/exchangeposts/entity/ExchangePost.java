@@ -6,6 +6,7 @@ import kosta.main.exchangeposts.dto.ExchangePostDTO;
 import kosta.main.global.audit.Auditable;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,8 @@ import java.util.List;
 @Table(name = "exchange_posts")
 @NoArgsConstructor
 @Getter
+@AllArgsConstructor
+@Builder
 public class ExchangePost extends Auditable {
 
     @Id
@@ -43,23 +46,14 @@ public class ExchangePost extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Builder.Default
     @Column(length = 20, nullable = false)
     private ExchangePostStatus exchangePostStatus = ExchangePostStatus.EXCHANGING;
 
+    @Builder.Default
     @OneToMany(mappedBy = "exchangePost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bid> bids = new ArrayList<>();
 
-    @Builder
-    public ExchangePost(Integer exchangePostId, User user, Item item, String title, String preferItems, String address, String content, ExchangePostStatus exchangePostStatus) {
-        this.exchangePostId = exchangePostId;
-        this.user = user;
-        this.item = item;
-        this.title = title;
-        this.preferItems = preferItems;
-        this.address = address;
-        this.content = content;
-        this.exchangePostStatus = exchangePostStatus;
-    }
     public void updateWithBuilder(User user, Item item, ExchangePostDTO dto) {
         this.user = user;
         this.item = item;

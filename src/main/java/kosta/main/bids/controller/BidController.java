@@ -20,7 +20,7 @@ public class BidController {
 
     @PostMapping("/{exchangePostId}/bids")
     public ResponseEntity<?> createBid(@RequestBody BidsDto bidDTO) {
-        return ResponseEntity.ok(Map.of("message", "Bid created successfully", "bidId", bidService.createBid(bidDTO)));
+        return ResponseEntity.ok(bidService.createBid(bidDTO));
     }
 
     @GetMapping("/{exchangePostId}/bids")

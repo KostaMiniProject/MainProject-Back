@@ -28,11 +28,9 @@ public class CommunityPostResponseDto {
                 communityPost.getContent(),
                 communityPost.getViews(),
                 communityPost.getCommunityPostStatus(),
-                communityPost.getImageUrl(),
+               // communityPost.getImageUrl(),
                 communityPost.getLikePostList().size()
-                communityPost.getCommunityPostStatus()
-                //communityPost.getImageUrl()
- 
+                //communityPost.getCommunityPostStatus()
         );
     }
 }

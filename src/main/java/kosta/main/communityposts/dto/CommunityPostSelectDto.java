@@ -19,7 +19,7 @@ public class CommunityPostSelectDto { // stackoverflow에러로 인하여 조회
     private Integer views;
     private CommunityPost.CommunityPostStatus communityPostStatus;
 
-    private String imageUrl;
+    //private String imageUrl;
 
     private Integer likeCount;
 
@@ -31,7 +31,7 @@ public class CommunityPostSelectDto { // stackoverflow에러로 인하여 조회
                 communityPost.getContent(),
                 communityPost.getViews(),
                 communityPost.getCommunityPostStatus(),
-                communityPost.getImageUrl(),
+                //communityPost.getImageUrl(),
                 communityPost.getLikePostList().size()
         );
     }

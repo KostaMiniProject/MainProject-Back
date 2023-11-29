@@ -56,7 +56,7 @@ public class CommunityPost extends Auditable {
         this.user = user;
         this.title = title;
         this.content = content;
-        this.imageUrl = imageUrl;
+        //this.imageUrl = imageUrl;
         this.likeCount = 0;
     }
 

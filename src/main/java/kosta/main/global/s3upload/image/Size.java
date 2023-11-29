@@ -4,8 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum Size {
-    PROFILE("100/",100),
-    BASIC("500/",500);
+
+    BASIC("500/",500),
+    PROFILE("100/",100);
 
     private final String path;
     private final int width;

@@ -21,14 +21,7 @@ public class ImageService {
         this.s3Client = s3Client;
     }
 
-    public List<String> resizeToAllSizesAndUpload(final List<MultipartFile> files){
-        final List<ImageResizer> imageResizers = files.stream().map(this::multipartfileToImageResizer).toList();
 
-        imageResizers.parallelStream().forEach(imageResizer -> imageResizer.resizeImageToAllSizes().forEach(s3Client::upload));
-
-        return imageResizers.stream().map(ImageResizer::getFileName).toList();
-
-    }
 
     private ImageResizer multipartfileToImageResizer(final MultipartFile file) {
         final ImageName imageName = ImageName.from(file.getOriginalFilename());

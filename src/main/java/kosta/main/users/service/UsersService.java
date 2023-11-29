@@ -3,9 +3,8 @@ package kosta.main.users.service;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
 import kosta.main.dibs.dto.DibResponseDto;
-import kosta.main.dibs.repository.DibsRepository;
 import kosta.main.exchangehistories.dto.ExchangeHistoryResponseDto;
-import kosta.main.global.s3upload.S3UploadService;
+import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.reports.dto.CreateReportDto;
 import kosta.main.reports.entity.Report;
 import kosta.main.reports.repository.ReportsRepository;
@@ -27,8 +26,7 @@ public class UsersService {
     private final UsersRepository usersRepository;
     private final ReportsRepository reportsRepository;
     private final BlockedUsersRepository blockedUsersRepository;
-    private final DibsRepository dibsRepository;
-    private final S3UploadService s3UploadService;
+    private final ImageService imageService;
 
     @Transactional(readOnly = true)
     public UsersResponseDto findMyProfile(Integer userId) {
@@ -41,9 +39,12 @@ public class UsersService {
     }
 
     @Transactional
-    public UsersResponseDto updateUser(Integer userId, UserUpdateDto userUpdateDto, MultipartFile file) throws IOException {
-        userUpdateDto.updateProfileImage(s3UploadService.saveFile(file));
-        return UsersResponseDto.of(usersRepository.save(findUserByUserId(userId).updateUser(userUpdateDto)));
+    public UsersResponseDto updateUser(Integer userId, UserUpdateDto userUpdateDto, MultipartFile file) {
+        String imagePath = imageService.resizeToProfileSizeAndUpload(file);
+        userUpdateDto.updateProfileImage(imagePath);
+
+        User user = findUserByUserId(userId).updateUser(userUpdateDto);
+        return UsersResponseDto.of(usersRepository.save(user));
     }
     @Transactional
     public void withdrawalUser(Integer userId) {

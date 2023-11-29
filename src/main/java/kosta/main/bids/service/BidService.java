@@ -43,7 +43,7 @@ public class BidService {
             if (item.getIsBiding() == Item.IsBiding.BIDING) {
                 throw new RuntimeException("Item is already in bidding");
             }
-            item.setIsBiding(Item.IsBiding.BIDING);
+            item.updateIsBiding(Item.IsBiding.BIDING);
             itemsRepository.save(item);
         }
 
@@ -57,7 +57,7 @@ public class BidService {
 
         // 사용된 아이템들의 bid 필드를 업데이트
         items.forEach(item -> {
-            item.setBid(savedBid);
+            item.updateBid(savedBid);
             itemsRepository.save(item);
         });
         return savedBid.getBidId(); // 생성된 입찰의 ID만 반환
@@ -94,13 +94,13 @@ public class BidService {
         // 기존에 연결된 아이템의 상태를 NOT_BIDING으로 변경
         // (이 부분은 비즈니스 로직에 따라 달라질 수 있습니다)
         existingBid.getItems().forEach(item -> {
-            item.setIsBiding(Item.IsBiding.NOT_BIDING);
+            item.updateIsBiding(Item.IsBiding.NOT_BIDING);
             itemsRepository.save(item);
         });
 
         // 새로운 아이템의 상태를 BIDING으로 변경
         items.forEach(item -> {
-            item.setIsBiding(Item.IsBiding.BIDING);
+            item.updateIsBiding(Item.IsBiding.BIDING);
             itemsRepository.save(item);
         });
 
@@ -137,8 +137,8 @@ public class BidService {
 
         // 입찰에 사용된 아이템들의 상태를 NOT_BIDING으로 변경하고, bid 참조를 제거
         for (Item item : bid.getItems()) {
-            item.setIsBiding(Item.IsBiding.NOT_BIDING);
-            item.setBid(null); // Bid 참조를 제거하면서 Bid_id 값을 Null로 변경합니다.
+            item.updateIsBiding(Item.IsBiding.NOT_BIDING);
+            item.updateBid(null); // Bid 참조를 제거하면서 Bid_id 값을 Null로 변경합니다.
             itemsRepository.save(item);
         }
 

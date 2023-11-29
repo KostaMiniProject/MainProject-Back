@@ -36,9 +36,8 @@ public class CommunityPost extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Builder.Default
     @Column
-    private Integer views = 0;
+    private Integer views;
 
     @Column(length = 20)
     private CommunityPostStatus communityPostStatus = CommunityPostStatus.PUBLIC;
@@ -51,6 +50,7 @@ public class CommunityPost extends Auditable {
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.REMOVE)
     private List<Like> likePostList = new ArrayList<>();
 
+    private Integer likeCount;
     @Builder
     public CommunityPost(Integer communityPostId, User user, String title, String content, List<String> images) {
         this.communityPostId = communityPostId;
@@ -58,6 +58,7 @@ public class CommunityPost extends Auditable {
         this.title = title;
         this.content = content;
         this.images = images;
+        this.likeCount = 0;
     }
 
     public CommunityPost updateCommunityPost( CommunityPostUpdateDto communityPostUpdateDto) {
@@ -76,4 +77,11 @@ public class CommunityPost extends Auditable {
         this.communityPostStatus = communityPostStatus;
     }
 
+    public void likePostUp() {
+        this.likeCount++;
+    }
+
+    public void likePostDown() {
+        this.likeCount--;
+    }
 }

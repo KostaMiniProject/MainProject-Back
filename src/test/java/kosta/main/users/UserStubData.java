@@ -33,7 +33,7 @@ public class UserStubData {
                 .password(PASSWORD)
                 .address(ADDRESS)
                 .email(EMAIL)
-                //.profileImage(PROFILE_IMAGE)
+                .profileImage(PROFILE_IMAGE)
                 .userStatus(USER_STATUS)
                 .build();
     }
@@ -46,7 +46,7 @@ public class UserStubData {
                 .password(UPDATE_PASSWORD)
                 .address(UPDATE_ADDRESS)
                 .email(UPDATE_EMAIL)
-                //.profileImage(UPDATE_IMAGE_FILE)
+                .profileImage(UPDATE_IMAGE_FILE)
                 .userStatus(USER_STATUS)
                 .build();
 
@@ -63,7 +63,6 @@ public class UserStubData {
                 .name(NAME)
                 .address(ADDRESS)
                 .phone(PHONE)
-                .profileImage(PROFILE_IMAGE)
                 .build();
     }
 

@@ -23,7 +23,5 @@ public class UserCreateDto {
 
     private String phone;
 
-    private String profileImage;
-
 
 }

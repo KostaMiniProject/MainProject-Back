@@ -4,7 +4,6 @@ import kosta.main.dibs.entity.Dib;
 import kosta.main.exchangehistories.entity.ExchangeHistory;
 import kosta.main.global.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
-import kosta.main.images.entity.Image;
 import kosta.main.users.dto.UserCreateDto;
 import kosta.main.users.dto.UserUpdateDto;
 import lombok.AllArgsConstructor;
@@ -41,9 +40,8 @@ public class User extends Auditable {
     @Column(length = 20)
     private String phone;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "profile_image_id", referencedColumnName = "imageId")
-    private Image profileImage; // 사용자의 프로필 이미지
+    @Column
+    private String profileImage; // 사용자의 프로필 이미지
 
     @Builder.Default
     @Column(length = 20, nullable = false)
@@ -67,7 +65,7 @@ public class User extends Auditable {
         this.address = !nullCheck(userUpdateDto.getAddress()) ? userUpdateDto.getAddress(): this.address;
         this.phone = !nullCheck(userUpdateDto.getPhone()) ? userUpdateDto.getPhone() : this.phone;
         this.password = !nullCheck(userUpdateDto.getPassword()) ? userUpdateDto.getPassword() : this.password;
-//        this.profileImage = !nullCheck(userUpdateDto.getProfileImage()) ? userUpdateDto.getProfileImage() : this.profileImage;
+        this.profileImage = !nullCheck(userUpdateDto.getProfileImage()) ? userUpdateDto.getProfileImage() : this.profileImage;
         this.name = !nullCheck(userUpdateDto.getName()) ? userUpdateDto.getName() : this.name;
         return this;
     }

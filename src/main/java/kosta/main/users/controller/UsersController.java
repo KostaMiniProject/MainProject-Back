@@ -31,7 +31,7 @@ public class UsersController {
 
     @PutMapping("/users/{userId}")
     public ResponseEntity updateMyInfo(@PathVariable("userId") Integer userId,
-                                       @ModelAttribute UserUpdateDto userUpdateDto,
+                                       @RequestPart("userUpdateDto") UserUpdateDto userUpdateDto,
                                        @RequestPart(value = "file") MultipartFile file) throws IOException {
         return ResponseEntity.ok(usersService.updateUser(userId, userUpdateDto,file));
     }

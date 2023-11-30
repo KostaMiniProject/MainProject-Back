@@ -13,13 +13,12 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.List;
-
 @Entity
 @Table(name = "community_posts")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class CommunityPost extends Auditable {
 
     @Id
@@ -40,27 +39,19 @@ public class CommunityPost extends Auditable {
     private Integer views;
 
     @Column(length = 20)
+    @Builder.Default
     private CommunityPostStatus communityPostStatus = CommunityPostStatus.PUBLIC;
 
+
+    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.REMOVE)
+    private List<Like> likePostList = new ArrayList<>();
+  
     @ElementCollection
     @CollectionTable(name = "community_post_images", joinColumns = @JoinColumn(name = "community_post_id"))
     @Column(name = "community_post_image")
     private List<String> images = new ArrayList<>(); // 커뮤니티 게시글의 이미지 리스트
 
-    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.REMOVE)
-    private List<Like> likePostList = new ArrayList<>();
-
-    private Integer likeCount;
-    @Builder
-    public CommunityPost(Integer communityPostId, User user, String title, String content, List<String> images) {
-        this.communityPostId = communityPostId;
-        this.user = user;
-        this.title = title;
-        this.content = content;
-        this.images = images;
-        this.likeCount = 0;
-    }
-
+  
     public CommunityPost updateCommunityPost( CommunityPostUpdateDto communityPostUpdateDto) {
         this.content = communityPostUpdateDto.getContent() != null ? communityPostUpdateDto.getContent() : this.content;
         this.title = communityPostUpdateDto.getContent() != null ? communityPostUpdateDto.getTitle() : this.title;
@@ -75,13 +66,5 @@ public class CommunityPost extends Auditable {
 
     public void updateCommunityPostStatus(CommunityPost.CommunityPostStatus communityPostStatus) {
         this.communityPostStatus = communityPostStatus;
-    }
-
-    public void likePostUp() {
-        this.likeCount++;
-    }
-
-    public void likePostDown() {
-        this.likeCount--;
     }
 }

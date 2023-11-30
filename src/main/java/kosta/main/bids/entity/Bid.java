@@ -38,6 +38,6 @@ public class Bid extends Auditable {
     private List<Item> items;
 
     public enum BidStatus {
-        BIDDING, DENIED, SELECTED, DELETED
+        BIDDING, DENIED, SELECTED, DELETED, RESERVATION
     }
 }

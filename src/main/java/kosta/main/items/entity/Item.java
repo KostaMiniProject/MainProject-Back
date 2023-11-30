@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "items")
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
 public class Item extends Auditable {

@@ -45,6 +45,8 @@ public class CommunityPost extends Auditable {
 
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.REMOVE)
     private List<Like> likePostList = new ArrayList<>();
+
+
   
     @ElementCollection
     @CollectionTable(name = "community_post_images", joinColumns = @JoinColumn(name = "community_post_id"))

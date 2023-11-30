@@ -63,6 +63,9 @@ public class ExchangePost extends Auditable {
         this.content = dto.getContent() != null ? dto.getContent() : this.content;
         this.exchangePostStatus = dto.getExchangePostStatus() != null ? dto.getExchangePostStatus() : this.exchangePostStatus;
     }
+    public void updateExchangePostStatus(ExchangePostStatus newStatus) {
+        this.exchangePostStatus = newStatus;
+    }
 
     public enum ExchangePostStatus {
         EXCHANGING , RESERVATION, COMPLETED, DELETED

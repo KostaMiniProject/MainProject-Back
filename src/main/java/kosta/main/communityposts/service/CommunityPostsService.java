@@ -6,8 +6,8 @@ import kosta.main.communityposts.dto.CommunityPostSelectDto;
 import kosta.main.communityposts.dto.CommunityPostUpdateDto;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
-import kosta.main.global.s3upload.S3Client;
 import kosta.main.global.s3upload.service.ImageService;
+import kosta.main.likes.dto.LikeDto;
 import kosta.main.likes.entity.Like;
 import kosta.main.likes.repository.LikesRepository;
 import kosta.main.users.entity.User;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 

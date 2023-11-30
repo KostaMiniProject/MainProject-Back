@@ -16,9 +16,6 @@ public class CommunityPostResponseDto {
 
     private Integer views;
     private CommunityPost.CommunityPostStatus communityPostStatus;
-
-    //private String imageUrl;
-
     private Integer likeCount;
 
     public static CommunityPostResponseDto of(CommunityPost communityPost){ //of : 데이터를 가지고 새로운 객체를 만들때 사용
@@ -28,9 +25,7 @@ public class CommunityPostResponseDto {
                 communityPost.getContent(),
                 communityPost.getViews(),
                 communityPost.getCommunityPostStatus(),
-               // communityPost.getImageUrl(),
                 communityPost.getLikePostList().size()
-                //communityPost.getCommunityPostStatus()
         );
     }
 }

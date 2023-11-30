@@ -10,6 +10,8 @@ import kosta.main.global.s3upload.S3Client;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.likes.entity.Like;
 import kosta.main.likes.repository.LikesRepository;
+import kosta.main.users.entity.User;
+import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,10 +27,19 @@ import java.util.stream.Collectors;
 public class CommunityPostsService {
     private final LikesRepository likesRepository;
     private final CommunityPostsRepository communityPostsRepository;
+
+    private final UsersRepository usersRepository;
+
+
     private final ImageService imageService;
     /* RuntimeException 추상 메소드 */
+
     public CommunityPost findCommunityPostByCommunityPostId(Integer communityPostId) {
         return communityPostsRepository.findById(communityPostId).orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+    }
+
+    private User findUserByUserId(Integer userId) {
+        return usersRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
     }
 
     /* 커뮤니티 목록 조회 */
@@ -74,28 +84,21 @@ public class CommunityPostsService {
     }
     
     /* 커뮤니티 좋아요 */
-    public void likePost(Integer communityPostId) {
+    public LikeDto likePost(Integer communityPostId, Integer userId) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
-        Optional<Like> found = likesRepository.findByCommunityPost(communityPost);
-        if (found.isEmpty()) {
-            communityPost.likePostUp();
-            Like like = Like.of(communityPost);
-            likesRepository.save(like);
-        } else {
-            throw new RuntimeException("이미 좋아요를 눌렀습니다.");
-        }
+        User user = findUserByUserId(userId);
+        Like like = new Like();
+        like.setCommunityPost(communityPost);
+        like.setUser(user);
+        communityPost.getLikePostList().add(like);
+        return LikeDto.of(like);
     }
     
     /* 커뮤니티 좋아요 취소 */
-    public void disLikePost(Integer communityPostId) {
+    public void disLikePost(Integer communityPostId, Integer userId) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
-        Optional<Like> found = likesRepository.findByCommunityPost(communityPost);
-        if (found.isPresent()) {
-            communityPost.likePostDown();
-            likesRepository.delete(found.get());
-            likesRepository.flush();
-        } else {
-            throw new RuntimeException("이미 좋아요를 취소하였습니다.");
-        }
+        User user = findUserByUserId(userId);
+        List<Like> likes = communityPost.getLikePostList();
+        likes.removeIf(like -> like.getUser().equals(user));
     }
 }

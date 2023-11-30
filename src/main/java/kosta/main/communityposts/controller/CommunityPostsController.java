@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -41,15 +42,18 @@ public class CommunityPostsController {
     /* 커뮤니티 게시글 작성 */
     /* 테스트 성공 확인 */
     @PostMapping
-    public ResponseEntity<CommunityPost> addPost(@RequestBody CommunityPostCreateDto communityPostCreateDto) {
-        CommunityPost communityPost = communityPostsService.addPost(communityPostCreateDto);
+    public ResponseEntity<CommunityPost> addPost(@RequestPart("communityPostCreateDto") CommunityPostCreateDto communityPostCreateDto,
+                                                 @RequestPart("file") List<MultipartFile> files) {
+        CommunityPost communityPost = communityPostsService.addPost(communityPostCreateDto,files);
         return ResponseEntity.ok(communityPost);
     }
 
     /* 커뮤니티 게시글 수정 */
     @PutMapping("/{communityPostId}")
-    public ResponseEntity<CommunityPostResponseDto> updatePost(@PathVariable("communityPostId") Integer communityPostId, @RequestBody CommunityPostUpdateDto communityPostUpdateDto){
-        return new ResponseEntity<>(communityPostsService.updatePost(communityPostId, communityPostUpdateDto), HttpStatus.OK);
+    public ResponseEntity<CommunityPostResponseDto> updatePost(@PathVariable("communityPostId") Integer communityPostId,
+                                                               @RequestPart("communityPostUpdateDto") CommunityPostUpdateDto communityPostUpdateDto,
+                                                               @RequestPart("file") List<MultipartFile> files){
+        return new ResponseEntity<>(communityPostsService.updatePost(communityPostId, communityPostUpdateDto,files), HttpStatus.OK);
     }
 
     /* 커뮤니티 게시글 삭제 */

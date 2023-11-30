@@ -42,13 +42,23 @@ public class CommunityPost extends Auditable {
     @Builder.Default
     private CommunityPostStatus communityPostStatus = CommunityPostStatus.PUBLIC;
 
+
+    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.REMOVE)
+    private List<Like> likePostList = new ArrayList<>();
+  
+    @ElementCollection
+    @CollectionTable(name = "community_post_images", joinColumns = @JoinColumn(name = "community_post_id"))
+    @Column(name = "community_post_image")
+    private List<String> images = new ArrayList<>(); // 커뮤니티 게시글의 이미지 리스트
+
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.REMOVE)
     private List<Like> likePostList = new ArrayList<>();
 
+  
     public CommunityPost updateCommunityPost( CommunityPostUpdateDto communityPostUpdateDto) {
         this.content = communityPostUpdateDto.getContent() != null ? communityPostUpdateDto.getContent() : this.content;
         this.title = communityPostUpdateDto.getContent() != null ? communityPostUpdateDto.getTitle() : this.title;
-        //this.imageUrl = communityPostUpdateDto.getImageUrl() != null ? communityPostUpdateDto.getImageUrl() : this.imageUrl;
+        this.images = communityPostUpdateDto.getImagePaths() != null ? communityPostUpdateDto.getImagePaths() : this.images;
         return this;
     }
 

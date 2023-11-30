@@ -86,13 +86,12 @@ class UsersServiceTest {
 //        given(usersRepository.save(Mockito.any(User.class))).willReturn(updateUser);
 //
 //        //when
-//        UsersResponseDto result = usersService.updateUser(userId, userUpdateDto, file);
+//        UsersResponseDto result = usersService.updateUser(userId, userUpdateDto, );
 //        //then
 //
 //        assertThat(result.getName()).isEqualTo(updateUser.getName());
 //        assertThat(result.getEmail()).isEqualTo(updateUser.getEmail());
 //        assertThat(result.getAddress()).isEqualTo(updateUser.getAddress());
-//        assertThat(result.getProfileImage()).isEqualTo(updateUser.getProfileImage());
 //        assertThat(result.getPhone()).isEqualTo(updateUser.getPhone());
 //    }
 

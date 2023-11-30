@@ -6,12 +6,16 @@ import kosta.main.communityposts.dto.CommunityPostSelectDto;
 import kosta.main.communityposts.dto.CommunityPostUpdateDto;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
+import kosta.main.global.s3upload.S3Client;
+import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.likes.entity.Like;
 import kosta.main.likes.repository.LikesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 public class CommunityPostsService {
     private final LikesRepository likesRepository;
     private final CommunityPostsRepository communityPostsRepository;
+    private final ImageService imageService;
     /* RuntimeException 추상 메소드 */
     public CommunityPost findCommunityPostByCommunityPostId(Integer communityPostId) {
         return communityPostsRepository.findById(communityPostId).orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
@@ -44,18 +49,21 @@ public class CommunityPostsService {
     }
 
     /* 커뮤니티 게시글 작성 */
-    public CommunityPost addPost(CommunityPostCreateDto communityPostCreateDto) {
+    public CommunityPost addPost(CommunityPostCreateDto communityPostCreateDto, List<MultipartFile> files) {
+        List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
         CommunityPost communityPost = CommunityPost.builder()
                 .title(communityPostCreateDto.getTitle())
                 .content(communityPostCreateDto.getContent())
-                //.imageUrl(communityPostCreateDto.getImageUrl())
+                .images(imagePaths)
                 .build();
         return communityPostsRepository.save(communityPost);
     }
 
     /* 커뮤니티 게시글 수정 */
-    public CommunityPostResponseDto updatePost(Integer communityPostId, CommunityPostUpdateDto communityPostUpdateDto) {
+    public CommunityPostResponseDto updatePost(Integer communityPostId, CommunityPostUpdateDto communityPostUpdateDto, List<MultipartFile> files) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
+        List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
+        communityPostUpdateDto.updateImagePaths(imagePaths);
         return CommunityPostResponseDto.of(communityPostsRepository.save(communityPost.updateCommunityPost(communityPostUpdateDto)));
     }
 

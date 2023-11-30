@@ -1,11 +1,14 @@
 package kosta.main.bids.entity;
 
 import jakarta.persistence.*;
-import kosta.main.global.audit.Auditable;
 import kosta.main.exchangeposts.entity.ExchangePost;
+import kosta.main.global.audit.Auditable;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -14,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
 @Builder
 public class Bid extends Auditable {
 
@@ -36,6 +38,14 @@ public class Bid extends Auditable {
 
     @OneToMany(mappedBy = "bid", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Item> items;
+
+    public void updateStatus(BidStatus status) {
+        this.status = status;
+    }
+
+    public void updateItems(List<Item> items) {
+        this.items = items;
+    }
 
     public enum BidStatus {
         BIDDING, DENIED, SELECTED, DELETED

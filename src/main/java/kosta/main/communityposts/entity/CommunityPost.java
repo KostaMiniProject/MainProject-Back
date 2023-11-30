@@ -51,9 +51,6 @@ public class CommunityPost extends Auditable {
     @Column(name = "community_post_image")
     private List<String> images = new ArrayList<>(); // 커뮤니티 게시글의 이미지 리스트
 
-    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.REMOVE)
-    private List<Like> likePostList = new ArrayList<>();
-
   
     public CommunityPost updateCommunityPost( CommunityPostUpdateDto communityPostUpdateDto) {
         this.content = communityPostUpdateDto.getContent() != null ? communityPostUpdateDto.getContent() : this.content;

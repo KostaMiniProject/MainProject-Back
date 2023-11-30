@@ -16,5 +16,4 @@ public class ExchangePostDTO {
   private Integer userId;
   private Integer itemId;
   private ExchangePostStatus exchangePostStatus;
-
 }

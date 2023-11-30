@@ -31,7 +31,6 @@ public class CommunityPostSelectDto { // stackoverflow에러로 인하여 조회
                 communityPost.getContent(),
                 communityPost.getViews(),
                 communityPost.getCommunityPostStatus(),
-                //communityPost.getImageUrl(),
                 communityPost.getLikePostList().size()
         );
     }

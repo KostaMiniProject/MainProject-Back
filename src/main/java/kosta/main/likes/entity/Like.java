@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class Like {
 
     @Id
@@ -33,19 +34,14 @@ public class Like {
     @CreatedDate
     @Column
     private LocalDateTime createdAt = LocalDateTime.now();
-    // 게터와 세터
-    // 생략...
 
-    @Builder
-    public Like(CommunityPost communityPost) {
+    public void setCommunityPost(CommunityPost communityPost) {
         this.communityPost = communityPost;
     }
 
-    public static Like of(CommunityPost communityPost) {
-        Like like = Like.builder()
-                .communityPost(communityPost)
-                .build();
-        communityPost.getLikePostList().add(like);
-        return like;
+    public void setUser(User user) {
+        this.user = user;
     }
+    // 게터와 세터
+    // 생략...
 }

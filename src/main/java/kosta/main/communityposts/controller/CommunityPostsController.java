@@ -7,6 +7,7 @@ import kosta.main.communityposts.dto.CommunityPostSelectDto;
 import kosta.main.communityposts.dto.CommunityPostUpdateDto;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
+import kosta.main.likes.dto.LikeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -57,20 +58,23 @@ public class CommunityPostsController {
 
     /* 커뮤니티 게시글 삭제 */
     @DeleteMapping("/{communityPostId}")
-    public void deletePost(@PathVariable("communityPostId") Integer communityPostId) {
+    public ResponseEntity<Void> deletePost(@PathVariable("communityPostId") Integer communityPostId) {
         communityPostsService.deletePost(communityPostId);
+        return ResponseEntity.noContent().build();
     }
 
     /* 커뮤니티 좋아요 */
     @PostMapping("/likes/{communityPostId}")
-    public void likePost(@PathVariable("communityPostId") Integer communityPostId) {
-        communityPostsService.likePost(communityPostId);
+    public ResponseEntity<LikeDto> likePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
+        LikeDto likeDto = communityPostsService.likePost(communityPostId, userId);
+        return ResponseEntity.ok(likeDto);
     }
 
     /* 커뮤니티 좋아요 취소 */
     @DeleteMapping("/likes/{communityPostId}")
-    public void disLikePost(@PathVariable("communityPostId") Integer communityPostId) {
-        communityPostsService.disLikePost(communityPostId);
+    public ResponseEntity<Void> disLikePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
+        communityPostsService.disLikePost(communityPostId, userId);
+        return ResponseEntity.noContent().build();
     }
 }
 

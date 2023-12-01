@@ -168,14 +168,20 @@ public class BidService {
     }
 
 
-    // 입찰 삭제
     @Transactional
-    public void deleteBid(Integer bidId) {
+    public void deleteBid(Integer bidId, BidDeleteDTO bidDeleteDTO) {
         Bid bid = findEntityById(bidRepository, bidId, "Bid not found");
+
+        // 입찰자 확인: 요청한 사용자가 입찰을 생성한 사용자와 동일한지 확인
+        if (!bid.getUser().getUserId().equals(bidDeleteDTO.getUserId())) {
+            throw new RuntimeException("Only the bidder can delete the bid");
+        }
+
         updateItemsBidingStatus(bid.getItems(), Item.IsBiding.NOT_BIDING, null); // 아이템 상태 변경 및 bid 참조 제거
         bid.updateStatus(Bid.BidStatus.DELETED);
         bidRepository.save(bid);
     }
+
 
     // 거래 완료 로직
     @Transactional
@@ -215,20 +221,32 @@ public class BidService {
 
     // 특정 게시글에 대한 모든 입찰 조회 (DELETED 상태 제외)
     @Transactional(readOnly = true)
-    public List<BidListDTO> findAllBidsForPost(Integer exchangePostId) {
+    public List<BidListResponseDTO> findAllBidsForPost(Integer exchangePostId, Integer currentUserId) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
+        Integer postOwnerId = exchangePost.getUser().getUserId();
 
         return bidRepository.findByExchangePost(exchangePost).stream()
-                .filter(bid -> bid.getStatus() != Bid.BidStatus.DELETED) // DELETED 상태의 입찰 제외
-                .map(bid -> BidListDTO.builder()
-                        .bidId(bid.getBidId())
-                        .userId(bid.getUser().getUserId())
-                        .exchangePostId(bid.getExchangePost().getExchangePostId())
-                        .status(bid.getStatus())
-                        .itemIds(bid.getItems().stream().map(Item::getItemId).collect(Collectors.toList()))
-                        .build())
+                .filter(bid -> bid.getStatus() != Bid.BidStatus.DELETED)
+                .map(bid -> {
+                    List<BidListResponseDTO.ItemDetails> itemDetails = bid.getItems().stream()
+                            .map(item -> BidListResponseDTO.ItemDetails.builder()
+                                    .title(item.getTitle())
+                                    .description(item.getDescription())
+                                    .imgUrl(!item.getImages().isEmpty() ? item.getImages().get(0) : null)
+                                    .created_at(item.getCreatedAt())
+                                    .build())
+                            .collect(Collectors.toList());
+
+                    return BidListResponseDTO.builder()
+                            //.userId(bid.getUser().getUserId())
+                            .isOwner(currentUserId.equals(postOwnerId))
+                            .items(itemDetails)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
+
+
 
     // 교환 게시글 예약하기 기능인데 BidStatus에 예약중 상태도 추가해야할듯 합니다.
     @Transactional

@@ -52,7 +52,7 @@ class UsersControllerTest {
     void 유저_프로필_조회() throws Exception {
         User user = userStubData.getUser();
         //given
-        given(usersService.findMyProfile(Mockito.anyInt())).willReturn(userStubData.getUsersResponseDto());
+//        given(usersService.findMyProfile(Mockito.anyInt())).willReturn(userStubData.getUsersResponseDto());
 
         //when
         ResultActions action = mockMvc.perform(

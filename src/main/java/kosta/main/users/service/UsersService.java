@@ -30,8 +30,8 @@ public class UsersService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
-    public UsersResponseDto findMyProfile(Integer userId) {
-        return usersRepository.findUserByUserId(userId).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+    public UsersResponseDto findMyProfile(User user) {
+        return UsersResponseDto.of(user);
     }
 
     @Transactional
@@ -45,16 +45,15 @@ public class UsersService {
     }
 
     @Transactional
-    public UsersResponseDto updateUser(Integer userId, UserUpdateDto userUpdateDto, MultipartFile file) {
+    public UsersResponseDto updateUser(User user, UserUpdateDto userUpdateDto, MultipartFile file) {
         String imagePath = imageService.resizeToProfileSizeAndUpload(file);
         userUpdateDto.updateProfileImage(imagePath);
 
-        User user = findUserByUserId(userId).updateUser(userUpdateDto);
-        return UsersResponseDto.of(usersRepository.save(user));
+        User updatedUser = user.updateUser(userUpdateDto);
+        return UsersResponseDto.of(usersRepository.save(updatedUser));
     }
     @Transactional
-    public void withdrawalUser(Integer userId) {
-        User user = findUserByUserId(userId);
+    public void withdrawalUser(User user) {
         user.deleteUser();
         usersRepository.save(user);
     }
@@ -63,8 +62,7 @@ public class UsersService {
         return usersRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
     }
 
-    public void reportUser(Integer reportedUserId, Integer reporterUserId, CreateReportDto createReportDto) {
-        User reporterUser = findUserByUserId(reporterUserId);
+    public void reportUser(Integer reportedUserId, User reporterUser, CreateReportDto createReportDto) {
         User reportedUser = findUserByUserId(reportedUserId);
         reportsRepository
                 .save(Report.builder()
@@ -86,12 +84,12 @@ public class UsersService {
         blockedUsersRepository.save(blockedUser);
     }
 
-    public List<ExchangeHistoryResponseDto> findMyExchangeHistory(Integer userId) {
-        return findUserByUserId(userId).getExchangeHistories()
+    public List<ExchangeHistoryResponseDto> findMyExchangeHistory(User user) {
+        return user.getExchangeHistories()
                 .stream().map(ExchangeHistoryResponseDto::of).toList();
     }
 
-    public List<DibResponseDto> findMyDibs(Integer userId) {
-        return findUserByUserId(userId).getDibs().stream().map(DibResponseDto::of).toList();
+    public List<DibResponseDto> findMyDibs(User user) {
+        return user.getDibs().stream().map(DibResponseDto::of).toList();
     }
 }

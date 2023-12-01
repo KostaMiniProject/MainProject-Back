@@ -23,5 +23,7 @@ public class UserCreateDto {
 
     private String phone;
 
-
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

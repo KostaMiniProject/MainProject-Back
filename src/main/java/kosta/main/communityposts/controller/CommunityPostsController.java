@@ -1,10 +1,7 @@
 package kosta.main.communityposts.controller;
 
 
-import kosta.main.communityposts.dto.CommunityPostCreateDto;
-import kosta.main.communityposts.dto.CommunityPostResponseDto;
-import kosta.main.communityposts.dto.CommunityPostSelectDto;
-import kosta.main.communityposts.dto.CommunityPostUpdateDto;
+import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.likes.dto.LikeDto;
@@ -27,15 +24,15 @@ public class CommunityPostsController {
     /* 커뮤니티 목록 조회 */
     /* 테스트 성공 확인 */
     @GetMapping
-    public List<CommunityPostSelectDto> findPosts() {
+    public List<CommunityPostListDto> findPosts() {
         return communityPostsService.findPosts();
     }
 
     /* 커뮤니티 게시글 상세 조회 */
     /* 테스트 성공 확인 */
     @GetMapping("/{communityPostId}")
-    public ResponseEntity<CommunityPostSelectDto> findPost(@PathVariable("communityPostId") Integer communityPostId) throws Exception {
-        CommunityPostSelectDto communityPost = communityPostsService.findPost(communityPostId);
+    public ResponseEntity<CommunityPostDetailDto> findPost(@PathVariable("communityPostId") Integer communityPostId) throws Exception {
+        CommunityPostDetailDto communityPost = communityPostsService.findPost(communityPostId);
         return ResponseEntity.ok(communityPost);
     }
 

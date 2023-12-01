@@ -7,7 +7,7 @@ import java.util.List;
 public class CommunityPostUpdateDto {
     private String title;
     private String content;
-
+    private Integer userId;
     private List<String> imagePaths;
 
     public void updateImagePaths(List<String> imagePaths) {

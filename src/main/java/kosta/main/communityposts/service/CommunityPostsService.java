@@ -1,15 +1,11 @@
 package kosta.main.communityposts.service;
 
-import kosta.main.communityposts.dto.CommunityPostCreateDto;
-import kosta.main.communityposts.dto.CommunityPostResponseDto;
-import kosta.main.communityposts.dto.CommunityPostSelectDto;
-import kosta.main.communityposts.dto.CommunityPostUpdateDto;
+import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.likes.dto.LikeDto;
 import kosta.main.likes.entity.Like;
-import kosta.main.likes.repository.LikesRepository;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +17,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CommunityPostsService {
-    private final LikesRepository likesRepository;
     private final CommunityPostsRepository communityPostsRepository;
-
     private final UsersRepository usersRepository;
 
 
@@ -43,24 +36,26 @@ public class CommunityPostsService {
 
     /* 커뮤니티 목록 조회 */
     @Transactional(readOnly = true)
-    public List<CommunityPostSelectDto> findPosts() {
+    public List<CommunityPostListDto> findPosts() {
         List<CommunityPost> posts = communityPostsRepository.findAll();
         return posts.stream()
-                .map(CommunityPostSelectDto::from)
+                .map(CommunityPostListDto::from)
                 .collect(Collectors.toList());
     }
 
     /* 커뮤니티 게시글 상세 조회 */
     @Transactional(readOnly = true)
-    public CommunityPostSelectDto findPost(Integer communityPostId){
+    public CommunityPostDetailDto findPost(Integer communityPostId){
         CommunityPost post = findCommunityPostByCommunityPostId(communityPostId);
-        return CommunityPostSelectDto.from(post);
+        return CommunityPostDetailDto.from(post);
     }
 
     /* 커뮤니티 게시글 작성 */
     public CommunityPost addPost(CommunityPostCreateDto communityPostCreateDto, List<MultipartFile> files) {
         List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
+        User user = findUserByUserId(communityPostCreateDto.getUserId());
         CommunityPost communityPost = CommunityPost.builder()
+                .user(user)
                 .title(communityPostCreateDto.getTitle())
                 .content(communityPostCreateDto.getContent())
                 .images(imagePaths)
@@ -71,6 +66,11 @@ public class CommunityPostsService {
     /* 커뮤니티 게시글 수정 */
     public CommunityPostResponseDto updatePost(Integer communityPostId, CommunityPostUpdateDto communityPostUpdateDto, List<MultipartFile> files) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
+
+        if (!communityPost.getUser().getUserId().equals(communityPostUpdateDto.getUserId())) {
+            throw new RuntimeException("작성자와 수정하는 사용자가 일치하지 않습니다.");
+        }
+
         List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
         communityPostUpdateDto.updateImagePaths(imagePaths);
         return CommunityPostResponseDto.of(communityPostsRepository.save(communityPost.updateCommunityPost(communityPostUpdateDto)));

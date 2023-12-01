@@ -6,10 +6,7 @@ import kosta.main.global.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.users.dto.UserCreateDto;
 import kosta.main.users.dto.UserUpdateDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +22,13 @@ public class User extends Auditable {
     @Column(name = "user_id")
     private Integer userId;
 
-    @Column(unique = true, length = 255)
+    @Column(unique = true, length = 40)
     private String email;
 
-    @Column(length = 255)
+    @Column(length = 100, nullable = false)
     private String password;
 
-    @Column(length = 255)
+    @Column(length = 20)
     private String name;
 
     @Column(columnDefinition = "TEXT")
@@ -46,6 +43,10 @@ public class User extends Auditable {
     @Builder.Default
     @Column(length = 20, nullable = false)
     private UserStatus userStatus = UserStatus.ACTIVATE;
+
+    @Builder.Default
+    @Column(length = 20, nullable = false)
+    private String roles = Role.ROLE_USER.getRole();
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -80,6 +81,7 @@ public class User extends Auditable {
     public enum UserStatus{
         ACTIVATE, BANNED ,DELETED
     }
+
     // 게터와 세터
     // 생략...
 

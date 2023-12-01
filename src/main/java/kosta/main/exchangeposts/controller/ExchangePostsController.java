@@ -1,9 +1,6 @@
 package kosta.main.exchangeposts.controller;
 
-import kosta.main.exchangeposts.dto.ExchangePostDTO;
-import kosta.main.exchangeposts.dto.ExchangePostDetailDTO;
-import kosta.main.exchangeposts.dto.ExchangePostListDTO;
-import kosta.main.exchangeposts.dto.ExchangePostResponseDTO;
+import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.service.ExchangePostsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +33,8 @@ public class ExchangePostsController {
     return ResponseEntity.ok(exchangePostsService.updateExchangePost(exchangePostId, exchangePostDTO));
   }
   @DeleteMapping("/{exchangePostId}")
-  public ResponseEntity<?> deleteExchangePost(@PathVariable("exchangePostId") Integer exchangePostId) {
-    exchangePostsService.deleteExchangePost(exchangePostId);
+  public ResponseEntity<?> deleteExchangePost(@PathVariable("exchangePostId") Integer exchangePostId, @RequestBody ExchangePostDeleteDTO deleteDTO) {
+    exchangePostsService.deleteExchangePost(exchangePostId, deleteDTO);
     return ResponseEntity.ok().build();
   }
 

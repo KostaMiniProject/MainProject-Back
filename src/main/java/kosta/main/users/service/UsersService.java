@@ -54,8 +54,7 @@ public class UsersService {
     }
     @Transactional
     public void withdrawalUser(User user) {
-        user.deleteUser();
-        usersRepository.save(user);
+        usersRepository.delete(user);
     }
 
     private User findUserByUserId(Integer userId) {

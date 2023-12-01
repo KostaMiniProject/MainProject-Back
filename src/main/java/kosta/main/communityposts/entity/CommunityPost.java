@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Builder
+@SQLDelete(sql = "UPDATE community_posts SET community_post_status = 3 WHERE community_post_id = ?")
+@Where(clause = "community_post_status = 'PUBLIC, PRIVATE'") //문제있을수도있음
 public class CommunityPost extends Auditable {
 
     @Id

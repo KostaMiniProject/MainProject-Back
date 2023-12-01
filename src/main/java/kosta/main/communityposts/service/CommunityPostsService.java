@@ -82,7 +82,7 @@ public class CommunityPostsService {
     /* 커뮤니티 게시글 삭제 */
     public void deletePost(Integer communityPostId) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
-        communityPost.updateCommunityPostStatus(CommunityPost.CommunityPostStatus.DELETED);
+        communityPostsRepository.delete(communityPost);
     }
     
     /* 커뮤니티 좋아요 */

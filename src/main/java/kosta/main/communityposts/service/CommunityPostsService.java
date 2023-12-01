@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,9 +72,11 @@ public class CommunityPostsService {
             throw new RuntimeException("작성자와 수정하는 사용자가 일치하지 않습니다.");
         }
 
-        List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
+        List<String> imagePaths = new ArrayList<>(files.stream().map(imageService::resizeToBasicSizeAndUpload).toList());
         communityPostUpdateDto.updateImagePaths(imagePaths);
-        return CommunityPostResponseDto.of(communityPostsRepository.save(communityPost.updateCommunityPost(communityPostUpdateDto)));
+        communityPost.updateCommunityPost(communityPostUpdateDto);
+        CommunityPost save = communityPostsRepository.save(communityPost);
+        return CommunityPostResponseDto.of(save);
     }
 
     /* 커뮤니티 게시글 삭제 */

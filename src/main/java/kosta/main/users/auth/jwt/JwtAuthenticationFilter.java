@@ -6,10 +6,9 @@ import jakarta.servlet.ServletException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kosta.main.users.auth.CustomUserDetails;
 import kosta.main.users.auth.dto.LoginDto;
-import kosta.main.users.auth.jwt.TokenProvider;
 import kosta.main.users.entity.User;
+import kosta.main.users.entity.UserAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +49,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
+        UserAdapter userDetails = (UserAdapter) authResult.getPrincipal();
         User user = userDetails.getUser();
         String accessToken = delegateAccessToken(user);
         String refreshToken = delegateRefreshToken(user);
@@ -63,6 +62,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", user.getEmail());
         claims.put("userId", user.getUserId());
+        claims.put("roles", user.getRoles());
 
         String subject = user.getEmail();
         Date expiration = tokenProvider.getTokenExpiration(tokenProvider.getAccessTokenExpirationMinutes());

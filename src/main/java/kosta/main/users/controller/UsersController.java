@@ -3,10 +3,15 @@ package kosta.main.users.controller;
 import kosta.main.users.dto.UserCreateDto;
 import kosta.main.users.dto.UserUpdateDto;
 import kosta.main.reports.dto.CreateReportDto;
+import kosta.main.users.entity.LoginUser;
+import kosta.main.users.entity.User;
 import kosta.main.users.service.UsersService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +20,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class UsersController {
 
     private final UsersService usersService;
@@ -30,11 +36,13 @@ public class UsersController {
         return new ResponseEntity(usersService.createUser(userCreateDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/users/{userId}")
-    public ResponseEntity updateMyInfo(@PathVariable("userId") Integer userId,
+    @PutMapping("/users")
+    public ResponseEntity updateMyInfo(@LoginUser User user,
                                        @RequestPart("userUpdateDto") UserUpdateDto userUpdateDto,
-                                       @RequestPart(value = "file") MultipartFile file) throws IOException {
-        return ResponseEntity.ok(usersService.updateUser(userId, userUpdateDto,file));
+                                       @RequestPart(value = "file") MultipartFile file) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("==============================={}=============================", user);
+        return ResponseEntity.ok(usersService.updateUser(1, userUpdateDto,file));
     }
 
     @PutMapping("/users/withdrawal/{userId}")

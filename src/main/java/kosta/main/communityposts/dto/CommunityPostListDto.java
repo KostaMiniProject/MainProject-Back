@@ -1,16 +1,13 @@
 package kosta.main.communityposts.dto;
 
 import kosta.main.communityposts.entity.CommunityPost;
-import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CommunityPostSelectDto { // stackoverflow에러로 인하여 조회 Dto 처리
+public class CommunityPostListDto { // stackoverflow에러로 인하여 조회 Dto 처리
     private Integer communityPostId;
-
-    private User user;
 
     private String title;
 
@@ -19,14 +16,11 @@ public class CommunityPostSelectDto { // stackoverflow에러로 인하여 조회
     private Integer views;
     private CommunityPost.CommunityPostStatus communityPostStatus;
 
-    //private String imageUrl;
-
     private Integer likeCount;
 
-    public static CommunityPostSelectDto from (CommunityPost communityPost){ //from : 엔티티를 DTO로 생성
-        return new CommunityPostSelectDto (
+    public static CommunityPostListDto from (CommunityPost communityPost){ //from : 엔티티를 DTO로 생성
+        return new CommunityPostListDto(
                 communityPost.getCommunityPostId(),
-                communityPost.getUser(),
                 communityPost.getTitle(),
                 communityPost.getContent(),
                 communityPost.getViews(),

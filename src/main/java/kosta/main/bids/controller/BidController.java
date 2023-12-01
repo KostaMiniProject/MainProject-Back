@@ -22,9 +22,9 @@ public class BidController {
     }
 
     // 한 교환게시글에 있는 입찰 목록을 모두 불러오는 기능
-    @GetMapping("/{exchangePostId}/bids") // 23.11.30 동작확인
-    public ResponseEntity<List<BidListDTO>> getAllBidsForPost(@PathVariable("exchangePostId") Integer exchangePostId) {
-        return ResponseEntity.ok(bidService.findAllBidsForPost(exchangePostId));
+    @GetMapping("/{exchangePostId}/bids/{currentUserId}") // 23.11.30 동작확인
+    public ResponseEntity<List<BidListResponseDTO>> getAllBidsForPost(@PathVariable("exchangePostId") Integer exchangePostId, @PathVariable("currentUserId")  Integer currentUserId) {
+        return ResponseEntity.ok(bidService.findAllBidsForPost(exchangePostId, currentUserId));
     }
 
     // 한 입찰에 대한 상세 정보를 제공하는 기능
@@ -42,8 +42,8 @@ public class BidController {
 
     // 입찰을 삭제하는 기능
     @DeleteMapping("/bids/{bidId}") // 23.11.30 동작확인
-    public ResponseEntity<Void> deleteBid(@PathVariable("bidId") Integer bidId) {
-        bidService.deleteBid(bidId);
+    public ResponseEntity<Void> deleteBid(@PathVariable("bidId") Integer bidId, @RequestBody BidDeleteDTO bidDeleteDTO) {
+        bidService.deleteBid(bidId, bidDeleteDTO);
         return ResponseEntity.ok().build();
     }
 

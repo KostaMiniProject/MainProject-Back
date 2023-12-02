@@ -1,5 +1,7 @@
 package kosta.main.dibs.service;
 
+import kosta.main.dibs.dto.DibResponseDto;
+import kosta.main.dibs.dto.DibbedExchangePostDTO;
 import kosta.main.dibs.entity.Dib;
 import kosta.main.dibs.repository.DibsRepository;
 import kosta.main.exchangeposts.entity.ExchangePost;
@@ -45,9 +47,15 @@ public class DibsService {
 
     //찜 목록 조회 기능
     @Transactional(readOnly = true)
-    public List<ExchangePost> getUserDibs(Integer userId) {
+    public List<DibbedExchangePostDTO> getUserDibs(Integer userId) {
         return dibsRepository.findByUserUserId(userId).stream()
-                .map(Dib::getExchangePost)
-                .collect(Collectors.toList());
+            .map(Dib::getExchangePost)
+            .map(exchangePost -> DibbedExchangePostDTO.builder()
+                //.exchangePostId(exchangePost.getExchangePostId())
+                .title(exchangePost.getTitle())
+                .representativeImageUrl(exchangePost.getItem().getImages().isEmpty() ? null : exchangePost.getItem().getImages().get(0))
+                .createdAt(exchangePost.getCreatedAt())
+                .build())
+            .collect(Collectors.toList());
     }
 }

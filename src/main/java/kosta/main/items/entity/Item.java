@@ -7,6 +7,7 @@ import kosta.main.categories.entity.Category;
 import kosta.main.users.entity.User;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -40,14 +41,17 @@ public class Item extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Builder.Default
     @Column(length = 20, nullable = false)
     private ItemStatus itemStatus = ItemStatus.PUBLIC;
 
     @ElementCollection
+    @Builder.Default
     @CollectionTable(name = "item_images", joinColumns = @JoinColumn(name = "item_id"))
     @Column(name = "item_image")
-    private List<String> images; // 아이템의 이미지 리스트
+    private List<String> images = new ArrayList<>(); // 아이템의 이미지 리스트
 
+    @Builder.Default
     @Column(length = 20, nullable = false)
     private IsBiding isBiding = IsBiding.NOT_BIDING;
 

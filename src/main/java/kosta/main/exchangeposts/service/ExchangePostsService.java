@@ -25,7 +25,7 @@ public class ExchangePostsService {
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
   
-  // 공통메서드 : 게시글 삭제시 item들의 상태를 풀어주기 위함
+  // 공통메서드 : 게시글 삭제시 item들의 상태를 변경해주는 기능
   private void updateItemsBidingStatus(List<Item> items, Item.IsBiding status, Bid bid) {
     for (Item item : items) {
       item.updateIsBiding(status);
@@ -34,21 +34,22 @@ public class ExchangePostsService {
     }
   }
 
-
   @Transactional
-  public ExchangePostDTO createExchangePost(ExchangePostDTO exchangePostDTO) {
+  public Integer createExchangePost(User user, ExchangePostDTO exchangePostDTO) {
     // 기존 코드: 사용자 및 아이템 조회
-    User user = usersRepository.findById(exchangePostDTO.getUserId())
-            .orElseThrow(() -> new RuntimeException("User not found"));
     Item item = itemsRepository.findById(exchangePostDTO.getItemId())
             .orElseThrow(() -> new RuntimeException("Item not found"));
+    System.out.println(item.getItemId());
 
     // 아이템 소유주 확인
-    if (!item.getUser().equals(user)) {
+    if (!item.getUser().getUserId().equals(user.getUserId())) {
       throw new RuntimeException("You can only create an exchange post with your own item");
     }
+    if (item.getIsBiding() == Item.IsBiding.BIDING) {
+      throw new RuntimeException("This item is already in use for another exchange");
+    }
 
-    // 아이템 상태를 BIDING으로 변경
+    // 교환 게시글에 사용된 Item의 상태는 다른 거래에 사용하지 못하도록 BIDING으로 변경되어야한다.
     item.updateIsBiding(Item.IsBiding.BIDING);
     itemsRepository.save(item);
 
@@ -60,28 +61,18 @@ public class ExchangePostsService {
             .preferItems(exchangePostDTO.getPreferItems())
             .address(exchangePostDTO.getAddress())
             .content(exchangePostDTO.getContent())
-            .exchangePostStatus(exchangePostDTO.getExchangePostStatus())
             .build();
     ExchangePost savedExchangePost = exchangePostRepository.save(exchangePost);
 
-    // DTO로 변환하여 반환
-    return new ExchangePostDTO(
-            savedExchangePost.getTitle(),
-            savedExchangePost.getPreferItems(),
-            savedExchangePost.getAddress(),
-            savedExchangePost.getContent(),
-            savedExchangePost.getUser().getUserId(),
-            savedExchangePost.getItem().getItemId(),
-            savedExchangePost.getExchangePostStatus()
-    );
+    //23.12.02 우선은 생성된 교환게시글의 ID만 날려주고 추후 응답 컨벤션이 제대로 지정되면 변경예정
+    return savedExchangePost.getExchangePostId();
   }
 
 
 
   @Transactional(readOnly = true)
   public List<ExchangePostListDTO> findAllExchangePosts() {
-    return exchangePostRepository.findAll().stream()
-            .map(post -> {
+    return exchangePostRepository.findAll().stream().map(post -> {
               // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
               String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
 
@@ -104,82 +95,123 @@ public class ExchangePostsService {
 
 
   @Transactional(readOnly = true)
-  public ExchangePostDetailDTO findExchangePostById(Integer exchangePostId) {
+  public ExchangePostDetailDTO findExchangePostById(Integer exchangePostId, User currentUser) {
     ExchangePost post = exchangePostRepository.findById(exchangePostId)
         .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
 
+    // 교환 게시글 작성자와 현재 로그인한 사용자가 같은지 확인 (로그인하지 않은 경우 고려)
+    boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
+
+    // 사용자 프로필 정보 생성
+    ExchangePostDetailDTO.UserProfile userProfile = ExchangePostDetailDTO.UserProfile.builder()
+        .id(post.getUser().getUserId())
+        .name(post.getUser().getName())
+        .address(post.getUser().getAddress())
+        .imageUrl(post.getUser().getProfileImage())
+        //.rating(calculateRating(post.getUser()))
+        .build();
+
+    // 아이템 상세 정보 생성
+    ExchangePostDetailDTO.ItemDetails itemDetails = ExchangePostDetailDTO.ItemDetails.builder()
+        .title(post.getItem().getTitle())
+        .description(post.getItem().getDescription())
+        .imageUrls(post.getItem().getImages())
+        .build();
+
+    // 입찰 목록 생성
+    List<ExchangePostDetailDTO.BidDetails> bidDetailsList = post.getBids().stream()
+        .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
+            .id(bid.getBidId())
+            .name(bid.getUser().getName())
+            .imageUrl(bid.getUser().getProfileImage())
+            .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
+            .build())
+        .collect(Collectors.toList());
+
+    // ExchangePostDetailDTO 구성
     return ExchangePostDetailDTO.builder()
-        .exchangePostId(post.getExchangePostId())
-        .userId(post.getUser().getUserId())
-        .userName(post.getUser().getName())
-        .itemId(post.getItem().getItemId())
-        .itemTitle(post.getItem().getTitle())
+        .postOwner(isOwner)
         .title(post.getTitle())
         .preferItems(post.getPreferItems())
         .address(post.getAddress())
         .content(post.getContent())
-        .exchangePostStatus(post.getExchangePostStatus().toString())
+        .profile(userProfile)
+        .item(itemDetails)
+        .bidList(bidDetailsList)
         .build();
   }
 
+  private String convertItemListToString(List<Item> items) {
+    // 아이템 리스트를 문자열로 변환하는 로직 구현
+    return items.stream()
+        .map(Item::getTitle)
+        .collect(Collectors.joining(", "));
+  }
+
   @Transactional
-  public ExchangePostResponseDTO updateExchangePost(Integer exchangePostId, ExchangePostDTO updatedExchangePostDTO) {
+  public Integer updateExchangePost(User user, Integer exchangePostId, ExchangePostDTO updatedExchangePostDTO) {
     ExchangePost existingExchangePost = exchangePostRepository.findById(exchangePostId)
-            .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
+        .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
 
     // 요청 사용자와 게시글 작성자가 동일한지 확인
-    if (!existingExchangePost.getUser().getUserId().equals(updatedExchangePostDTO.getUserId())) {
-      throw new RuntimeException("Only the post creator can update the post");
+    if (!existingExchangePost.getUser().getUserId().equals(user.getUserId())) {
+      throw new RuntimeException("게시글 작성자만 수정을 진행할 수 있습니다.");
     }
 
-    // Item 엔티티 조회
-    Item item = updatedExchangePostDTO.getItemId() != null
-            ? itemsRepository.findById(updatedExchangePostDTO.getItemId())
-            .orElseThrow(() -> new RuntimeException("Item not found"))
-            : existingExchangePost.getItem();
+    // Item 엔티티 조회 및 상태 확인 및 변경
+    Item newItem = null; // 생성되지 않을수 있기 떄문에 우선 선언
+    if (updatedExchangePostDTO.getItemId() != null) {
+      newItem = itemsRepository.findById(updatedExchangePostDTO.getItemId())
+          .orElseThrow(() -> new RuntimeException("물건정보를 찾을수 없습니다."));
 
-    // 아이템 소유주 확인
-    if (!item.getUser().getUserId().equals(updatedExchangePostDTO.getUserId())) {
-      throw new RuntimeException("You can only update the post with your own item");
+      // 아이템 소유주 확인
+      if (!newItem.getUser().getUserId().equals(user.getUserId())) {
+        throw new RuntimeException("본인의 물건만 사용 가능합니다.");
+      }
+
+      // 새 아이템의 상태를 BIDING으로 변경
+      newItem.updateIsBiding(Item.IsBiding.BIDING);
+      itemsRepository.save(newItem);
+    }
+
+    // 기존 아이템의 상태를 NOT_BIDING으로 변경 (새 아이템이 있고, 기존 아이템과 다른 경우)
+    Item existingItem = existingExchangePost.getItem();
+    if (newItem != null && !existingItem.equals(newItem)) {
+      existingItem.updateIsBiding(Item.IsBiding.NOT_BIDING);
+      itemsRepository.save(existingItem);
     }
 
     // ExchangePost 엔티티 업데이트
-    existingExchangePost.updateWithBuilder(existingExchangePost.getUser(), item, updatedExchangePostDTO);
-    return ExchangePostResponseDTO.builder()
-            .exchangePostId(existingExchangePost.getExchangePostId())
-            .userId(existingExchangePost.getUser().getUserId())
-            .itemId(item.getItemId())
-            .title(existingExchangePost.getTitle())
-            .preferItems(existingExchangePost.getPreferItems())
-            .address(existingExchangePost.getAddress())
-            .content(existingExchangePost.getContent())
-            .exchangePostStatus(existingExchangePost.getExchangePostStatus().toString())
-            .build();
+    existingExchangePost.updateWithBuilder(user, newItem != null ? newItem : existingItem, updatedExchangePostDTO);
+    return existingExchangePost.getExchangePostId();
   }
 
-
   @Transactional
-  public void deleteExchangePost(Integer exchangePostId, ExchangePostDeleteDTO deleteDTO) {
+  public void deleteExchangePost(Integer exchangePostId, User user) {
     ExchangePost existingExchangePost = exchangePostRepository.findById(exchangePostId)
-            .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
+        .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
 
     // 게시글 작성자와 삭제 요청자가 동일한지 확인
-    if (!existingExchangePost.getUser().getUserId().equals(deleteDTO.getUserId())) {
+    if (!existingExchangePost.getUser().getUserId().equals(user.getUserId())) {
       throw new RuntimeException("Only the post creator can delete the post");
     }
 
-    // 관련된 모든 입찰을 찾아서 처리
+    // 관련된 모든 입찰을 찾아서 처리 (Soft Delete로 상태 변경)
     List<Bid> bids = bidRepository.findByExchangePost(existingExchangePost);
     for (Bid bid : bids) {
       updateItemsBidingStatus(bid.getItems(), Item.IsBiding.NOT_BIDING, null); // 아이템 상태 변경 및 bid 참조 제거
-      bid.updateStatus(Bid.BidStatus.DELETED);
-      bidRepository.save(bid);
+      bidRepository.delete(bid); // Soft Delete 실행
     }
 
-    // 게시글 상태를 DELETED로 변경
-    existingExchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.DELETED);
-    exchangePostRepository.save(existingExchangePost);
+    // 게시글 작성자의 아이템 상태를 NOT_BIDING으로 변경
+    Item associatedItem = existingExchangePost.getItem();
+    associatedItem.updateIsBiding(Item.IsBiding.NOT_BIDING);
+    itemsRepository.save(associatedItem);
+
+    // 게시글을 Soft Delete로 처리
+    exchangePostRepository.delete(existingExchangePost);
   }
+
 
 
 

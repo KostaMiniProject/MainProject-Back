@@ -58,7 +58,7 @@ public class CommunityPostsController {
     @DeleteMapping("/{communityPostId}")
     public ResponseEntity<Void> deletePost(@PathVariable("communityPostId") Integer communityPostId) {
         communityPostsService.deletePost(communityPostId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     /* 커뮤니티 좋아요 */
@@ -72,7 +72,7 @@ public class CommunityPostsController {
     @DeleteMapping("/likes/{communityPostId}")
     public ResponseEntity<Void> disLikePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
         communityPostsService.disLikePost(communityPostId, userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }
 

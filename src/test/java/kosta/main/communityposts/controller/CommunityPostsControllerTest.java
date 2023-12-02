@@ -181,7 +181,9 @@ class CommunityPostsControllerTest {
                         .with(csrf()));
         verify(communityPostsService, times(ONE_ACTION)).deletePost(Mockito.anyInt());
         //then
-        actions.andExpect(status().isNoContent());
+        actions
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
 }

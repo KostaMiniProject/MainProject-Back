@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 
 @Getter
 @AllArgsConstructor
@@ -12,7 +14,9 @@ import lombok.Getter;
 public class ItemSaveDto {
   private String title;
   private String description;
-  private Item.ItemStatus itemStatus;
-  private String imageUrl;
+  private List<String> imageUrl;
 
+  public void updateImageUrl(List<String> imageUrl){
+    this.imageUrl = imageUrl;
+  }
 }

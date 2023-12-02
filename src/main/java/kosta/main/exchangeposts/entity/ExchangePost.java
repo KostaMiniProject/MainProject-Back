@@ -74,4 +74,7 @@ public class ExchangePost extends Auditable {
     public enum ExchangePostStatus {
         EXCHANGING , RESERVATION, COMPLETED, DELETED
     }
+    public void addBid(Bid bid){
+        bids.add(bid);
+    }
 }

@@ -1,5 +1,6 @@
 package kosta.main.exchangeposts.dto;
 
+import kosta.main.exchangeposts.entity.ExchangePost;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,4 +17,16 @@ public class ExchangePostListDTO { // 교환 게시글 전체 목록을 전송�
   private final LocalDateTime created_at; // 교환 게시글 작성일
   private final String imgUrl; // 교환 게시글에 등록된 item의 대표이미지 URㅣ
   private final Integer bidCount; // 해당 교환 게시글에 등록된 입찰의 갯수를 세서 Integer 값으로 반환
+
+  public static ExchangePostListDTO of(ExchangePost exchangePost,String imageUrl,Integer bidCount){
+    return new ExchangePostListDTO(
+            exchangePost.getExchangePostId(),
+            exchangePost.getTitle(),
+            exchangePost.getPreferItems(),
+            exchangePost.getAddress(),
+            exchangePost.getExchangePostStatus().toString(),
+            exchangePost.getCreatedAt(),
+            imageUrl,
+            bidCount);
+  }
 }

@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE exchange_posts SET exchange_post_status = 3 WHERE exchange_post_id = ? ")
+@Where(clause = "exchange_post_status <> 3")
 public class ExchangePost extends Auditable {
 
     @Id

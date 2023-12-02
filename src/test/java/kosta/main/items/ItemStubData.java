@@ -34,13 +34,13 @@ public class ItemStubData {
                 .images(images)
                 .build();
     }
-    public Bid getBid(){
-        UserStubData userStubData = new UserStubData();
-        ExchangePostStubData exchangePostStubData = new ExchangePostStubData();
-
-        Bid.builder()
-                .bidId(BID_ID)
-                .user(userStubData.getUser())
-                .
-    }
+//    public Bid getBid(){
+//        UserStubData userStubData = new UserStubData();
+//        ExchangePostStubData exchangePostStubData = new ExchangePostStubData();
+//
+//        Bid.builder()
+//                .bidId(BID_ID)
+//                .user(userStubData.getUser())
+//                .
+//    }
 }

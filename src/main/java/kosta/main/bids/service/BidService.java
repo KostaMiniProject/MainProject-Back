@@ -51,9 +51,9 @@ public class BidService {
     }
     // 입찰 생성
     @Transactional
-    public Integer createBid(Integer exchangePostId, BidsDto bidDTO) {
+    public Integer createBid(User user, Integer exchangePostId, BidsDto bidDTO) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
-        User bidder = findEntityById(usersRepository, bidDTO.getUserId(), "User not found");
+        User bidder = user;
 
         // 게시글 작성자가 본인 게시글에 입찰하는 것 방지
         if (exchangePost.getUser().equals(bidder)) {
@@ -64,7 +64,7 @@ public class BidService {
         validateItemsForBidding(items); // 'DELETED' 상태의 아이템 확인 및 최소 하나의 아이템 확인
 
         for (Item item : items) {
-            if (!item.getUser().getUserId().equals(bidDTO.getUserId())) {
+            if (!item.getUser().getUserId().equals(user.getUserId())) {
                 throw new RuntimeException("본인의 물건만 입찰에 사용할 수 있습니다.");
             }
             if (item.getIsBiding() == Item.IsBiding.BIDING) {
@@ -92,9 +92,10 @@ public class BidService {
 
     // 특정 입찰에 대한 상세 정보 조회
     @Transactional(readOnly = true)
-    public BidDetailResponseDTO findBidById(Integer bidId) {
+    public BidDetailResponseDTO findBidById(Integer bidId, Integer exchangePostId, User currentUser) {
         Bid bid = findEntityById(bidRepository, bidId, "Bid not found");
-
+        ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "Post Not Found");
+        boolean isOwner = currentUser != null && exchangePost.getUser().getUserId().equals(currentUser.getUserId());
         // 입찰자 정보 저장
         User bidder = bid.getUser();
 
@@ -108,8 +109,9 @@ public class BidService {
         ).collect(Collectors.toList());
 
         return BidDetailResponseDTO.builder()
-                .bidId(bid.getBidId())
-                .bidderId(bidder.getUserId())
+                .isOwner(isOwner)
+                //.bidId(bid.getBidId())
+                //.bidderId(bidder.getUserId())
                 .bidderNickname(bidder.getName())
                 .bidderAddress(bidder.getAddress())
                 .items(itemDetails)
@@ -119,11 +121,11 @@ public class BidService {
     // 입찰 서비스 클래스 내 updateBid 메서드
     // 입찰 수정
     @Transactional
-    public BidUpdateResponseDTO updateBid(Integer bidId, BidUpdateDTO bidUpdateDto) {
+    public BidUpdateResponseDTO updateBid(User user, Integer bidId, BidUpdateDTO bidUpdateDto) {
         Bid existingBid = findEntityById(bidRepository, bidId, "Bid not found");
 
         // 입찰자 확인과 유저 검증
-        if (!existingBid.getUser().getUserId().equals(bidUpdateDto.getUserId())) {
+        if (!existingBid.getUser().getUserId().equals(user.getUserId())) {
             throw new RuntimeException("해당 입찰자 본인만 입찰을 수정할 수 있습니다.");
         }
 
@@ -169,11 +171,11 @@ public class BidService {
 
 
     @Transactional
-    public void deleteBid(Integer bidId, BidDeleteDTO bidDeleteDTO) {
+    public void deleteBid(Integer bidId, User user) {
         Bid bid = findEntityById(bidRepository, bidId, "Bid not found");
 
         // 입찰자 확인: 요청한 사용자가 입찰을 생성한 사용자와 동일한지 확인
-        if (!bid.getUser().getUserId().equals(bidDeleteDTO.getUserId())) {
+        if (!bid.getUser().getUserId().equals(user.getUserId())) {
             throw new RuntimeException("Only the bidder can delete the bid");
         }
 
@@ -250,28 +252,84 @@ public class BidService {
 
     // 교환 게시글 예약하기 기능인데 BidStatus에 예약중 상태도 추가해야할듯 합니다.
     @Transactional
-    public void reserveExchange(Integer exchangePostId, Integer bidId, Integer userId) {
+    public void toggleReserveExchange(Integer exchangePostId, Integer bidId, Integer userId) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
-
-        // 이미 예약 또는 완료된 게시물인지 확인
-        if (exchangePost.getExchangePostStatus() != ExchangePost.ExchangePostStatus.EXCHANGING) {
-            throw new RuntimeException("이미 예약되었거나 거래가 완료된 게시물입니다.");
-        }
 
         // 게시글 작성자 확인
         if (!exchangePost.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("교환 게시글 작성자만 예약을 진행할 수 있습니다.");
+            throw new RuntimeException("교환 게시글 작성자만 예약 상태를 변경할 수 있습니다.");
         }
 
         Bid selectedBid = bidRepository.findById(bidId)
-                .orElseThrow(() -> new RuntimeException("Selected bid not found"));
+            .orElseThrow(() -> new RuntimeException("Selected bid not found"));
 
-        // 예약 상태로 변경
-        exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.RESERVATION);
-        //selectedBid.updateStatus(Bid.BidStatus.RESERVED); // 입찰 상태가 따로 없어서 나중에 고려해보기로 23.11.30
+        // 예약 상태 토글
+        if (exchangePost.getExchangePostStatus() == ExchangePost.ExchangePostStatus.RESERVATION) {
+            // 이미 예약된 경우 예약 취소
+            exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.EXCHANGING);
+            selectedBid.updateStatus(Bid.BidStatus.BIDDING);
+        } else if (exchangePost.getExchangePostStatus() == ExchangePost.ExchangePostStatus.EXCHANGING) {
+            // 예약되지 않은 경우 예약 설정
+            exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.RESERVATION);
+            selectedBid.updateStatus(Bid.BidStatus.RESERVATION);
+        } else {
+            // 완료 또는 삭제된 게시물인 경우
+            throw new RuntimeException("거래가 완료되었거나 삭제된 게시물입니다.");
+        }
 
         exchangePostsRepository.save(exchangePost);
         bidRepository.save(selectedBid);
+    }
+
+    // 입찰 거절
+    @Transactional
+    public void denyBid(Integer exchangePostId, Integer bidId, Integer userId) {
+        ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
+        if (!exchangePost.getUser().getUserId().equals(userId)) {
+            throw new RuntimeException("Only the post creator can deny the bid");
+        }
+
+        Bid bid = findEntityById(bidRepository, bidId, "Bid not found");
+        bid.updateStatus(Bid.BidStatus.DENIED);
+        bidRepository.save(bid);
+    }
+
+    // 입찰 거절 취소
+    @Transactional
+    public void undoDenyBid(Integer exchangePostId, Integer bidId, Integer userId) {
+        ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
+        if (!exchangePost.getUser().getUserId().equals(userId)) {
+            throw new RuntimeException("Only the post creator can undo deny the bid");
+        }
+
+        Bid bid = findEntityById(bidRepository, bidId, "Bid not found");
+        if (bid.getStatus() != Bid.BidStatus.DENIED) {
+            throw new RuntimeException("Bid is not in DENIED status");
+        }
+        bid.updateStatus(Bid.BidStatus.BIDDING);
+        bidRepository.save(bid);
+    }
+
+    // 거절된 입찰 목록 조회
+    @Transactional(readOnly = true)
+    public List<BidListResponseDTO> findDeniedBidsForPost(Integer exchangePostId, Integer userId) {
+        ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
+        if (!exchangePost.getUser().getUserId().equals(userId)) {
+            throw new RuntimeException("Only the post creator can view denied bids");
+        }
+
+        return bidRepository.findByExchangePostAndStatus(exchangePost, Bid.BidStatus.DENIED).stream()
+            .map(bid -> BidListResponseDTO.builder()
+                .isOwner(exchangePost.getUser().getUserId().equals(userId))
+                .items(bid.getItems().stream().map(item ->
+                        BidListResponseDTO.ItemDetails.builder()
+                            .title(item.getTitle())
+                            .description(item.getDescription())
+                            .imgUrl(!item.getImages().isEmpty() ? item.getImages().get(0) : null)
+                            .build())
+                    .collect(Collectors.toList()))
+                .build())
+            .collect(Collectors.toList());
     }
 
 

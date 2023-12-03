@@ -78,6 +78,7 @@ public class UserStubData {
     public UserUpdateDto getUserUpdateDto() {
         return new UserUpdateDto(
                 UPDATE_PASSWORD,
+                UPDATE_PASSWORD,
                 UPDATED_NAME,
                 UPDATE_ADDRESS,
                 UPDATED_PHONE,
@@ -96,7 +97,7 @@ public class UserStubData {
         MockMultipartFile image1 = new MockMultipartFile(
                 "file", //name
                 fileName + "." + contentType, //originalFilename
-                contentType,
+                "image/png",
                 fileInputStream
         );
 

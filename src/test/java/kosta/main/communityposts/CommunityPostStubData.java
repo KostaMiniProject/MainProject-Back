@@ -5,6 +5,8 @@ import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.likes.entity.Like;
 import kosta.main.users.UserStubData;
 import kosta.main.users.entity.User;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@MockBean(JpaMetamodelMappingContext.class)
 public class CommunityPostStubData {
 
     public static final int COMMUNITY_POST_ID = 1;
@@ -108,7 +111,7 @@ public class CommunityPostStubData {
         MockMultipartFile image1 = new MockMultipartFile(
                 "file", //name
                 fileName + "." + contentType, //originalFilename
-                contentType,
+                "image/png",
                 fileInputStream
         );
 

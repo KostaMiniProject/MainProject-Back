@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +49,8 @@ public class UsersService {
     public UsersResponseDto updateUser(User user, UserUpdateDto userUpdateDto, MultipartFile file) {
         String imagePath = imageService.resizeToProfileSizeAndUpload(file);
         userUpdateDto.updateProfileImage(imagePath);
-
+        if(!Objects.equals(userUpdateDto.getPassword(), userUpdateDto.getCheckPassword()))
+            throw new RuntimeException("전달해준 두 비밀번호가 일치하지 않습니다");
         User updatedUser = user.updateUser(userUpdateDto);
         return UsersResponseDto.of(usersRepository.save(updatedUser));
     }

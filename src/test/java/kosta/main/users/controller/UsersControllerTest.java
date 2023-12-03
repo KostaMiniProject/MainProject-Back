@@ -27,6 +27,7 @@ import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -41,7 +42,11 @@ import java.nio.charset.StandardCharsets;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -72,7 +77,7 @@ class UsersControllerTest {
     @BeforeEach
     public void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentationContextProvider) {
         userStubData = new UserStubData();
-        MockMvcBuilders.webAppContextSetup(webApplicationContext)
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(documentationConfiguration(restDocumentationContextProvider))
                 .alwaysDo(print())														// 이건 왜하는지 모르겠음.
                 .alwaysDo(restDocs)														// 재정의한 핸들러를 적용함. 적용하면 일반 document에도 적용됨. 일반 document로 선언되면 그부분도 같이 생성됨에 유의해야 함.
@@ -93,16 +98,25 @@ class UsersControllerTest {
                 get(BASIC_URL, 1)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer yourAccessToken")
         );
         //then
         action
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(user.getEmail()))
-                .andExpect(jsonPath("$.name").value(user.getName()))
-                .andExpect(jsonPath("$.address").value(user.getAddress()))
-                .andExpect(jsonPath("$.phone").value(user.getPhone()))
-                .andExpect(jsonPath("$.profileImage").value(user.getProfileImage()));
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
+                                fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호"),
+                                fieldWithPath("profileImage").type(JsonFieldType.STRING).description("유저의 프로필 이미지"),
+                                fieldWithPath("userStatus").type(JsonFieldType.STRING).description("유저의 상태(ACTIVATE, BANNED ,DELETED)")
+                                )
+                ));
     }
 
     @Test
@@ -128,10 +142,21 @@ class UsersControllerTest {
         //then
         result.andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.email").value(userCreateDto.getEmail()))
-                .andExpect(jsonPath("$.name").value(userCreateDto.getName()))
-                .andExpect(jsonPath("$.address").value(userCreateDto.getAddress()))
-                .andExpect(jsonPath("$.phone").value(userCreateDto.getPhone()));
+                .andDo(restDocs.document(
+                        requestFields(
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저의 비밀번호"),
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
+                                fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
+                                fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호")
+                        )
+                ));
 
     }
 
@@ -146,7 +171,7 @@ class UsersControllerTest {
         UsersResponseDto usersResponseDto = userStubData.getUsersResponseDto();
         MockMultipartFile file = userStubData.getMockMultipartFile();
 
-        MockPart userUpdateDto1 = new MockPart("userUpdateDto", content.getBytes(StandardCharsets.UTF_8));
+        MockPart userUpdateDto1 = new MockPart("userUpdateDto",content.getBytes(StandardCharsets.UTF_8));
         userUpdateDto1.getHeaders().setContentType(APPLICATION_JSON);
 
         given(usersService.updateUser(
@@ -160,18 +185,41 @@ class UsersControllerTest {
                 MockMvcRequestBuilders.multipart(HttpMethod.PUT,BASIC_URL)
                         .file(file)
                         .part(userUpdateDto1)
-                        .with(csrf()));
+                        .header("Authorization", "Bearer yourAccessToken")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .with(csrf().asHeader()));
 
 
         perform
                 .andDo(print())
                 .andExpect(status().isOk())
-//                .andDo(restDocs.document());
-                .andExpect(jsonPath("$.email").value(user.getEmail()))
-                .andExpect(jsonPath("$.name").value(user.getName()))
-                .andExpect(jsonPath("$.address").value(user.getAddress()))
-                .andExpect(jsonPath("$.phone").value(user.getPhone()))
-                .andExpect(jsonPath("$.profileImage").value(user.getProfileImage()));
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        requestParts(
+                                partWithName("userUpdateDto").description("유저 업데이트 정보"),
+                                partWithName("file").description("유저 프로필 사진")
+                        ),
+                        requestPartFields("userUpdateDto",
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저의 변경용 비밀번호"),
+                                fieldWithPath("checkPassword").type(JsonFieldType.STRING).description("유저의 변경용 비밀번호 확인"),
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
+                                fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호"),
+                                fieldWithPath("profileImage").type(JsonFieldType.STRING).description("유저의 프로필 이미지"),
+                                fieldWithPath("userStatus").type(JsonFieldType.STRING).description("유저의 상태(ACTIVATE, BANNED ,DELETED)")
+                        )
+                        ,responseFields(
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
+                                fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호"),
+                                fieldWithPath("profileImage").type(JsonFieldType.STRING).description("유저의 프로필 이미지"),
+                                fieldWithPath("userStatus").type(JsonFieldType.STRING).description("유저의 상태(ACTIVATE, BANNED ,DELETED)")
+                        )
+                ));
     }
 
     @Test
@@ -183,6 +231,7 @@ class UsersControllerTest {
         //when
         ResultActions result = mockMvc.perform(
                 put(BASIC_URL+"/withdrawal")
+                        .header("Authorization", "Bearer yourAccessToken")
                         .with(csrf())
         );
 
@@ -190,6 +239,11 @@ class UsersControllerTest {
         verify(usersService,times(ONE_ACTION)).withdrawalUser(Mockito.any(User.class));
 
         result.andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        )
+                ));
     }
 }

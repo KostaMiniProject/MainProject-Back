@@ -122,7 +122,7 @@ public class ItemStubData {
         MockMultipartFile image1 = new MockMultipartFile(
                 "file", //name
                 fileName + "." + contentType, //originalFilename
-                contentType,
+                "image/png",
                 fileInputStream
         );
 

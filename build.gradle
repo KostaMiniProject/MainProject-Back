@@ -29,6 +29,7 @@ asciidoctor.doFirst {
 }
 
 asciidoctor {
+	baseDir file('src/docs/asciidoc')
 	inputs.dir snippetsDir
 	dependsOn test
 }

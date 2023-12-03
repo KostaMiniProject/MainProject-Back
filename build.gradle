@@ -65,6 +65,13 @@ ext{
 	set('snippetsDir', file("build/generated-snippets"))
 	//snippets 파일이 저장될 경로 snippetsDir로 변수 설정
 }
+task copyPrivate(type: Copy) {
+	copy {
+		from './MainProject-Back-Data'
+		include "*.yml"
+		into 'src/main/resources'
+	}
+}
 
 test {
 	outputs.dir snippetsDir

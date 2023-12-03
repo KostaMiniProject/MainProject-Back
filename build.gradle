@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.5'
 	id 'io.spring.dependency-management' version '1.1.3'
+	id 'org.asciidoctor.jvm.convert' version('3.3.2')
+	//asciidoctor 파일을 컨버팅하고 Build 폴더에 복사하기 위한 플러그인
 }
 
 group = 'kosta'
@@ -12,6 +14,7 @@ java {
 }
 
 configurations {
+	asciidoctorExtensions
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -51,18 +54,60 @@ dependencies {
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+	//asciidocs
+	asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	//adoc 파일에서 사용할 snippets 속성이 자동으로 build/generated-snippets를 가키리도록 해줌
+
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+ext{
+	set('snippetsDir', file("build/generated-snippets"))
+	//snippets 파일이 저장될 경로 snippetsDir로 변수 설정
 }
-
-
 task copyPrivate(type: Copy) {
 	copy {
 		from './MainProject-Back-Data'
 		include "*.yml"
 		into 'src/main/resources'
+	}
+}
+
+test {
+	outputs.dir snippetsDir
+	useJUnitPlatform()
+}
+
+asciidoctor{
+	configurations 'asciidoctorExt'
+	baseDirFollowsSourceFile()
+	inputs.dir snippetsDir
+	dependsOn test
+}
+
+asciidoctor.doFirst {
+	delete file('src/main/resources/templates/api_doc.html')
+}
+
+asciidoctor {
+	inputs.dir snippetsDir
+	dependsOn test
+}
+
+task copyDocument(type: Copy) {
+	dependsOn asciidoctor
+	from file("build/docs/asciidoc")
+	into file("src/main/resources/templates")
+}
+
+build {
+	dependsOn copyDocument
+}
+
+bootJar {
+	dependsOn asciidoctor
+	from ("build/docs/asciidoc") {
+		into 'src/main/resources/templates'
 	}
 }
 

@@ -1,6 +1,5 @@
 package kosta.main.items.service;
 
-import kosta.main.categories.entity.Category;
 import kosta.main.categories.repository.CategoriesRepository;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemUpdateDto;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,7 +57,6 @@ public class ItemsService {
             .title(itemSaveDto.getTitle())
             .description(itemSaveDto.getDescription())
             .images(imagePaths)
-            .itemStatus(itemSaveDto.getItemStatus())
             .build();
 
     // Item 저장
@@ -78,7 +77,7 @@ public class ItemsService {
 
 
   //  물건 수정
-  public void updateItem(Integer itemId, ItemUpdateDto itemUpdateDto) {
+  public Item updateItem(Integer itemId, ItemUpdateDto itemUpdateDto, List<MultipartFile> files) {
 //    # sudo 코드
 //    1. Controller에서 itemId와 ItemUpdateDto값을 받아온다.
 //    2. 수정할 내용을 담는 용도인 Item 객체(updateItem)를 생성한다.
@@ -104,26 +103,26 @@ public class ItemsService {
 //    if (itemUpdateDto.getItemStatus() != null) {
 //      updateItem1.setItemStatus(itemUpdateDto.getItemStatus());
 //    }
-    
-    
+    List<String> imagePath = new ArrayList<>(files.stream().map(imageService::resizeToBasicSizeAndUpload).toList());
+    itemUpdateDto.updateImagePath(imagePath);
 //    # Builder 사용
     Item item = getFindById(itemId);
     
 //    itemUpdateDto 요소 null값 체크
     String title = itemUpdateDto.getTitle() != null ? itemUpdateDto.getTitle() : item.getTitle();
     String description = itemUpdateDto.getDescription() != null ? itemUpdateDto.getDescription() : item.getDescription();
-    //String imageUrl = itemUpdateDto.getImageUrl() != null ? itemUpdateDto.getImageUrl() : item.getImageUrl();
+    List<String> imageUrl = itemUpdateDto.getImages() != null ? itemUpdateDto.getImages() : item.getImages();
     Item.ItemStatus itemStatus = itemUpdateDto.getItemStatus() != null ? itemUpdateDto.getItemStatus() : item.getItemStatus();
 
     Item updateItem2 = Item.builder()
         .itemId(itemId)
         .title(title)
         .description(description)
-        //.imageUrl(imageUrl)
+        .images(imageUrl)
         .itemStatus(itemStatus)
         .build();
 
-    itemsRepository.save(updateItem2);
+    return itemsRepository.save(updateItem2);
   }
 
 

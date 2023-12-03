@@ -35,7 +35,7 @@ public class ExchangePostsService {
   }
 
   @Transactional
-  public Integer createExchangePost(User user, ExchangePostDTO exchangePostDTO) {
+  public ResponseDto createExchangePost(User user, ExchangePostDTO exchangePostDTO) {
     // 기존 코드: 사용자 및 아이템 조회
     Item item = itemsRepository.findById(exchangePostDTO.getItemId())
             .orElseThrow(() -> new RuntimeException("Item not found"));
@@ -65,7 +65,7 @@ public class ExchangePostsService {
     ExchangePost savedExchangePost = exchangePostRepository.save(exchangePost);
 
     //23.12.02 우선은 생성된 교환게시글의 ID만 날려주고 추후 응답 컨벤션이 제대로 지정되면 변경예정
-    return savedExchangePost.getExchangePostId();
+    return ResponseDto.of(savedExchangePost.getExchangePostId());
   }
 
 
@@ -85,7 +85,7 @@ public class ExchangePostsService {
                       .preferItem(post.getPreferItems())
                       .address(post.getAddress())
                       .exchangePostStatus(post.getExchangePostStatus().toString())
-                      .created_at(post.getCreatedAt())
+                      .createdAt(post.getCreatedAt())
                       .imgUrl(imgUrl)
                       .bidCount(bidCount)
                       .build();

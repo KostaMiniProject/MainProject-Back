@@ -28,4 +28,5 @@ public class CommunityPostListDto { // stackoverflow에러로 인하여 조회 D
                 communityPost.getLikePostList().size()
         );
     }
+
 }

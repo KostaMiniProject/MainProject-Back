@@ -2,6 +2,7 @@ package kosta.main.likes.entity;
 
 import jakarta.persistence.*;
 import kosta.main.communityposts.entity.CommunityPost;
+import kosta.main.global.audit.CreateDate;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Builder
-public class Like {
+public class Like extends CreateDate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +32,6 @@ public class Like {
     @JoinColumn(name = "community_post_id", nullable = false)
     private CommunityPost communityPost;
 
-    @CreatedDate
-    @Column
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     public void setCommunityPost(CommunityPost communityPost) {
         this.communityPost = communityPost;

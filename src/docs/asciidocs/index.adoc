@@ -1,0 +1,14 @@
+= 물물교환 애플리케이션
+:sectnums:
+:toc: left
+:toclevels: 4
+:toc-title: Table of Contents
+:sectlinks:
+:source-highlighter: prettify
+
+
+v0.0.1, 2023.12.03
+
+include::user.adoc[]
+include::exchangePost.adoc[]
+include::communityPost.adoc[]

@@ -1,0 +1,13 @@
+== 유저
+
+=== 내 프로필 조회
+operation::users-controller-test/find-my-profile[snippets='request-headers,http-request,http-response,response-fields']
+
+=== 회원 가입
+operation::users-controller-test/signup[snippets='http-request,request-fields,http-response,response-fields']
+
+=== 내 정보 수정
+operation::users-controller-test/update-my-info[snippets='request-headers,request-parts,request-part-userUpdateDto-fields,http-response,response-fields']
+
+=== 회원 삭제
+operation::users-controller-test/withdrawal[snippets='request-headers,http-request,http-response']

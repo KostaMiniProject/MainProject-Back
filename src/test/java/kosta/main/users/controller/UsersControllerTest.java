@@ -225,7 +225,7 @@ class UsersControllerTest {
     @Test
     @WithMockCustomUser
     @DisplayName("회원탈퇴")
-    void 탈퇴하기() throws Exception {
+    void withdrawal() throws Exception {
         //given
         doNothing().when(usersService).withdrawalUser(Mockito.any());
         //when

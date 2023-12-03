@@ -1,0 +1,13 @@
+== 커뮤니티 게시글
+
+=== 커뮤니티 게시글 목록 조회
+operation::community-posts-controller-test/find-posts[snippets='http-request,http-response,response-fields']
+
+=== 커뮤니티 게시글 상세조회
+operation::community-posts-controller-test/find-post[snippets='http-request,http-response,response-fields']
+
+=== 커뮤니티 게시글 수정
+operation::community-posts-controller-test/update-post[snippets='request-parts,request-part-communityPostUpdateDto-fields,http-response,response-fields']
+
+=== 커뮤니티 게시글 삭제
+operation::community-posts-controller-test/delete-post[snippets='http-request,http-response']

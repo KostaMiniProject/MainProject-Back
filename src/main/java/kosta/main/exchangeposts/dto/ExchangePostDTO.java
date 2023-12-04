@@ -13,7 +13,7 @@ public class ExchangePostDTO {
   private String preferItems;
   private String address;
   private String content;
-  private Integer userId;
+  //private Integer userId;
   private Integer itemId;
   private ExchangePostStatus exchangePostStatus;
 }

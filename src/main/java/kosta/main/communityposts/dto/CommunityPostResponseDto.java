@@ -1,6 +1,7 @@
 package kosta.main.communityposts.dto;
 
 import kosta.main.communityposts.entity.CommunityPost;
+import kosta.main.users.dto.UsersResponseDto;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CommunityPostResponseDto {
-    private User user;
+    private UsersResponseDto user;
 
     private String title;
 
@@ -20,7 +21,7 @@ public class CommunityPostResponseDto {
 
     public static CommunityPostResponseDto of(CommunityPost communityPost){ //of : 데이터를 가지고 새로운 객체를 만들때 사용
         return new CommunityPostResponseDto(
-                communityPost.getUser(),
+                UsersResponseDto.of(communityPost.getUser()),
                 communityPost.getTitle(),
                 communityPost.getContent(),
                 communityPost.getViews(),

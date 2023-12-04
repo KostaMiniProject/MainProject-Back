@@ -16,5 +16,6 @@ public interface BidRepository extends JpaRepository<Bid, Integer> {
   // ExchangePost에 해당하고 DELETED 상태가 아닌 Bid의 수를 카운트합니다.
   @Query("SELECT COUNT(b) FROM Bid b WHERE b.exchangePost = :exchangePost AND b.status <> 3")
   Integer countByExchangePostAndStatusNotDeleted(@Param("exchangePost") ExchangePost exchangePost);
+  List<Bid> findByExchangePostAndStatus(ExchangePost exchangePost, Bid.BidStatus status);
 
 }

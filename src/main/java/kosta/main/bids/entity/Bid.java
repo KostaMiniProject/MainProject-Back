@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 
@@ -18,6 +20,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Builder
+@SQLDelete(sql = "UPDATE bids SET status = 3 WHERE bid_id = ? ")
+@Where(clause = "status <> 3")
 public class Bid extends Auditable {
 
     @Id

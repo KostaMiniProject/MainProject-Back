@@ -1,5 +1,6 @@
 package kosta.main.communityposts.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import kosta.main.communityposts.dto.CommunityPostUpdateDto;
 import kosta.main.global.audit.Auditable;
@@ -9,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,8 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Builder
+@SQLDelete(sql = "UPDATE community_posts SET community_post_status = 3 WHERE community_post_id = ?")
+@Where(clause = "community_post_status = 'PUBLIC, PRIVATE'") //문제있을수도있음
 public class CommunityPost extends Auditable {
 
     @Id
@@ -43,6 +48,8 @@ public class CommunityPost extends Auditable {
     private CommunityPostStatus communityPostStatus = CommunityPostStatus.PUBLIC;
 
 
+    @Builder.Default
+    @JsonIgnore
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL)
     private List<Like> likePostList = new ArrayList<>();
 
@@ -51,6 +58,7 @@ public class CommunityPost extends Auditable {
     @ElementCollection
     @CollectionTable(name = "community_post_images", joinColumns = @JoinColumn(name = "community_post_id"))
     @Column(name = "community_post_image")
+    @Builder.Default
     private List<String> images = new ArrayList<>(); // 커뮤니티 게시글의 이미지 리스트
 
   
@@ -62,6 +70,9 @@ public class CommunityPost extends Auditable {
         return this;
     }
 
+    public void updateLikes(Like like){
+        likePostList.add(like);
+    }
 
     public enum CommunityPostStatus {
         PUBLIC, PRIVATE, REPORTED, DELETED

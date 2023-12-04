@@ -7,6 +7,9 @@ import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.users.dto.UserCreateDto;
 import kosta.main.users.dto.UserUpdateDto;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Builder
+@SQLDelete(sql = "UPDATE users SET user_status = 2 WHERE user_id = ?")
+@Where(clause = "user_status = 'ACTIVATE'") //문제있을수도있음
 public class User extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,19 +90,17 @@ public class User extends Auditable {
     // 게터와 세터
     // 생략...
 
-    public static User createUser(UserCreateDto userCreateDto){
+    public static User createUser(UserCreateDto userCreateDto,String profileImage){
         return User.builder()
                 .name(userCreateDto.getName())
                 .password(userCreateDto.getPassword())
                 .email(userCreateDto.getEmail())
                 .phone(userCreateDto.getPhone())
                 .address(userCreateDto.getAddress())
+                .profileImage(profileImage)
                 .build();
     }
 
-    public void deleteUser(){
-        this.userStatus = UserStatus.DELETED;
-    }
     public void addBlockedUser(BlockedUser blockedUser){
         this.blockedUsers.add(blockedUser);
     }

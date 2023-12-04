@@ -8,6 +8,7 @@ import kosta.main.likes.dto.LikeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +39,7 @@ public class CommunityPostsController {
 
     /* 커뮤니티 게시글 작성 */
     /* 테스트 성공 확인 */
-    @PostMapping
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<CommunityPost> addPost(@RequestPart("communityPostCreateDto") CommunityPostCreateDto communityPostCreateDto,
                                                  @RequestPart("file") List<MultipartFile> files) {
         CommunityPost communityPost = communityPostsService.addPost(communityPostCreateDto,files);

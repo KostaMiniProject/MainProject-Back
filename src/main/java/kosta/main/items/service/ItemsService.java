@@ -1,28 +1,35 @@
 package kosta.main.items.service;
 
-
-import kosta.main.bids.entity.Bid;
-import kosta.main.categories.entity.Category;
+import kosta.main.categories.repository.CategoriesRepository;
+import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
+import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Transactional
 @AllArgsConstructor
 public class ItemsService {
+
   private final ItemsRepository itemsRepository;
+  private final UsersRepository usersRepository;
+  private final CategoriesRepository categoriesRepository;
+  private final ImageService imageService;
+
 
 
   //  물건 생성
-  public void addItem(ItemSaveDto itemSaveDto) {
+  public void addItem(User user, ItemSaveDto itemSaveDto, List<MultipartFile> files) {
 //    # sudo 코드
 //    1. Controller에서 ItemSaveDto값을 받아온다.
 //    2. 추가할 내용을 담는 용도로 Item 객체(newItem)를 생성한다.
@@ -38,20 +45,22 @@ public class ItemsService {
 //    newItem1.setDescription(itemSaveDto.getDescription());
 //    newItem1.setImageUrl(itemSaveDto.getImageUrl());
 
-//    # Builder 사용
-    Item newItem2 = Item.builder()
-        //    TODO : userId를 받아와서 추가
-        .user(new User())
-        //    TODO : bidId를 받아와서 추가
-        .bid(new Bid())
-        //    TODO : categoryId를 받아와서 추가
-        .category(new Category())
-        .title(itemSaveDto.getTitle())
-        .description(itemSaveDto.getDescription())
-        //.imageUrl(itemSaveDto.getImageUrl())
-        .build();
+    // 사용자와 카테고리 정보 조회
+//    Category category = categoriesRepository.findById(itemSaveDto.getCategoryId())
+//            .orElseThrow(() -> new RuntimeException("Category not found"));
+    List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
 
-    itemsRepository.save(newItem2);
+    // Item 객체 생성
+    Item newItem = Item.builder()
+            .user(user)
+            //.category(category)
+            .title(itemSaveDto.getTitle())
+            .description(itemSaveDto.getDescription())
+            .images(imagePaths)
+            .build();
+
+    // Item 저장
+    itemsRepository.save(newItem);
   }
 
 
@@ -68,7 +77,7 @@ public class ItemsService {
 
 
   //  물건 수정
-  public void updateItem(Integer itemId, ItemUpdateDto itemUpdateDto) {
+  public Item updateItem(Integer itemId, ItemUpdateDto itemUpdateDto, List<MultipartFile> files) {
 //    # sudo 코드
 //    1. Controller에서 itemId와 ItemUpdateDto값을 받아온다.
 //    2. 수정할 내용을 담는 용도인 Item 객체(updateItem)를 생성한다.
@@ -94,26 +103,26 @@ public class ItemsService {
 //    if (itemUpdateDto.getItemStatus() != null) {
 //      updateItem1.setItemStatus(itemUpdateDto.getItemStatus());
 //    }
-    
-    
+    List<String> imagePath = new ArrayList<>(files.stream().map(imageService::resizeToBasicSizeAndUpload).toList());
+    itemUpdateDto.updateImagePath(imagePath);
 //    # Builder 사용
     Item item = getFindById(itemId);
     
 //    itemUpdateDto 요소 null값 체크
     String title = itemUpdateDto.getTitle() != null ? itemUpdateDto.getTitle() : item.getTitle();
     String description = itemUpdateDto.getDescription() != null ? itemUpdateDto.getDescription() : item.getDescription();
-   // String imageUrl = itemUpdateDto.getImageUrl() != null ? itemUpdateDto.getImageUrl() : item.getImageUrl();
+    List<String> imageUrl = itemUpdateDto.getImages() != null ? itemUpdateDto.getImages() : item.getImages();
     Item.ItemStatus itemStatus = itemUpdateDto.getItemStatus() != null ? itemUpdateDto.getItemStatus() : item.getItemStatus();
 
     Item updateItem2 = Item.builder()
         .itemId(itemId)
         .title(title)
         .description(description)
-        //.imageUrl(imageUrl)
+        .images(imageUrl)
         .itemStatus(itemStatus)
         .build();
 
-    itemsRepository.save(updateItem2);
+    return itemsRepository.save(updateItem2);
   }
 
 

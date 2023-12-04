@@ -1,4 +1,7 @@
 package kosta.main.reviews.repository;
 
-public interface ReviewsRepository {
+import kosta.main.reviews.entity.Review;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ReviewsRepository extends JpaRepository<Review,Integer> {
 }

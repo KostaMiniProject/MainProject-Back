@@ -4,6 +4,7 @@ import kosta.main.global.audit.Auditable;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class Dib extends Auditable {
 
     @Id
@@ -26,6 +28,4 @@ public class Dib extends Auditable {
     @JoinColumn(name = "exchange_post_id")
     private ExchangePost exchangePost;
 
-    // 게터와 세터
-    // 생략...
 }

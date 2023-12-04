@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "items")
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
 public class Item extends Auditable {
@@ -64,6 +64,10 @@ public class Item extends Auditable {
     public void updateBid(Bid bid) {
         this.bid = bid;
     }
+    public void updateUser(User newUser) {
+        this.user = newUser;
+    }
+
 
     public void itemStatusUpdate(ItemStatus itemStatus) {
         this.itemStatus = itemStatus;

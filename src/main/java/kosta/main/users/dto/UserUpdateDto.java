@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserUpdateDto {
     private String password;
 
+    private String checkPassword;
+
     private String name;
 
     private String address;

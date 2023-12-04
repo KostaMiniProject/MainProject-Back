@@ -4,6 +4,7 @@ import kosta.main.global.s3upload.S3Client;
 import kosta.main.global.s3upload.image.ImageName;
 import kosta.main.global.s3upload.image.ImageResizer;
 import kosta.main.global.s3upload.image.Size;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +17,9 @@ import static kosta.main.global.s3upload.image.Size.PROFILE;
 public class ImageService {
 
     private final S3Client s3Client;
+
+    @Value("${s3address}")
+    private String s3address;
 
     public ImageService(final S3Client s3Client) {
         this.s3Client = s3Client;
@@ -41,7 +45,7 @@ public class ImageService {
 
         final MultipartFile resizedImages = imageResizer.resizeToFixedSize(size);
         s3Client.upload(resizedImages);
-        return imageResizer.getFileName();
+        return s3address+size.getPath()+imageResizer.getFileName();
     }
 
     public void deleteAll(final List<String> imageNames){

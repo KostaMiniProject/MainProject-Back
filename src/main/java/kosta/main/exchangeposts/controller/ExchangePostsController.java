@@ -2,7 +2,10 @@ package kosta.main.exchangeposts.controller;
 
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.service.ExchangePostsService;
+import kosta.main.users.entity.LoginUser;
+import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -15,26 +18,26 @@ public class ExchangePostsController {
   private final ExchangePostsService exchangePostsService;
 
   @PostMapping
-  public ExchangePostDTO createExchangePost(@RequestBody ExchangePostDTO exchangePostDTO) {
-    return exchangePostsService.createExchangePost(exchangePostDTO);
+  public ResponseEntity<?> createExchangePost(@LoginUser User user, @RequestBody ExchangePostDTO exchangePostDTO) {
+    return ResponseEntity.ok(exchangePostsService.createExchangePost(user ,exchangePostDTO));
   }
   @GetMapping//필요한 데이터만 클라이언트 측으로 전송하도록 변경(23.11.27)
-  public List<ExchangePostListDTO> getAllExchangePosts() {
-    return exchangePostsService.findAllExchangePosts();
+  public ResponseEntity<?> getAllExchangePosts() {
+    return new ResponseEntity(exchangePostsService.findAllExchangePosts(), HttpStatus.OK);
   }
 
   @GetMapping("/{exchangePostId}")
-  public ResponseEntity<ExchangePostDetailDTO> getExchangePostById(@PathVariable("exchangePostId") Integer exchangePostId) {
-    return ResponseEntity.ok(exchangePostsService.findExchangePostById(exchangePostId));
+  public ResponseEntity<ExchangePostDetailDTO> getExchangePostById(@PathVariable("exchangePostId") Integer exchangePostId, @LoginUser User user) {
+    return ResponseEntity.ok(exchangePostsService.findExchangePostById(exchangePostId,user));
   }
 
   @PutMapping("/{exchangePostId}") //필요한 데이터만 클라이언트 측으로 전송하도록 변경(23.11.27)
-  public ResponseEntity<ExchangePostResponseDTO> updateExchangePost(@PathVariable("exchangePostId") Integer exchangePostId, @RequestBody ExchangePostDTO exchangePostDTO) {
-    return ResponseEntity.ok(exchangePostsService.updateExchangePost(exchangePostId, exchangePostDTO));
+  public ResponseEntity<?> updateExchangePost(@LoginUser User user,  @PathVariable("exchangePostId") Integer exchangePostId, @RequestBody ExchangePostDTO exchangePostDTO) {
+    return ResponseEntity.ok(exchangePostsService.updateExchangePost(user, exchangePostId, exchangePostDTO));
   }
   @DeleteMapping("/{exchangePostId}")
-  public ResponseEntity<?> deleteExchangePost(@PathVariable("exchangePostId") Integer exchangePostId, @RequestBody ExchangePostDeleteDTO deleteDTO) {
-    exchangePostsService.deleteExchangePost(exchangePostId, deleteDTO);
+  public ResponseEntity<?> deleteExchangePost(@PathVariable("exchangePostId") Integer exchangePostId, @LoginUser  User user) {
+    exchangePostsService.deleteExchangePost(exchangePostId, user);
     return ResponseEntity.ok().build();
   }
 

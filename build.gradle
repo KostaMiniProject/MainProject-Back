@@ -7,6 +7,7 @@ plugins {
 }
 
 configurations {
+	asciidoctorExt
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -65,33 +66,27 @@ ext {
 
 
 tasks.named('test') {
-	outputs.dir snippetsDir // (5)
 	useJUnitPlatform()
 }
 
 asciidoctor {
+	dependsOn test
+	configurations 'asciidoctorExt'
+}
+
+tasks.register('copyApiDocument', Copy) {
+	dependsOn asciidoctor
 	doFirst {
 		delete file("src/main/resources/static/docs")
 	}
-	dependsOn test
-	sourceDir file("src/docs/asciidoc") // 수정된 부분
-	inputs.dir snippetsDir
-}
-bootJar {
-	dependsOn asciidoctor
 	from asciidoctor.outputDir
-	into 'static/docs'
-}
-
-task copyDocument(type: Copy) {
-	dependsOn asciidoctor
-	from file("${asciidoctor.outputDir}")
 	into file("src/main/resources/static/docs")
 }
 
 build {
-	dependsOn copyDocument
+	dependsOn copyApiDocument
 }
+
 //RestDocs 종료
 task copyPrivate(type: Copy) {
 	copy {

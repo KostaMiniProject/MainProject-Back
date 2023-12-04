@@ -10,13 +10,14 @@ import kosta.main.likes.repository.LikesRepository;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -38,11 +39,9 @@ public class CommunityPostsService {
 
     /* 커뮤니티 목록 조회 */
     @Transactional(readOnly = true)
-    public List<CommunityPostListDto> findPosts() {
-        List<CommunityPost> posts = communityPostsRepository.findAll();
-        return posts.stream()
-                .map(CommunityPostListDto::from)
-                .collect(Collectors.toList());
+    public Page<CommunityPostListDto> findPosts(Pageable pageable) {
+        Page<CommunityPost> posts = communityPostsRepository.findAll(pageable);
+        return posts.map(CommunityPostListDto::from);
     }
 
     /* 커뮤니티 게시글 상세 조회 */

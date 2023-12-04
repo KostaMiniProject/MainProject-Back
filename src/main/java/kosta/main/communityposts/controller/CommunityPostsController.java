@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/community-posts")
+@RequestMapping("/api/community-posts")
 public class CommunityPostsController {
     private final CommunityPostsService communityPostsService;
 
@@ -56,23 +56,17 @@ public class CommunityPostsController {
 
     /* 커뮤니티 게시글 삭제 */
     @DeleteMapping("/{communityPostId}")
-    public ResponseEntity<Void> deletePost(@PathVariable("communityPostId") Integer communityPostId) {
-        communityPostsService.deletePost(communityPostId);
+    public ResponseEntity<?> deletePost(@PathVariable("communityPostId") Integer communityPostId,
+                                           @RequestParam("userId") Integer userId) {
+        communityPostsService.deletePost(communityPostId, userId);
         return ResponseEntity.ok().build();
     }
 
     /* 커뮤니티 좋아요 */
-    @PostMapping("/likes/{communityPostId}")
-    public ResponseEntity<LikeDto> likePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
-        LikeDto likeDto = communityPostsService.likePost(communityPostId, userId);
+    @PutMapping("/likes/{communityPostId}")
+    public ResponseEntity<?> toggleLikePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
+        LikeDto likeDto = communityPostsService.toggleLikePost(communityPostId, userId);
         return ResponseEntity.ok(likeDto);
-    }
-
-    /* 커뮤니티 좋아요 취소 */
-    @DeleteMapping("/likes/{communityPostId}")
-    public ResponseEntity<Void> disLikePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
-        communityPostsService.disLikePost(communityPostId, userId);
-        return ResponseEntity.ok().build();
     }
 }
 

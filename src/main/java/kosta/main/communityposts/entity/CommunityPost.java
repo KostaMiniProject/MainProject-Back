@@ -66,12 +66,7 @@ public class CommunityPost extends Auditable {
         this.content = communityPostUpdateDto.getContent() != null && !communityPostUpdateDto.getTitle().equals(this.content) ? communityPostUpdateDto.getContent() : this.content;
         this.title = communityPostUpdateDto.getTitle() != null && !communityPostUpdateDto.getTitle().equals(this.title) ? communityPostUpdateDto.getTitle() : this.title;
         this.images = communityPostUpdateDto.getImagePaths() != null && !communityPostUpdateDto.getImagePaths().equals(this.images) ? communityPostUpdateDto.getImagePaths() : this.images;
-        //UnsupportedOperationException 해결 하기 위한 코드
-//        if (communityPostUpdateDto.getImagePaths() != null && !communityPostUpdateDto.getImagePaths().equals(this.images)) {
-//            this.images.clear(); this.images가 가리키는 컬렉션의 내용을 먼저 지움(clear())
-//            this.images.addAll(communityPostUpdateDto.getImagePaths()); 새로운 이미지 경로들을 추가(addAll())
-//        }
-//        새로운 컬렉션으로 대체하는 것이 아니라 기존 컬렉션의 내용을 바꾸는 것이므로 UnsupportedOperationException이 발생하지 않는다.
+
         return this;
     }
 

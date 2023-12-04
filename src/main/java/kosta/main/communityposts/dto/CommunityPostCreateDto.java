@@ -5,5 +5,6 @@ import lombok.Getter;
 @Getter
 public class CommunityPostCreateDto {
     private String title;
+    private Integer userId;
     private String content;
 }

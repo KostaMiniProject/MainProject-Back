@@ -1,5 +1,6 @@
 package kosta.main.exchangeposts.service;
 
+import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
@@ -23,10 +24,20 @@ public class ExchangePostsService {
   private final UsersRepository usersRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
+  
+  // 공통메서드 : 게시글 삭제시 item들의 상태를 풀어주기 위함
+  private void updateItemsBidingStatus(List<Item> items, Item.IsBiding status, Bid bid) {
+    for (Item item : items) {
+      item.updateIsBiding(status);
+      item.updateBid(bid); // Bid 참조 업데이트, bid가 null일 경우 참조 제거
+      itemsRepository.save(item);
+    }
+  }
+
 
   @Transactional
   public ExchangePostDTO createExchangePost(ExchangePostDTO exchangePostDTO) {
-    // 사용자와 아이템을 찾는 과정
+    // 기존 코드: 사용자 및 아이템 조회
     User user = usersRepository.findById(exchangePostDTO.getUserId())
             .orElseThrow(() -> new RuntimeException("User not found"));
     Item item = itemsRepository.findById(exchangePostDTO.getItemId())
@@ -36,6 +47,10 @@ public class ExchangePostsService {
     if (!item.getUser().equals(user)) {
       throw new RuntimeException("You can only create an exchange post with your own item");
     }
+
+    // 아이템 상태를 BIDING으로 변경
+    item.updateIsBiding(Item.IsBiding.BIDING);
+    itemsRepository.save(item);
 
     // ExchangePost 엔티티 생성
     ExchangePost exchangePost = ExchangePost.builder()
@@ -47,8 +62,6 @@ public class ExchangePostsService {
             .content(exchangePostDTO.getContent())
             .exchangePostStatus(exchangePostDTO.getExchangePostStatus())
             .build();
-
-    // 엔티티 저장
     ExchangePost savedExchangePost = exchangePostRepository.save(exchangePost);
 
     // DTO로 변환하여 반환
@@ -62,6 +75,7 @@ public class ExchangePostsService {
             savedExchangePost.getExchangePostStatus()
     );
   }
+
 
 
   @Transactional(readOnly = true)
@@ -154,9 +168,19 @@ public class ExchangePostsService {
       throw new RuntimeException("Only the post creator can delete the post");
     }
 
+    // 관련된 모든 입찰을 찾아서 처리
+    List<Bid> bids = bidRepository.findByExchangePost(existingExchangePost);
+    for (Bid bid : bids) {
+      updateItemsBidingStatus(bid.getItems(), Item.IsBiding.NOT_BIDING, null); // 아이템 상태 변경 및 bid 참조 제거
+      bid.updateStatus(Bid.BidStatus.DELETED);
+      bidRepository.save(bid);
+    }
+
     // 게시글 상태를 DELETED로 변경
     existingExchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.DELETED);
     exchangePostRepository.save(existingExchangePost);
   }
+
+
 
 }

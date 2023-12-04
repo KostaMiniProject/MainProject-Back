@@ -6,11 +6,9 @@ plugins {
 	//asciidoctor 파일을 컨버팅하고 Build 폴더에 복사하기 위한 플러그인
 }
 
-configurations {
-	asciidoctorExt
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+
+ext {
+	set('snippetsDir', file("build/generated-snippets"))
 }
 group = 'kosta'
 version = '0.0.1-SNAPSHOT'
@@ -19,6 +17,12 @@ java {
 	sourceCompatibility = '17'
 }
 
+configurations {
+	asciidoctorExt
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
 repositories {
 	mavenCentral()
 }
@@ -55,6 +59,7 @@ dependencies {
 
 	// RestDocs
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 	//adoc 파일에서 사용할 snippets 속성이 자동으로 build/generated-snippets를 가키리도록 해줌
 
 }
@@ -66,40 +71,27 @@ ext {
 
 
 tasks.named('test') {
-	outputs.dir snippetsDir
 	useJUnitPlatform()
 }
 
 asciidoctor {
-	inputs.dir snippetsDir
-	configurations 'asciidoctorExt'
 	dependsOn test
-
-	sources {
-		include("**/index.adoc")
-	}
-	baseDirFollowsSourceFile()
+	configurations 'asciidoctorExt'
 }
 
-asciidoctor.doFirst {
-	delete file('src/main/resources/templates/docs')
-}
-
-task copyDocument(type: Copy) {
+tasks.register('copyApiDocument', Copy) {
 	dependsOn asciidoctor
-	from file("build/docs/asciidoc")
+	doFirst {
+		delete file("src/main/resources/static/docs")
+	}
+	from asciidoctor.outputDir
 	into file("src/main/resources/static/docs")
 }
+
 build {
-	dependsOn copyDocument
+	dependsOn copyApiDocument
 }
 
-bootJar {
-	dependsOn asciidoctor
-	from ("${asciidoctor.outputDir}/html5") {
-		into 'static/docs'
-	}
-}
 //RestDocs 종료
 task copyPrivate(type: Copy) {
 	copy {

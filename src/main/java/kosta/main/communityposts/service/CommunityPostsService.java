@@ -6,6 +6,7 @@ import kosta.main.communityposts.repository.CommunityPostsRepository;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.likes.dto.LikeDto;
 import kosta.main.likes.entity.Like;
+import kosta.main.likes.repository.LikesRepository;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,16 +14,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CommunityPostsService {
     private final CommunityPostsRepository communityPostsRepository;
     private final UsersRepository usersRepository;
-
-
+    private final LikesRepository likesRepository;
     private final ImageService imageService;
     /* RuntimeException 추상 메소드 */
 
@@ -71,33 +73,52 @@ public class CommunityPostsService {
             throw new RuntimeException("작성자와 수정하는 사용자가 일치하지 않습니다.");
         }
 
-        List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
+        List<String> imagePaths = new ArrayList<>(files.stream().map(imageService::resizeToBasicSizeAndUpload).toList());
+        // 변경 불가능한 리스트를 반환하는 toList() 메소드
+        // toList()로 생성한 리스트를 new ArrayList<>를 이용해 새로운 ArrayList로 변환
+        // ArrayList는 필요에 따라 요소를 추가하거나 삭제하는 등의 작업을 할 수 있다.
         communityPostUpdateDto.updateImagePaths(imagePaths);
-        return CommunityPostResponseDto.of(communityPostsRepository.save(communityPost.updateCommunityPost(communityPostUpdateDto)));
+        communityPost.updateCommunityPost(communityPostUpdateDto);
+        CommunityPost save = communityPostsRepository.save(communityPost);
+        return CommunityPostResponseDto.of(save);
     }
 
     /* 커뮤니티 게시글 삭제 */
-    public void deletePost(Integer communityPostId) {
+    public void deletePost(Integer communityPostId, Integer userId) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
+        User user = findUserByUserId(userId);
+        if (!communityPost.getUser().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("작성자와 삭제하는 사용자가 일치하지 않습니다.");
+        }
+
         communityPost.updateCommunityPostStatus(CommunityPost.CommunityPostStatus.DELETED);
+        communityPostsRepository.save(communityPost);
     }
-    
-    /* 커뮤니티 좋아요 */
-    public LikeDto likePost(Integer communityPostId, Integer userId) {
+
+    /* 커뮤니티 좋아요 토글 */
+    public LikeDto toggleLikePost(Integer communityPostId, Integer userId) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
         User user = findUserByUserId(userId);
-        Like like = new Like();
-        like.setCommunityPost(communityPost);
-        like.setUser(user);
-        communityPost.getLikePostList().add(like);
-        return LikeDto.of(like);
-    }
-    
-    /* 커뮤니티 좋아요 취소 */
-    public void disLikePost(Integer communityPostId, Integer userId) {
-        CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
-        User user = findUserByUserId(userId);
-        List<Like> likes = communityPost.getLikePostList();
-        likes.removeIf(like -> like.getUser().equals(user));
+        Like targetLike = null;
+        for (Like like : communityPost.getLikePostList()) {
+            if (like.getUser().getUserId().equals(user.getUserId())) {
+                targetLike = like;
+                break;
+            }
+        }
+
+        if(targetLike != null) {
+            communityPost.getLikePostList().remove(targetLike);
+            targetLike.setCommunityPost(null);
+            likesRepository.delete(targetLike);
+            return null;
+        } else {
+            Like like = new Like();
+            like.setCommunityPost(communityPost);
+            like.setUser(user);
+            communityPost.getLikePostList().add(like);
+            communityPostsRepository.save(communityPost);
+            return LikeDto.of(like);
+        }
     }
 }

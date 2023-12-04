@@ -1,7 +1,9 @@
 == 물물교환
 
 === 물물교환 게시글 목록 조회
+
 operation::exchange-posts-controller-test/get-all-exchange-posts[snippets='http-request,http-response,response-fields']
 
 === 물물교환 게시글 생성
+
 operation::exchange-posts-controller-test/create-exchange-post[snippets='request-headers,http-request,http-response,response-fields']

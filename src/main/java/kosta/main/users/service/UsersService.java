@@ -12,6 +12,7 @@ import kosta.main.users.dto.*;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,8 @@ public class UsersService {
     private final BlockedUsersRepository blockedUsersRepository;
     private final ImageService imageService;
     private final PasswordEncoder passwordEncoder;
+    @Value("${profile}")
+    private String basicProfileImage;
 
     @Transactional(readOnly = true)
     public UsersResponseDto findMyProfile(User user) {
@@ -39,7 +42,7 @@ public class UsersService {
     public UserCreateResponseDto createUser(UserCreateDto userCreateDto) {
         String encryptedPassword  = passwordEncoder.encode(userCreateDto.getPassword());
         userCreateDto.updatePassword(encryptedPassword);
-        User user = User.createUser(userCreateDto);
+        User user = User.createUser(userCreateDto,basicProfileImage);
 
 
         return UserCreateResponseDto.of(usersRepository.save(user));

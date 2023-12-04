@@ -1,6 +1,7 @@
 package kosta.main.users.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kosta.main.ControllerTest;
 import kosta.main.global.annotation.WithMockCustomUser;
 import kosta.main.items.entity.Item;
 import kosta.main.users.UserStubData;
@@ -53,18 +54,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@ExtendWith({SpringExtension.class})
 @WebMvcTest(UsersController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-@Import(kosta.main.RestDocsConfiguration.class)
-class UsersControllerTest {
+class UsersControllerTest extends ControllerTest {
 
     public static final String BASIC_URL = "/api/users";
     public static final String SIGNUP_URL = "/api/signup";
     public static final int ONE_ACTION = 1;
 
-    @Autowired
-    private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -75,14 +74,8 @@ class UsersControllerTest {
     private UserStubData userStubData;
 
     @BeforeEach
-    public void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentationContextProvider) {
+    public void setup() {
         userStubData = new UserStubData();
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentationContextProvider))
-                .alwaysDo(print())														// 이건 왜하는지 모르겠음.
-                .alwaysDo(restDocs)														// 재정의한 핸들러를 적용함. 적용하면 일반 document에도 적용됨. 일반 document로 선언되면 그부분도 같이 생성됨에 유의해야 함.
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))					// 한글깨짐 방지 처리
-                .build();
     }
 
     @Test
@@ -116,7 +109,8 @@ class UsersControllerTest {
                                 fieldWithPath("profileImage").type(JsonFieldType.STRING).description("유저의 프로필 이미지"),
                                 fieldWithPath("userStatus").type(JsonFieldType.STRING).description("유저의 상태(ACTIVATE, BANNED ,DELETED)")
                                 )
-                ));
+                ))
+                .andReturn();
     }
 
     @Test

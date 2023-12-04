@@ -5,6 +5,9 @@ import kosta.main.exchangeposts.service.ExchangePostsService;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +22,11 @@ public class ExchangePostsController {
 
   @PostMapping
   public ResponseEntity<?> createExchangePost(@LoginUser User user, @RequestBody ExchangePostDTO exchangePostDTO) {
-    return ResponseEntity.ok(exchangePostsService.createExchangePost(user ,exchangePostDTO));
+    return new ResponseEntity(exchangePostsService.createExchangePost(user ,exchangePostDTO), HttpStatus.CREATED);
   }
   @GetMapping//필요한 데이터만 클라이언트 측으로 전송하도록 변경(23.11.27)
-  public ResponseEntity<?> getAllExchangePosts() {
-    return new ResponseEntity(exchangePostsService.findAllExchangePosts(), HttpStatus.OK);
+  public ResponseEntity<?> getAllExchangePosts(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    return new ResponseEntity(exchangePostsService.findAllExchangePosts(pageable), HttpStatus.OK);
   }
 
   @GetMapping("/{exchangePostId}")
@@ -38,7 +41,7 @@ public class ExchangePostsController {
   @DeleteMapping("/{exchangePostId}")
   public ResponseEntity<?> deleteExchangePost(@PathVariable("exchangePostId") Integer exchangePostId, @LoginUser  User user) {
     exchangePostsService.deleteExchangePost(exchangePostId, user);
-    return ResponseEntity.ok().build();
+    return new ResponseEntity(HttpStatus.NO_CONTENT);
   }
 
 

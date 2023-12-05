@@ -4,6 +4,10 @@ package kosta.main.communityposts.controller;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
+import kosta.main.global.dto.PageInfo;
+import kosta.main.global.dto.PageResponseDto;
+import kosta.main.users.entity.LoginUser;
+import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,7 +36,7 @@ public class CommunityPostsController {
         Page<CommunityPostListDto> posts = communityPostsService.findPosts(pageable);
         List<CommunityPostListDto> list = posts.stream().toList();
 
-        return new ResponseEntity<>(new PageResponseDto(list,PageInfo.of(posts)),HttpStatus.OK);
+        return new ResponseEntity<>(new PageResponseDto(list, PageInfo.of(posts)),HttpStatus.OK);
     }
 
     /* 커뮤니티 게시글 상세 조회 */

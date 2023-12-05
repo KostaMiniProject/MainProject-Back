@@ -1,11 +1,12 @@
 package kosta.main.chatrooms.service;
 
-import kosta.main.chatrooms.CreateChatRoomDTO;
+import kosta.main.chatrooms.dto.CreateChatRoomDTO;
 import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.chatrooms.repository.ChatRoomsRepository;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +45,7 @@ public class ChatRoomService {
     // 사용자가 속한 채팅방 목록 조회 로직
     // ...
 
-    return chatRoomsRepository.findBySender_IdOrReceiver_Id(userId, userId);
+    return chatRoomsRepository.findBySenderUserIdOrReceiverUserId(userId, userId);
   }
 
   // 채팅방 입장 알림

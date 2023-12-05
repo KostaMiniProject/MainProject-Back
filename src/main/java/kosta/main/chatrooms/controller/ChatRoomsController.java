@@ -1,6 +1,6 @@
 package kosta.main.chatrooms.controller;
 
-import kosta.main.chatrooms.CreateChatRoomDTO;
+import kosta.main.chatrooms.dto.CreateChatRoomDTO;
 import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.chatrooms.service.ChatRoomService;
 import kosta.main.users.entity.LoginUser;

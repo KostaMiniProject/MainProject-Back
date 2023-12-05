@@ -1,4 +1,4 @@
-package kosta.main.chatrooms;
+package kosta.main.chatrooms.dto;
 
 
 import lombok.AllArgsConstructor;

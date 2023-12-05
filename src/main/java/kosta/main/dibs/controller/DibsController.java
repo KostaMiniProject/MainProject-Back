@@ -1,9 +1,7 @@
 package kosta.main.dibs.controller;
 
-import kosta.main.dibs.dto.DibResponseDto;
 import kosta.main.dibs.dto.DibbedExchangePostDTO;
 import kosta.main.dibs.service.DibsService;
-import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;

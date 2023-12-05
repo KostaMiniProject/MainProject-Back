@@ -6,6 +6,7 @@ import kosta.main.bids.service.BidService;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,9 +46,9 @@ public class BidController {
 
     // 입찰을 삭제하는 기능
     @DeleteMapping("/bids/{bidId}") // 23.11.30 동작확인
-    public ResponseEntity<Void> deleteBid(@PathVariable("bidId") Integer bidId, @LoginUser User user) {
+    public ResponseEntity<?> deleteBid(@PathVariable("bidId") Integer bidId, @LoginUser User user) {
         bidService.deleteBid(bidId, user);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     // 거래를 완료하는 기능

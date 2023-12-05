@@ -10,6 +10,8 @@ import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,28 +72,30 @@ public class ExchangePostsService {
 
 
 
+  // 전체 게시글 불러오기 (23.12.04 : 최신순으로 제공, 페이지 네이션으로 10개씩 제공)
   @Transactional(readOnly = true)
-  public List<ExchangePostListDTO> findAllExchangePosts() {
-    return exchangePostRepository.findAll().stream().map(post -> {
-              // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
-              String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
+  public Page<ExchangePostListDTO> findAllExchangePosts(Pageable pageable) {
+    return exchangePostRepository.findAll(pageable)
+        .map(post -> {
+          // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
+          String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
 
-              // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
-              Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
+          // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
+          Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
 
-              return ExchangePostListDTO.builder()
-                      .exchangePostId(post.getExchangePostId())
-                      .title(post.getTitle())
-                      .preferItem(post.getPreferItems())
-                      .address(post.getAddress())
-                      .exchangePostStatus(post.getExchangePostStatus().toString())
-                      .createdAt(post.getCreatedAt())
-                      .imgUrl(imgUrl)
-                      .bidCount(bidCount)
-                      .build();
-            })
-            .collect(Collectors.toList());
+          return ExchangePostListDTO.builder()
+              .exchangePostId(post.getExchangePostId())
+              .title(post.getTitle())
+              .preferItem(post.getPreferItems())
+              .address(post.getAddress())
+              .exchangePostStatus(post.getExchangePostStatus().toString())
+              .createdAt(post.getCreatedAt())
+              .imgUrl(imgUrl)
+              .bidCount(bidCount)
+              .build();
+        });
   }
+
 
 
   @Transactional(readOnly = true)
@@ -211,8 +215,5 @@ public class ExchangePostsService {
     // 게시글을 Soft Delete로 처리
     exchangePostRepository.delete(existingExchangePost);
   }
-
-
-
 
 }

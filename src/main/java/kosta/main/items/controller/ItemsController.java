@@ -1,6 +1,7 @@
 package kosta.main.items.controller;
 
 import kosta.main.items.dto.ItemUpdateDto;
+import kosta.main.items.dto.ItemUpdateResponseDto;
 import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.service.ItemsService;
@@ -26,13 +27,14 @@ public class ItemsController {
   public ResponseEntity<?> addItem(@LoginUser User user, @RequestPart("itemSaveDto") ItemSaveDto itemSaveDto,
                                 @RequestPart(value = "file") List<MultipartFile> files) {
      itemsService.addItem(user,itemSaveDto, files);
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   //  물건 목록 조회
+  // 23.12.04 해당하는 유저의 Item만 가져오도록 수정
   @GetMapping
-  public ResponseEntity<?> getItems() {
-    List<Item> allItems = itemsService.getItems();
+  public ResponseEntity<?> getItems(@LoginUser User user) {
+    List<Item> allItems = itemsService.getItems(user.getUserId());
     return new ResponseEntity<>(allItems,HttpStatus.OK);
   }
 
@@ -47,16 +49,18 @@ public class ItemsController {
   @PutMapping("/{itemId}")
   public ResponseEntity<?> updateItem(@PathVariable int itemId,
                          @RequestPart("itemUpdateDto") ItemUpdateDto itemUpdateDto,
-                         @RequestPart(value = "file") List<MultipartFile> files) {
-    Item item = itemsService.updateItem(itemId, itemUpdateDto, files);
-    return new ResponseEntity<>(item, HttpStatus.OK);
+                         @RequestPart(value = "file") List<MultipartFile> files,
+                                      @LoginUser User user) {
+    return new ResponseEntity<>(itemsService.updateItem(itemId, itemUpdateDto, files,user), HttpStatus.OK);
   }
 
 
   //  물건 삭제
+  // 23.12.04 : 응답 데이터에 Status 추가
   @DeleteMapping("/{itemId}")
-  public void deleteItem(@PathVariable Integer itemId) {
-    itemsService.deleteItem(itemId);
+  public ResponseEntity<?> deleteItem(@PathVariable Integer itemId, @LoginUser User user) {
+    itemsService.deleteItem(itemId, user.getUserId());
+    return new ResponseEntity(HttpStatus.NO_CONTENT);
   }
 
   //  물건 검색

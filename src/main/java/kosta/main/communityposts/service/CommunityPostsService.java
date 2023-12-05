@@ -83,9 +83,8 @@ public class CommunityPostsService {
     }
 
     /* 커뮤니티 게시글 삭제 */
-    public void deletePost(Integer communityPostId, Integer userId) {
+    public void deletePost(Integer communityPostId, User user) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
-        User user = findUserByUserId(userId);
         if (!communityPost.getUser().getUserId().equals(user.getUserId())) {
             throw new RuntimeException("작성자와 삭제하는 사용자가 일치하지 않습니다.");
         }

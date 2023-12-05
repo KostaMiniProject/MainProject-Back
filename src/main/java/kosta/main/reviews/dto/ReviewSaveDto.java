@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 public class ReviewSaveDto extends Auditable {
-    private User reviewer; // 평가를 하는 사람(입찰자)
+    private Integer reviewedUserId; // 평가를 하는 사람(입찰자)
     private Integer rating;
     private String review;
 

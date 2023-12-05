@@ -61,11 +61,15 @@ include::{snippets}/users-controller-test/withdrawal/http-response.adoc[]
 
 operation::exchange-posts-controller-test/get-all-exchange-posts[snippets='http-request,http-response,response-fields']
 
+
 === 물물교환 게시글 생성
 
 operation::exchange-posts-controller-test/create-exchange-post[snippets='request-headers,http-request,http-response,response-fields']
 
-== 물건
+=== 물물교환 게시글 자료 수정
+
+operation::exchange-posts-controller-test/update-exchange-post[snippets='request-headers,http-request,http-response']
+
 
 === 물건 수정
 

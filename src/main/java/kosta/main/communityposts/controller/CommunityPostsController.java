@@ -7,6 +7,10 @@ import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.likes.dto.LikeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +22,15 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/community-posts")
+@RequestMapping("/api/community-posts")
 public class CommunityPostsController {
     private final CommunityPostsService communityPostsService;
 
     /* 커뮤니티 목록 조회 */
     /* 테스트 성공 확인 */
     @GetMapping
-    public List<CommunityPostListDto> findPosts() {
-        return communityPostsService.findPosts();
+    public Page<CommunityPostListDto> findPosts(@PageableDefault(page = 0, size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable) {
+        return communityPostsService.findPosts(pageable);
     }
 
     /* 커뮤니티 게시글 상세 조회 */
@@ -56,23 +60,17 @@ public class CommunityPostsController {
 
     /* 커뮤니티 게시글 삭제 */
     @DeleteMapping("/{communityPostId}")
-    public ResponseEntity<Void> deletePost(@PathVariable("communityPostId") Integer communityPostId) {
-        communityPostsService.deletePost(communityPostId);
+    public ResponseEntity<?> deletePost(@PathVariable("communityPostId") Integer communityPostId,
+                                           @RequestParam("userId") Integer userId) {
+        communityPostsService.deletePost(communityPostId, userId);
         return ResponseEntity.ok().build();
     }
 
     /* 커뮤니티 좋아요 */
-    @PostMapping("/likes/{communityPostId}")
-    public ResponseEntity<LikeDto> likePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
-        LikeDto likeDto = communityPostsService.likePost(communityPostId, userId);
+    @PutMapping("/likes/{communityPostId}")
+    public ResponseEntity<?> toggleLikePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
+        LikeDto likeDto = communityPostsService.toggleLikePost(communityPostId, userId);
         return ResponseEntity.ok(likeDto);
-    }
-
-    /* 커뮤니티 좋아요 취소 */
-    @DeleteMapping("/likes/{communityPostId}")
-    public ResponseEntity<Void> disLikePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
-        communityPostsService.disLikePost(communityPostId, userId);
-        return ResponseEntity.ok().build();
     }
 }
 

@@ -54,3 +54,32 @@ include::{snippets}/users-controller-test/withdrawal/http-request.adoc[]
 
 include::{snippets}/users-controller-test/withdrawal/http-response.adoc[]
 
+
+== 물물교환
+
+=== 물물교환 게시글 목록 조회
+
+operation::exchange-posts-controller-test/get-all-exchange-posts[snippets='http-request,http-response,response-fields']
+
+=== 물물교환 게시글 생성
+
+operation::exchange-posts-controller-test/create-exchange-post[snippets='request-headers,http-request,http-response,response-fields']
+
+== 커뮤니티 게시글
+
+
+=== 커뮤니티 게시글 목록 조회
+
+operation::community-posts-controller-test/find-posts[snippets='http-request,http-response,response-fields']
+
+=== 커뮤니티 게시글 상세조회
+
+operation::community-posts-controller-test/find-post[snippets='http-request,http-response,response-fields']
+
+=== 커뮤니티 게시글 수정
+
+operation::community-posts-controller-test/update-post[snippets='request-parts,request-part-communityPostUpdateDto-fields,http-response,response-fields']
+
+=== 커뮤니티 게시글 삭제
+
+operation::community-posts-controller-test/delete-post[snippets='http-request,http-response']

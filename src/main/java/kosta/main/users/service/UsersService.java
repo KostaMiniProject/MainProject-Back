@@ -62,7 +62,7 @@ public class UsersService {
         usersRepository.delete(user);
     }
 
-    private User findUserByUserId(Integer userId) {
+    public User findUserByUserId(Integer userId) {
         return usersRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
     }
 

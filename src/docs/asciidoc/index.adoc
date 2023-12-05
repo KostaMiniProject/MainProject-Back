@@ -89,3 +89,8 @@ operation::community-posts-controller-test/update-post[snippets='request-parts,r
 === 커뮤니티 게시글 삭제
 
 operation::community-posts-controller-test/delete-post[snippets='http-request,http-response']
+
+
+== 리뷰 생성
+
+operation::reviews-controller-test/add-reviews[snippets='request-headers,http-request,request-fields,http-response']

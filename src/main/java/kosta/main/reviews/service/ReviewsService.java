@@ -1,11 +1,9 @@
 package kosta.main.reviews.service;
 
-import kosta.main.items.entity.Item;
-import kosta.main.reviews.dto.ReviewSaveDto;
+import kosta.main.reviews.dto.ReviewSaveDTO;
 import kosta.main.reviews.entity.Review;
 import kosta.main.reviews.repository.ReviewsRepository;
 import kosta.main.users.entity.User;
-import kosta.main.users.repository.UsersRepository;
 import kosta.main.users.service.UsersService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,7 @@ public class ReviewsService {
   private final ReviewsRepository reviewsRepository;
   private final UsersService usersService;
 
-  public void addReviews(ReviewSaveDto reviewSaveDto, User reviewer) {
+  public void addReviews(ReviewSaveDTO reviewSaveDto, User reviewer) {
 //    # sudo 코드
 //    1. Controller에서 ReviewSaveDto값을 받아온다.
 //      (reviewer, rate, review)

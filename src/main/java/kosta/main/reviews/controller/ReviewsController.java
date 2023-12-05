@@ -19,7 +19,7 @@ public class ReviewsController {
   private final ReviewsService reviewsService;
 
   // 리뷰 작성하기
-  @PostMapping("/users/reviews")
+  @PostMapping("/api/reviews")
   public void addReviews(@RequestBody ReviewSaveDto reviewSaveDto, @LoginUser User reviewer) {
 //    TODO @LoginUser 값을 받아와서 new User() 수정
     log.info("{}=================================",reviewer);

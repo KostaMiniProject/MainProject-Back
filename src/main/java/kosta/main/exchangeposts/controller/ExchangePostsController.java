@@ -1,10 +1,14 @@
 package kosta.main.exchangeposts.controller;
 
+import kosta.main.communityposts.dto.CommunityPostListDto;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.service.ExchangePostsService;
+import kosta.main.global.dto.PageInfo;
+import kosta.main.global.dto.PageResponseDto;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -26,7 +30,9 @@ public class ExchangePostsController {
   }
   @GetMapping//필요한 데이터만 클라이언트 측으로 전송하도록 변경(23.11.27)
   public ResponseEntity<?> getAllExchangePosts(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-    return new ResponseEntity(exchangePostsService.findAllExchangePosts(pageable), HttpStatus.OK);
+    Page<ExchangePostListDTO> allExchangePosts = exchangePostsService.findAllExchangePosts(pageable);
+    List<ExchangePostListDTO> list = allExchangePosts.stream().toList();
+    return new ResponseEntity(new PageResponseDto<>(list,PageInfo.of(allExchangePosts)), HttpStatus.OK);
   }
 
   @GetMapping("/{exchangePostId}")

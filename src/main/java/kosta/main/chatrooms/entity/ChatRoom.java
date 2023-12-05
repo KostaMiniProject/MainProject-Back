@@ -37,4 +37,11 @@ public class ChatRoom extends Auditable {
     @OneToMany(mappedBy = "chatRoom")
     private ArrayList<Chat> chats = new ArrayList<>();
 
+    public void updateSender(User sender) {
+        this.sender = sender;
+    }
+    public void updateReceiver(User receiver) {
+        this.receiver = receiver;
+    }
+
 }

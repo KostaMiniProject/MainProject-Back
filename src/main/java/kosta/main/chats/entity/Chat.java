@@ -1,9 +1,11 @@
 package kosta.main.chats.entity;
 import jakarta.persistence.*;
+import kosta.main.bids.entity.Bid;
 import kosta.main.global.audit.Auditable;
 import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class Chat extends Auditable {
 
     @Id
@@ -34,5 +37,12 @@ public class Chat extends Auditable {
 
     @Column
     private boolean isRead = false; // 채팅 메시지 읽음 상태
+
+    public void updateMessage(String message) {
+        this.message = message;
+    }
+    public void updateUser(User user) {
+        this.user = user;
+    }
 
 }

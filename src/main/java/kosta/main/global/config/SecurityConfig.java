@@ -70,8 +70,8 @@ public class SecurityConfig {
                         new AntPathRequestMatcher("/h2-console/**"),
                         new AntPathRequestMatcher("/error"),
                         // 일단 모든 API 허용되게 설정
-                        new AntPathRequestMatcher("/**")
-
+                        new AntPathRequestMatcher("/**"),
+                        new AntPathRequestMatcher("/ws/**") // WebSocket 경로 예외 추가
                 ).permitAll()
                         .anyRequest().permitAll()
 //                .anyRequest().authenticated()

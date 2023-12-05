@@ -94,29 +94,33 @@ public class CommunityPostsService {
     }
 
     /* 커뮤니티 좋아요 토글 */
-    public LikeDto toggleLikePost(Integer communityPostId, Integer userId) {
+    public Object toggleLikePost(Integer communityPostId, Integer userId) { // 좋아요 누르면 likeDto/ 취소를 누르면 CommunityPostLikeCancelledDto를 반환해야 하므로 Object타입
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
         User user = findUserByUserId(userId);
-        Like targetLike = null;
-        for (Like like : communityPost.getLikePostList()) {
-            if (like.getUser().getUserId().equals(user.getUserId())) {
-                targetLike = like;
-                break;
+
+        // 좋아요를 누른 유저가 로그인한 유저와 일치한지의 로직
+        Like targetLike = null; // 좋아요 여부를 결정해주는 변수 targetLike 생성
+        for (Like like : communityPost.getLikePostList()) { // 엔티티에서 가져온 좋아요 목록을 like에 담아 향상된 for문으로 순회
+            if (like.getUser().getUserId().equals(user.getUserId())) { // 좋아요를 한 유저의 유저아이디와 현재 로그인한 유저아이디가 일치한지
+                targetLike = like; // 일치하면 like를 targetLike에 담음
+                break; // 일치하여 targetLike에 좋아요 목록이 담겼으니 for문에서 빠져나온다.
             }
         }
 
-        if(targetLike != null) {
-            communityPost.getLikePostList().remove(targetLike);
-            targetLike.setCommunityPost(null);
-            likesRepository.delete(targetLike);
-            return null;
-        } else {
-            Like like = new Like();
-            like.setCommunityPost(communityPost);
-            like.setUser(user);
-            communityPost.getLikePostList().add(like);
-            communityPostsRepository.save(communityPost);
-            return LikeDto.of(like);
+        // 좋아요와 좋아요 취소 로직
+        if(targetLike != null) { // 좋아요 목록에 좋아요가 있다면
+            communityPost.getLikePostList().remove(targetLike); // 엔티티의 좋아요 목록에서 targetLike를 제거하여 like와 communityPost의 연관관계를 제거한다.
+            targetLike.setCommunityPost(null); // targetLike가 CommunityPost를 더 이상 참조하지 않도록 설정하여 CommunityPost 엔티티에서 Like 엔티티를 제거한다.
+            likesRepository.delete(targetLike); // targetLike 객체를 데이터베이스에서 제거한다.
+            // 이전 두 단계에서 '좋아요'의 상태를 업데이트했으므로, 이제 안전하게 DB에서 '좋아요'를 제거하는 로직이다.
+            return new CommunityPostLikeCancelledDto("좋아요 취소 했습니다."); //retrurn null이였으나 NullPointerException 발생 가능성이 있어서 수정하여 취소 메세지 반환
+        } else { // 좋아요 목록에 좋아요가 없다면
+            Like like = new Like(); // 새로운 like 객체를 생성한다.
+            like.setCommunityPost(communityPost); // 좋아요를 누른 게시글을 like 객체에 연결
+            like.setUser(user); // 좋아요를 누른 사용자를 like 객체에 연결
+            communityPost.getLikePostList().add(like); // 좋아요 목록에 like 객체 추가
+            communityPostsRepository.save(communityPost); // 좋아요가 추가된 게시글을 DB에 저장
+            return LikeDto.of(like); // like 객체를 LikeDto로 변환하여 반환
         }
     }
 }

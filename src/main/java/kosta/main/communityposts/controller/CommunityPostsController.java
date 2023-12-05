@@ -4,11 +4,6 @@ package kosta.main.communityposts.controller;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
-import kosta.main.global.dto.PageInfo;
-import kosta.main.global.dto.PageResponseDto;
-import kosta.main.likes.dto.LikeDto;
-import kosta.main.users.entity.LoginUser;
-import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -76,8 +71,8 @@ public class CommunityPostsController {
     /* 커뮤니티 좋아요 */
     @PutMapping("/likes/{communityPostId}")
     public ResponseEntity<?> toggleLikePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
-        LikeDto likeDto = communityPostsService.toggleLikePost(communityPostId, userId);
-        return ResponseEntity.ok(likeDto);
+        Object response = communityPostsService.toggleLikePost(communityPostId, userId);
+        return ResponseEntity.ok(response);
     }
 }
 

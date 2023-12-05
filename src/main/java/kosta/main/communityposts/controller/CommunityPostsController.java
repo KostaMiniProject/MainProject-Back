@@ -4,7 +4,11 @@ package kosta.main.communityposts.controller;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
+import kosta.main.global.dto.PageInfo;
+import kosta.main.global.dto.PageResponseDto;
 import kosta.main.likes.dto.LikeDto;
+import kosta.main.users.entity.LoginUser;
+import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,8 +33,11 @@ public class CommunityPostsController {
     /* 커뮤니티 목록 조회 */
     /* 테스트 성공 확인 */
     @GetMapping
-    public Page<CommunityPostListDto> findPosts(@PageableDefault(page = 0, size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable) {
-        return communityPostsService.findPosts(pageable);
+    public ResponseEntity<?> findPosts(@PageableDefault(page = 0, size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<CommunityPostListDto> posts = communityPostsService.findPosts(pageable);
+        List<CommunityPostListDto> list = posts.stream().toList();
+
+        return new ResponseEntity<>(new PageResponseDto(list,PageInfo.of(posts)),HttpStatus.OK);
     }
 
     /* 커뮤니티 게시글 상세 조회 */
@@ -61,8 +68,8 @@ public class CommunityPostsController {
     /* 커뮤니티 게시글 삭제 */
     @DeleteMapping("/{communityPostId}")
     public ResponseEntity<?> deletePost(@PathVariable("communityPostId") Integer communityPostId,
-                                           @RequestParam("userId") Integer userId) {
-        communityPostsService.deletePost(communityPostId, userId);
+                                        @LoginUser User user) {
+        communityPostsService.deletePost(communityPostId, user);
         return ResponseEntity.ok().build();
     }
 

@@ -6,6 +6,7 @@ import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.global.annotation.WithMockCustomUser;
+import kosta.main.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpMethod;
 
@@ -41,6 +44,8 @@ import java.util.List;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
@@ -72,7 +77,7 @@ class CommunityPostsControllerTest {
     private CommunityPostsService communityPostsService;
 
     private CommunityPostStubData communityPostStubData;
-    private final String BASE_URL = "/community-posts";
+    private final String BASE_URL = "/api/community-posts";
 
     @BeforeEach
     public void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentationContextProvider) {
@@ -89,9 +94,10 @@ class CommunityPostsControllerTest {
     @DisplayName("게시글 목록 조회 성공 테스트")
     void findPosts() throws Exception {
         // given
-        List<CommunityPostListDto> communityPostListDto = communityPostStubData.getCommunityPostListDto();
+        Page<CommunityPostListDto> communityPostListDtoPage = communityPostStubData.getCommunityPostListDtoPage();
+
         // when
-        when(communityPostsService.findPosts()).thenReturn(communityPostListDto);
+        when(communityPostsService.findPosts(Mockito.any(Pageable.class))).thenReturn(communityPostListDtoPage);
 
         // then
         mockMvc.perform(get(BASE_URL))
@@ -99,12 +105,18 @@ class CommunityPostsControllerTest {
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         responseFields(
-                                fieldWithPath("[].communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
-                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
-                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
-                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
-                                fieldWithPath("[].communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
-                                fieldWithPath("[].likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수")
+                                fieldWithPath("data").type(JsonFieldType.ARRAY).description("커뮤니티게시글을 감싸고 있는 배열"),
+                                fieldWithPath("data.[].communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
+                                fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
+                                fieldWithPath("data.[].content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
+                                fieldWithPath("data.[].views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
+                                fieldWithPath("data.[].communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
+                                fieldWithPath("data.[].likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수"),
+                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description("페이지 정보를 감싸고 있는 배열"),
+                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description("현재 페이지 숫자"),
+                                fieldWithPath("pageInfo.size").type(JsonFieldType.NUMBER).description("페이지 크기(한 번에 몇개의 정보를 가져올지"),
+                                fieldWithPath("pageInfo.totalElements").type(JsonFieldType.NUMBER).description("전체 데이터 개수"),
+                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 숫자")
                                 )
                 ));
     }
@@ -246,16 +258,21 @@ class CommunityPostsControllerTest {
         //given
 
         //when
-        doNothing().when(communityPostsService).deletePost(Mockito.anyInt());
+        doNothing().when(communityPostsService).deletePost(Mockito.anyInt(),Mockito.any(User.class));
         ResultActions actions = mockMvc.perform(
                 delete(BASE_URL+"/{communityPostId}", COMMUNITYPOST_ID)
+                        .header("Authorization", "Bearer yourAccessToken")
                         .with(csrf()));
-        verify(communityPostsService, times(ONE_ACTION)).deletePost(Mockito.anyInt());
+        verify(communityPostsService, times(ONE_ACTION)).deletePost(Mockito.anyInt(),Mockito.any(User.class));
         //then
         actions
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(restDocs.document());
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        )
+                ));
     }
 
 }

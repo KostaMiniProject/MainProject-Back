@@ -65,6 +65,12 @@ operation::exchange-posts-controller-test/get-all-exchange-posts[snippets='http-
 
 operation::exchange-posts-controller-test/create-exchange-post[snippets='request-headers,http-request,http-response,response-fields']
 
+== 물건
+
+=== 물건 수정
+
+operation::items-controller-test/update-item[snippets='request-headers,request-parts,request-part-itemUpdateDto-fields,http-response,response-fields']
+
 == 커뮤니티 게시글
 
 

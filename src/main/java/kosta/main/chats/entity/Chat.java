@@ -25,7 +25,6 @@ public class Chat extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String message;
 
-
     @Column
     private String chatImage; // 채팅에 첨부되는 이미지
 
@@ -36,7 +35,4 @@ public class Chat extends Auditable {
     @Column
     private boolean isRead = false; // 채팅 메시지 읽음 상태
 
-
-    // 게터와 세터
-    // 생략...
 }

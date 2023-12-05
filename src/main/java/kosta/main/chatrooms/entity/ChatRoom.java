@@ -37,6 +37,4 @@ public class ChatRoom extends Auditable {
     @OneToMany(mappedBy = "chatRoom")
     private ArrayList<Chat> chats = new ArrayList<>();
 
-    // 게터와 세터
-    // 생략...
 }

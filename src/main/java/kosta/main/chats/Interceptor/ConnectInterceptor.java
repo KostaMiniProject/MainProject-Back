@@ -17,7 +17,7 @@ public class ConnectInterceptor implements ChannelInterceptor {
     switch ((accessor.getCommand())) {
       case CONNECT:
 
-        // 유저가 Websocket으로 connect()를 한 뒤 호출됨
+        // 유저가 Websocket으로 connect()를 한 뒤 호출된다.
         LOGGER.info("세션 들어옴 => {}", sessionId);
         break;
 

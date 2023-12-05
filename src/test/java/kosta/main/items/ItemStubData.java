@@ -6,6 +6,7 @@ import kosta.main.exchangeposts.ExchangePostStubData;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.dto.ItemUpdateDto;
+import kosta.main.items.dto.ItemUpdateResponseDto;
 import kosta.main.items.entity.Item;
 import kosta.main.users.UserStubData;
 import org.springframework.mock.web.MockMultipartFile;
@@ -91,6 +92,16 @@ public class ItemStubData {
                 .title(TITLE)
                 .description(DESCRIPTION)
                 .imageUrl(images)
+                .build();
+    }
+
+    public ItemUpdateResponseDto getItemUpdateResponseDto(){
+        Item item = getNoBidItem();
+        return ItemUpdateResponseDto.builder()
+                .title(item.getTitle())
+                .description(item.getDescription())
+                .itemStatus(item.getItemStatus())
+                .images(item.getImages())
                 .build();
     }
 

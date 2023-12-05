@@ -6,6 +6,9 @@ import kosta.main.likes.entity.Like;
 import kosta.main.users.UserStubData;
 import kosta.main.users.entity.User;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,6 +77,15 @@ public class CommunityPostStubData {
         communityPostLists.add(CommunityPostListDto.from(communityPost));
         communityPostLists.add(CommunityPostListDto.from(anotherCommunityPost));
         return communityPostLists;
+    }
+
+    public Page<CommunityPostListDto> getCommunityPostListDtoPage(){
+        List<CommunityPostListDto> communityPostListDto = getCommunityPostListDto();
+        // 요청으로 들어온 page와 한 page당 원하는 데이터의 갯수
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), communityPostListDto.size());
+        return new PageImpl<>(communityPostListDto.subList(start, end), pageRequest, communityPostListDto.size());
     }
 
     public CommunityPostResponseDto getCommunityPostResponseDto(){

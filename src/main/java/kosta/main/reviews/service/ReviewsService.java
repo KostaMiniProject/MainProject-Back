@@ -28,6 +28,7 @@ public class ReviewsService {
 
     Review newReview = Review.builder()
         .reviewer(reviewer)
+
         .reviewedUser(reviewSaveDto.getReviewer())
         .rating(reviewSaveDto.getRating())
         .review(reviewSaveDto.getReview())

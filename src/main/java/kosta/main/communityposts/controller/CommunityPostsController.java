@@ -7,6 +7,10 @@ import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.likes.dto.LikeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +29,8 @@ public class CommunityPostsController {
     /* 커뮤니티 목록 조회 */
     /* 테스트 성공 확인 */
     @GetMapping
-    public List<CommunityPostListDto> findPosts() {
-        return communityPostsService.findPosts();
+    public Page<CommunityPostListDto> findPosts(@PageableDefault(page = 0, size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable) {
+        return communityPostsService.findPosts(pageable);
     }
 
     /* 커뮤니티 게시글 상세 조회 */

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "chat_rooms")
@@ -35,13 +36,16 @@ public class ChatRoom extends Auditable {
     private User receiver;
 
     @OneToMany(mappedBy = "chatRoom")
-    private ArrayList<Chat> chats = new ArrayList<>();
+    private List<Chat> chats = new ArrayList<>();
 
     public void updateSender(User sender) {
         this.sender = sender;
     }
     public void updateReceiver(User receiver) {
         this.receiver = receiver;
+    }
+    public void updateExchangePost(ExchangePost exchangePost) {
+        this.exchangePost = exchangePost;
     }
 
 }

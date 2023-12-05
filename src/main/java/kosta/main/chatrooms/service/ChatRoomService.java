@@ -3,6 +3,9 @@ package kosta.main.chatrooms.service;
 import kosta.main.chatrooms.dto.CreateChatRoomDTO;
 import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.chatrooms.repository.ChatRoomsRepository;
+import kosta.main.exchangeposts.dto.ExchangePostResponseDTO;
+import kosta.main.exchangeposts.entity.ExchangePost;
+import kosta.main.exchangeposts.repository.ExchangePostsRepository;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
@@ -18,14 +21,17 @@ import java.util.List;
 public class ChatRoomService {
   private final ChatRoomsRepository chatRoomsRepository;
   private final UsersRepository usersRepository;
+  private final ExchangePostsRepository exchangePostsRepository;
 
 
   // 채팅방 생성
   public ChatRoom createChatRoom(CreateChatRoomDTO createChatRoomDTO, User sender) {
     User receiver = usersRepository.findById(createChatRoomDTO.getReceiverId())
         .orElseThrow(() -> new RuntimeException("Receiver not found"));
-
+    ExchangePost exchangePost = exchangePostsRepository.findById(createChatRoomDTO.getExchangePostId())
+        .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
     ChatRoom chatRoom = new ChatRoom();
+    chatRoom.updateExchangePost(exchangePost);
     chatRoom.updateSender(sender);
     chatRoom.updateReceiver(receiver);
 

@@ -20,11 +20,9 @@ public class ChatsService {
   private final UsersRepository usersRepository;
 
   public ChatMessageDTO saveChat(ChatMessageDTO chatMessage, User user) {
-    // 채팅 메시지 저장 로직 (DB에 저장)
     Chat chat = new Chat();
     chat.updateMessage(chatMessage.getContent());
     chat.updateUser(user);
-    // 다른 필드 설정 (user, chatRoom 등)
     chatsRepository.save(chat);
     return chatMessage;
   }

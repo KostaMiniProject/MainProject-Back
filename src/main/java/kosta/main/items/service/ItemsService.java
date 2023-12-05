@@ -1,6 +1,9 @@
 package kosta.main.items.service;
 
+import kosta.main.communityposts.dto.CommunityPostListDto;
+import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.global.s3upload.service.ImageService;
+import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.dto.ItemUpdateResponseDto;
 import kosta.main.items.entity.Item;
@@ -8,6 +11,8 @@ import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +27,7 @@ public class ItemsService {
 
   private final ItemsRepository itemsRepository;
   private final ImageService imageService;
+
 
 
 
@@ -59,15 +65,22 @@ public class ItemsService {
     // Item 저장
     itemsRepository.save(newItem);
   }
-
-
-  //  물건 목록 조회
-  public List<Item> getItems(Integer userId) {
-    return itemsRepository.findByUser_UserId(userId);
+  // 목록 전체 조회
+  @Transactional(readOnly = true)
+  public Page<ItemPageDTO> findAllItems(Pageable pageable) {
+    Page<Item> items = itemsRepository.findAll(pageable);
+    return items.map(ItemPageDTO::from);
   }
 
+  //  물건 목록 조회
+  @Transactional(readOnly = true)
+  public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
+    return itemsRepository.findByUser_UserId(userId, pageable);
+  }
+  
 
   //  물건 상세 조회
+  @Transactional(readOnly = true)
   public Item getFindById(int itemId) {
     return itemsRepository.findById(itemId).orElseThrow(() -> new RuntimeException("아이디를 찾지 못했습니다."));
   }

@@ -1,5 +1,6 @@
 package kosta.main.items.controller;
 
+import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDto;
@@ -7,6 +8,10 @@ import kosta.main.items.service.ItemsService;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +37,9 @@ public class ItemsController {
   //  물건 목록 조회
   // 23.12.04 해당하는 유저의 Item만 가져오도록 수정
   @GetMapping
-  public ResponseEntity<?> getItems(@LoginUser User user) {
-    List<Item> allItems = itemsService.getItems(user.getUserId());
+  public ResponseEntity<?> getItems(@LoginUser User user,
+                                    @PageableDefault(page = 0, size = 10, sort = "itemId", direction = Sort.Direction.DESC) Pageable pageable) {
+    Page<ItemPageDTO> allItems = itemsService.getItems(user.getUserId(), pageable);
     return new ResponseEntity<>(allItems,HttpStatus.OK);
   }
 

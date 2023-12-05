@@ -70,6 +70,11 @@ operation::exchange-posts-controller-test/create-exchange-post[snippets='request
 
 operation::exchange-posts-controller-test/update-exchange-post[snippets='request-headers,http-request,http-response']
 
+=== 물물교환 게시글 삭제
+
+operation::exchange-posts-controller-test/delete-exchange-post[snippets='http-request,http-response']
+
+== 물건
 
 === 물건 수정
 

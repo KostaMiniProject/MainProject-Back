@@ -1,7 +1,6 @@
 package kosta.main.items.controller;
 
 import kosta.main.items.dto.ItemUpdateDto;
-import kosta.main.items.dto.ItemUpdateResponseDto;
 import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.service.ItemsService;

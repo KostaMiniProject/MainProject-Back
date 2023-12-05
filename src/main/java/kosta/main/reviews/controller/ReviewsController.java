@@ -2,7 +2,6 @@ package kosta.main.reviews.controller;
 
 
 import kosta.main.reviews.dto.ReviewSaveDto;
-import kosta.main.reviews.entity.Review;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;

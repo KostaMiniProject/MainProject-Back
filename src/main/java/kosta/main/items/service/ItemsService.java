@@ -1,7 +1,5 @@
 package kosta.main.items.service;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import kosta.main.categories.repository.CategoriesRepository;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.dto.ItemUpdateResponseDto;
@@ -9,7 +7,6 @@ import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
-import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +21,6 @@ import java.util.List;
 public class ItemsService {
 
   private final ItemsRepository itemsRepository;
-  private final UsersRepository usersRepository;
-  private final CategoriesRepository categoriesRepository;
   private final ImageService imageService;
 
 

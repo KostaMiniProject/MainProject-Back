@@ -1,8 +1,8 @@
 package kosta.main.items.service;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import kosta.main.categories.repository.CategoriesRepository;
 import kosta.main.global.s3upload.service.ImageService;
+import kosta.main.items.dto.ItemDetailResponseDTO;
 import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.dto.ItemUpdateResponseDto;
 import kosta.main.items.entity.Item;
@@ -50,6 +50,7 @@ public class ItemsService {
     // 사용자와 카테고리 정보 조회
 //    Category category = categoriesRepository.findById(itemSaveDto.getCategoryId())
 //            .orElseThrow(() -> new RuntimeException("Category not found"));
+
     List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
 
     // Item 객체 생성
@@ -73,7 +74,12 @@ public class ItemsService {
 
 
   //  물건 상세 조회
-  public Item getFindById(int itemId) {
+  public ItemDetailResponseDTO getFindById(int itemId) {
+    Item itemByItemId = findItemByItemId(itemId);
+    return ItemDetailResponseDTO.of(itemByItemId);
+  }
+
+  private Item findItemByItemId(int itemId) {
     return itemsRepository.findById(itemId).orElseThrow(() -> new RuntimeException("아이디를 찾지 못했습니다."));
   }
 

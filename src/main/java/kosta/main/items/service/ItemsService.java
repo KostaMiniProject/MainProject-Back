@@ -114,7 +114,7 @@ public class ItemsService {
     List<String> imagePath = new ArrayList<>(files.stream().map(imageService::resizeToBasicSizeAndUpload).toList());
     itemUpdateDto.updateImagePath(imagePath);
 //    # Builder 사용
-    Item item = getFindById(itemId);
+    Item item = findItemByItemId(itemId);
 
     // 사용자 ID 일치 여부 확인 (23.12.04)
     if (!item.getUser().getUserId().equals(user.getUserId())) {
@@ -152,7 +152,7 @@ public class ItemsService {
 
   //  물건 삭제
   public void deleteItem(Integer itemId, Integer userId) {
-    Item item = getFindById(itemId);
+    Item item = findItemByItemId(itemId);
     // 사용자 ID 일치 여부 확인
     if (!item.getUser().getUserId().equals(userId)) {
       // 여기서 사용자 ID가 일치하지 않으면 오류를 발생

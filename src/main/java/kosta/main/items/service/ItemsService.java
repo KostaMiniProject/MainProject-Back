@@ -1,8 +1,10 @@
 package kosta.main.items.service;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import kosta.main.categories.repository.CategoriesRepository;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemUpdateDto;
+import kosta.main.items.dto.ItemUpdateResponseDto;
 import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.repository.ItemsRepository;
@@ -65,8 +67,8 @@ public class ItemsService {
 
 
   //  물건 목록 조회
-  public List<Item> getItems() {
-    return itemsRepository.findAll();
+  public List<Item> getItems(Integer userId) {
+    return itemsRepository.findByUser_UserId(userId);
   }
 
 
@@ -77,7 +79,7 @@ public class ItemsService {
 
 
   //  물건 수정
-  public Item updateItem(Integer itemId, ItemUpdateDto itemUpdateDto, List<MultipartFile> files) {
+  public ItemUpdateResponseDto updateItem(Integer itemId, ItemUpdateDto itemUpdateDto, List<MultipartFile> files, User user) {
 //    # sudo 코드
 //    1. Controller에서 itemId와 ItemUpdateDto값을 받아온다.
 //    2. 수정할 내용을 담는 용도인 Item 객체(updateItem)를 생성한다.
@@ -107,6 +109,15 @@ public class ItemsService {
     itemUpdateDto.updateImagePath(imagePath);
 //    # Builder 사용
     Item item = getFindById(itemId);
+
+    // 사용자 ID 일치 여부 확인 (23.12.04)
+    if (!item.getUser().getUserId().equals(user.getUserId())) {
+      throw new RuntimeException("You are not authorized to update this item.");
+    }
+    //사용중인 Item은 변경 불가(23.12.04)
+    if (item.getIsBiding() == Item.IsBiding.BIDING) {
+      throw new RuntimeException("Item is currently biding and cannot be updated.");
+    }
     
 //    itemUpdateDto 요소 null값 체크
     String title = itemUpdateDto.getTitle() != null ? itemUpdateDto.getTitle() : item.getTitle();
@@ -114,22 +125,34 @@ public class ItemsService {
     List<String> imageUrl = itemUpdateDto.getImages() != null ? itemUpdateDto.getImages() : item.getImages();
     Item.ItemStatus itemStatus = itemUpdateDto.getItemStatus() != null ? itemUpdateDto.getItemStatus() : item.getItemStatus();
 
-    Item updateItem2 = Item.builder()
+    Item.builder()
         .itemId(itemId)
         .title(title)
         .description(description)
         .images(imageUrl)
         .itemStatus(itemStatus)
+        .user(user) // User 객체 대신 userId 사용
         .build();
 
-    return itemsRepository.save(updateItem2);
+
+    return ItemUpdateResponseDto.builder()
+        .title(title)
+        .description(description)
+        .images(imageUrl)
+        .itemStatus(itemStatus)
+        .build();
   }
 
 
   //  물건 삭제
-  public void deleteItem(Integer itemId) {
+  public void deleteItem(Integer itemId, Integer userId) {
     Item item = getFindById(itemId);
-    item.itemStatusUpdate(Item.ItemStatus.DELETED);
+    // 사용자 ID 일치 여부 확인
+    if (!item.getUser().getUserId().equals(userId)) {
+      // 여기서 사용자 ID가 일치하지 않으면 오류를 발생
+      throw new RuntimeException("Item 소유주만 물건을 삭제할 수 있습니다.");
+    }
+    itemsRepository.delete(item);
   }
 
   //  물건 검색

@@ -28,12 +28,10 @@ public class Item extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer itemId;
 
-    @JsonIgnore//DTO생기면 지울것
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @JsonIgnore//DTO생기면 지울것
     @ManyToOne
     @JoinColumn(name = "bid_id")
     private Bid bid;

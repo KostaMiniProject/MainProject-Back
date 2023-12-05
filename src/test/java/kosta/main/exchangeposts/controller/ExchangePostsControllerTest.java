@@ -24,10 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -47,6 +50,8 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -70,6 +75,12 @@ class ExchangePostsControllerTest {
     public static final String DESC_CREATED_AT = "물물교환 게시글 작성일(현재 널로 처리되어있는데 수정하겠습니다)";
     public static final String DESC_IMAGE_URL = "교환 게시글에 등록된 item의 대표이미지 URL";
     public static final String DESC_BID_COUNT = "해당 교환 게시글에 등록된 입찰의 갯수를 세서 Integer 값으로 반환";
+    public static final String DATA = "전달하는 데이터 배열";
+    public static final String DESC_PAGEINFO = "페이지 정보를 감싸고 있는 배열";
+    public static final String DESC_PAGESIZE = "현재 페이지 숫자";
+    public static final String DESC_SIZE = "페이지 크기(한 번에 몇개의 정보를 가져올지";
+    public static final String DESC_TOTAL_ELEMENTS = "전체 데이터 개수";
+    public static final String DESC_TOTALPAGES = "전체 페이지 숫자";
 
     @Autowired
     private MockMvc mockMvc;
@@ -120,7 +131,7 @@ class ExchangePostsControllerTest {
 
         //then
         result.andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰")
@@ -145,24 +156,34 @@ class ExchangePostsControllerTest {
     @DisplayName("교환 게시글 목록 조회 성공 테스트")
     void getAllExchangePosts() throws Exception {
         // given
-        List<ExchangePostListDTO> exchangePostListDTO = exchangePostStubData.getExchangePostListDTO();
+        Page<ExchangePostListDTO> exchangePostListDTOPage = exchangePostStubData.getExchangePostListDTOPage();
         // when
-        when(exchangePostsService.findAllExchangePosts()).thenReturn(exchangePostListDTO);
+        when(exchangePostsService.findAllExchangePosts(Mockito.any(Pageable.class))).thenReturn(exchangePostListDTOPage);
 
         // then
-        this.mockMvc.perform(get(BASIC_URL))
+        this.mockMvc.perform(get(BASIC_URL)
+                        .header("Authorization", "Bearer yourAccessToken"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰").optional()
+                        ),
                         responseFields(
-                                fieldWithPath("[].exchangePostId").type(JsonFieldType.NUMBER).description(DESC_EXCHANGE_POST_ID),
-                                fieldWithPath("[].title").type(JsonFieldType.STRING).description(DESC_EXCHANGE_POST_TITLE),
-                                fieldWithPath("[].preferItem").type(JsonFieldType.STRING).description(DESC_PREFER_ITEM),
-                                fieldWithPath("[].address").type(JsonFieldType.STRING).description(DESC_ADDRESS),
-                                fieldWithPath("[].exchangePostStatus").type(JsonFieldType.STRING).description(DESC_EXCHANGE_POST_STATUS),
-                                fieldWithPath("[].createdAt").type(JsonFieldType.NULL).description(DESC_CREATED_AT),
-                                fieldWithPath("[].imgUrl").type(JsonFieldType.STRING).description(DESC_IMAGE_URL),
-                                fieldWithPath("[].bidCount").type(JsonFieldType.NUMBER).description(DESC_BID_COUNT)
+                                fieldWithPath("data").type(JsonFieldType.ARRAY).description(DATA),
+                                fieldWithPath("data.[].exchangePostId").type(JsonFieldType.NUMBER).description(DESC_EXCHANGE_POST_ID),
+                                fieldWithPath("data.[].title").type(JsonFieldType.STRING).description(DESC_EXCHANGE_POST_TITLE),
+                                fieldWithPath("data.[].preferItem").type(JsonFieldType.STRING).description(DESC_PREFER_ITEM),
+                                fieldWithPath("data.[].address").type(JsonFieldType.STRING).description(DESC_ADDRESS),
+                                fieldWithPath("data.[].exchangePostStatus").type(JsonFieldType.STRING).description(DESC_EXCHANGE_POST_STATUS),
+                                fieldWithPath("data.[].createdAt").type(JsonFieldType.NULL).description(DESC_CREATED_AT),
+                                fieldWithPath("data.[].imgUrl").type(JsonFieldType.STRING).description(DESC_IMAGE_URL),
+                                fieldWithPath("data.[].bidCount").type(JsonFieldType.NUMBER).description(DESC_BID_COUNT),
+                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description(DESC_PAGEINFO),
+                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description(DESC_PAGESIZE),
+                                fieldWithPath("pageInfo.size").type(JsonFieldType.NUMBER).description(DESC_SIZE),
+                                fieldWithPath("pageInfo.totalElements").type(JsonFieldType.NUMBER).description(DESC_TOTAL_ELEMENTS),
+                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description(DESC_TOTALPAGES)
                         )
                 ));
     }
@@ -186,16 +207,33 @@ class ExchangePostsControllerTest {
         //when
 
         ResultActions result = mockMvc.perform(
-                put(BASIC_URL+"/{exchangePostId}",EXCHANGE_POST_ID)
+                RestDocumentationRequestBuilders.put(BASIC_URL+"/{exchangePostId}",EXCHANGE_POST_ID)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
+                        .header("Authorization", "Bearer yourAccessToken")
                         .with(csrf())
         );
 
         //then
         result.andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("exchangePostId").description("교환 게시글 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("물물교환 게시글 제목"),
+                                fieldWithPath("preferItems").type(JsonFieldType.STRING).description("물물교환 선호물품"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("거래 요청 주소지"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
+                                fieldWithPath("itemId").type(JsonFieldType.NUMBER).description("물건의 ID"),
+                                fieldWithPath("exchangePostStatus").type(JsonFieldType.STRING).description("해당 게시글의 상태").optional()
+                        )
+                ));
     }
 
     @Test
@@ -215,6 +253,6 @@ class ExchangePostsControllerTest {
         verify(exchangePostsService,times(ONE_ACTION)).deleteExchangePost(Mockito.anyInt(),Mockito.any(User.class));
 
         result.andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 }

@@ -27,7 +27,7 @@ public class ItemPageDTO {
         item.getTitle(),
         item.getDescription(),
         item.getItemStatus(),
-        item.getImages().toString()
+        item.getImages().get(0)
     );
   }
 }

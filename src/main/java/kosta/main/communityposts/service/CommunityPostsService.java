@@ -3,6 +3,7 @@ package kosta.main.communityposts.service;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
+import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.likes.dto.LikeDto;
 import kosta.main.likes.entity.Like;
@@ -19,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
+import static kosta.main.global.error.exception.ErrorCode.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -30,11 +33,11 @@ public class CommunityPostsService {
     /* RuntimeException 추상 메소드 */
 
     public CommunityPost findCommunityPostByCommunityPostId(Integer communityPostId) {
-        return communityPostsRepository.findById(communityPostId).orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+        return communityPostsRepository.findById(communityPostId).orElseThrow(() -> new BusinessException(COMMUNITY_POST_NOT_FOUND));
     }
 
     private User findUserByUserId(Integer userId) {
-        return usersRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        return usersRepository.findById(userId).orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
     }
 
     /* 커뮤니티 목록 조회 */
@@ -69,7 +72,7 @@ public class CommunityPostsService {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
 
         if (!communityPost.getUser().getUserId().equals(communityPostUpdateDto.getUserId())) {
-            throw new RuntimeException("작성자와 수정하는 사용자가 일치하지 않습니다.");
+            throw new BusinessException(NOT_COMMUNITY_POST_OWNER);
         }
 
         List<String> imagePaths = new ArrayList<>(files.stream().map(imageService::resizeToBasicSizeAndUpload).toList());
@@ -86,7 +89,7 @@ public class CommunityPostsService {
     public void deletePost(Integer communityPostId, User user) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
         if (!communityPost.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("작성자와 삭제하는 사용자가 일치하지 않습니다.");
+            throw new BusinessException(NOT_COMMUNITY_POST_OWNER);
         }
 
         communityPost.updateCommunityPostStatus(CommunityPost.CommunityPostStatus.DELETED);

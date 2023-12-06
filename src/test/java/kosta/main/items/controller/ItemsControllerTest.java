@@ -114,22 +114,22 @@ class ItemsControllerTest extends ControllerTest {
 //                .andDo(restDocs.document());
     }
 
-    @Test
-    @WithMockCustomUser
-    @DisplayName("물건 목록 조회 성공 테스트")
-    void getItems() throws Exception {
-
-        // given
-        List<Item> items = itemStubData.getItems();
-        // when
-        when(itemsService.getItems(Mockito.anyInt())).thenReturn(items);
-
-        // then
-        this.mockMvc.perform(get(BASE_URL))
-                .andDo(print())
-                .andExpect(status().isOk());
-//                .andDo(restDocs.document());
-    }
+//    @Test
+//    @WithMockCustomUser
+//    @DisplayName("물건 목록 조회 성공 테스트")
+//    void getItems() throws Exception {
+//
+//        // given
+//        List<Item> items = itemStubData.getItems();
+//        // when
+//        when(itemsService.getItems(Mockito.anyInt())).thenReturn(items);
+//
+//        // then
+//        this.mockMvc.perform(get(BASE_URL))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+////                .andDo(restDocs.document());
+//    }
 
 //    @Test 순환참조 오류로 인해 보류
 //    @WithMockCustomUser

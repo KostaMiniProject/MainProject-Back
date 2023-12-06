@@ -1,5 +1,9 @@
 package kosta.main.items.service;
 
+import kosta.main.communityposts.dto.CommunityPostListDto;
+import kosta.main.communityposts.entity.CommunityPost;
+import kosta.main.global.s3upload.service.ImageService;
+import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.categories.repository.CategoriesRepository;
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.error.exception.ErrorCode;
@@ -11,8 +15,9 @@ import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDto;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
-import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,13 +34,15 @@ import static kosta.main.global.error.exception.ErrorCode.NOT_ITEM_OWNER;
 public class ItemsService {
 
   private final ItemsRepository itemsRepository;
-  private final UsersRepository usersRepository;
-  private final CategoriesRepository categoriesRepository;
   private final ImageService imageService;
 
 
-
-  //  물건 생성
+  /**
+   * 물건 생성
+   * @param user
+   * @param itemSaveDto
+   * @param files
+   */
   public void addItem(User user, ItemSaveDto itemSaveDto, List<MultipartFile> files) {
 //    # sudo 코드
 //    1. Controller에서 ItemSaveDto값을 받아온다.
@@ -71,14 +78,23 @@ public class ItemsService {
     itemsRepository.save(newItem);
   }
 
-
-  //  물건 목록 조회
-  public List<Item> getItems(Integer userId) {
-    return itemsRepository.findByUser_UserId(userId);
+  /**
+   * 물건 목록 조회
+   * @param userId
+   * @param pageable
+   * @return
+   */
+  @Transactional(readOnly = true)
+  public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
+    return itemsRepository.findByUser_UserId(userId, pageable);
   }
 
 
-  //  물건 상세 조회
+  /**
+   * 물건 상세 조회
+   * @param itemId
+   * @return
+   */
   public ItemDetailResponseDTO getFindById(int itemId) {
     Item itemByItemId = findItemByItemId(itemId);
     return ItemDetailResponseDTO.of(itemByItemId);
@@ -89,7 +105,14 @@ public class ItemsService {
   }
 
 
-  //  물건 수정
+  /**
+   * 물건 수정
+   * @param itemId
+   * @param itemUpdateDto
+   * @param files
+   * @param user
+   * @return
+   */
   public ItemUpdateResponseDto updateItem(Integer itemId, ItemUpdateDto itemUpdateDto, List<MultipartFile> files, User user) {
 //    # sudo 코드
 //    1. Controller에서 itemId와 ItemUpdateDto값을 받아온다.
@@ -155,7 +178,11 @@ public class ItemsService {
   }
 
 
-  //  물건 삭제
+  /**
+   * 물건 삭제
+   * @param itemId
+   * @param userId
+   */
   public void deleteItem(Integer itemId, Integer userId) {
     Item item = findItemByItemId(itemId);
     // 사용자 ID 일치 여부 확인
@@ -166,6 +193,7 @@ public class ItemsService {
     itemsRepository.delete(item);
   }
 
+  
   //  물건 검색
   //  ex - /items/search?name=메롱!
 //  public Item searchItems() {

@@ -35,7 +35,9 @@ public class Chat extends Auditable {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+
     @Column
+    @Builder.Default
     private boolean isRead = false; // 채팅 메시지 읽음 상태
 
     public void updateMessage(String message) {

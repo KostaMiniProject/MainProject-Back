@@ -1,5 +1,6 @@
 package kosta.main.items.controller;
 
+import jakarta.validation.Valid;
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.dto.ItemDetailResponseDTO;
 import kosta.main.items.dto.ItemUpdateDTO;
@@ -8,6 +9,7 @@ import kosta.main.items.service.ItemsService;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api/items")
 @AllArgsConstructor
@@ -34,9 +36,10 @@ public class ItemsController {
    * @return
    */
   @PostMapping
-  public ResponseEntity<?> addItem(@LoginUser User user, @RequestPart("itemSaveDTO") ItemSaveDTO itemSaveDTO,
-                                @RequestPart(value = "file") List<MultipartFile> files) {
+  public ResponseEntity<?> addItem(@LoginUser User user, @Valid @RequestPart("itemSaveDTO") ItemSaveDTO itemSaveDTO,
+                                @Valid @RequestPart(value = "file") List<MultipartFile> files) {
      itemsService.addItem(user,itemSaveDTO, files);
+     log.info("###### 물건 생성 Response >> itemSaveDto={}, files={}",itemSaveDTO, files);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 

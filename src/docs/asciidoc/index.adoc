@@ -61,9 +61,18 @@ include::{snippets}/users-controller-test/withdrawal/http-response.adoc[]
 
 operation::exchange-posts-controller-test/get-all-exchange-posts[snippets='http-request,http-response,response-fields']
 
+
 === 물물교환 게시글 생성
 
 operation::exchange-posts-controller-test/create-exchange-post[snippets='request-headers,http-request,http-response,response-fields']
+
+=== 물물교환 게시글 자료 수정
+
+operation::exchange-posts-controller-test/update-exchange-post[snippets='request-headers,http-request,http-response']
+
+=== 물물교환 게시글 삭제
+
+operation::exchange-posts-controller-test/delete-exchange-post[snippets='http-request,http-response']
 
 == 물건
 
@@ -89,3 +98,8 @@ operation::community-posts-controller-test/update-post[snippets='request-parts,r
 === 커뮤니티 게시글 삭제
 
 operation::community-posts-controller-test/delete-post[snippets='http-request,http-response']
+
+
+== 리뷰 생성
+
+operation::reviews-controller-test/add-reviews[snippets='request-headers,http-request,request-fields,http-response']

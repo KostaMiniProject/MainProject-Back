@@ -94,8 +94,8 @@ public class SecurityConfig {
                 List.of("http://localhost:3000",
                         "http://localhost:8080",
                         "https://main-project-front.vercel.app",
-                        "www.itsop.shop",
-                "kosta-mini-project.vercel.app"));
+                        "https://www.itsop.shop",
+                "https://kosta-mini-project.vercel.app"));
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Set-Cookie", "*"));
         corsConfiguration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
         corsConfiguration.setAllowedMethods(List.of("POST", "GET", "PATCH", "DELETE", "OPTIONS","PUT"));

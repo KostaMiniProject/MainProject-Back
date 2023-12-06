@@ -84,7 +84,7 @@ public class ItemStubData {
         return getBid().getItems().get(0);
     }
 
-    public ItemSaveDTO getItemSaveDto(){
+    public ItemSaveDTO getItemSaveDTO(){
         ArrayList<String> images = new ArrayList<>();
         images.add("주소1");
         images.add("주소2");

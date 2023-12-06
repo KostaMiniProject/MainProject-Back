@@ -73,11 +73,11 @@ class ItemsControllerTest extends ControllerTest {
 
         //Given
         Item bidItem = itemStubData.getBidItem();
-        ItemSaveDTO itemSaveDto = itemStubData.getItemSaveDto();
+        ItemSaveDTO itemSaveDto = itemStubData.getItemSaveDTO();
         String content = objectMapper.writeValueAsString(itemSaveDto);
         MockMultipartFile file = itemStubData.getMockMultipartFile();
 
-        MockPart itemSaveDto1 = new MockPart("itemSaveDto", content.getBytes(StandardCharsets.UTF_8));
+        MockPart itemSaveDto1 = new MockPart("itemSaveDTO", content.getBytes(StandardCharsets.UTF_8));
         itemSaveDto1.getHeaders().setContentType(APPLICATION_JSON);
 
         //When
@@ -140,7 +140,7 @@ class ItemsControllerTest extends ControllerTest {
         String content = objectMapper.writeValueAsString(itemUpdateDto);
         MockMultipartFile file = itemStubData.getMockMultipartFile();
 
-        MockPart itemUpdateDto1 = new MockPart("itemUpdateDto", content.getBytes(StandardCharsets.UTF_8));
+        MockPart itemUpdateDto1 = new MockPart("itemUpdateDTO", content.getBytes(StandardCharsets.UTF_8));
         itemUpdateDto1.getHeaders().setContentType(APPLICATION_JSON);
         given(itemsService
                 .updateItem(Mockito.anyInt(),Mockito.any(ItemUpdateDTO.class), Mockito.anyList(),Mockito.any(User.class)))
@@ -168,10 +168,10 @@ class ItemsControllerTest extends ControllerTest {
                                 headerWithName("Authorization").description("액세스 토큰")
                         ),
                         requestParts(
-                                partWithName("itemUpdateDto").description("유저 업데이트 정보"),
+                                partWithName("itemUpdateDTO").description("유저 업데이트 정보"),
                                 partWithName("file").description("유저 프로필 사진")
                         ),
-                        requestPartFields("itemUpdateDto",
+                        requestPartFields("itemUpdateDTO",
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("물건 제목"),
                                 fieldWithPath("description").type(JsonFieldType.STRING).description("물건 설명"),
                                 fieldWithPath("itemStatus").type(JsonFieldType.STRING).description("물건 상태(PUBLIC, PRIVATE, DELETED)"),

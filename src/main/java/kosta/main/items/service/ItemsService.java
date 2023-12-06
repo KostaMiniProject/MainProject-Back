@@ -29,9 +29,12 @@ public class ItemsService {
   private final ImageService imageService;
 
 
-
-
-  //  물건 생성
+  /**
+   * 물건 생성
+   * @param user
+   * @param itemSaveDto
+   * @param files
+   */
   public void addItem(User user, ItemSaveDto itemSaveDto, List<MultipartFile> files) {
 //    # sudo 코드
 //    1. Controller에서 ItemSaveDto값을 받아온다.
@@ -65,28 +68,38 @@ public class ItemsService {
     // Item 저장
     itemsRepository.save(newItem);
   }
-  // 목록 전체 조회
-  @Transactional(readOnly = true)
-  public Page<ItemPageDTO> findAllItems(Pageable pageable) {
-    Page<Item> items = itemsRepository.findAll(pageable);
-    return items.map(ItemPageDTO::from);
-  }
 
-  //  물건 목록 조회
+  /**
+   * 물건 목록 조회
+   * @param userId
+   * @param pageable
+   * @return
+   */
   @Transactional(readOnly = true)
   public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
     return itemsRepository.findByUser_UserId(userId, pageable);
   }
-  
 
-  //  물건 상세 조회
+
+  /**
+   * 물건 상세 조회
+   * @param itemId
+   * @return
+   */
   @Transactional(readOnly = true)
   public Item getFindById(int itemId) {
     return itemsRepository.findById(itemId).orElseThrow(() -> new RuntimeException("아이디를 찾지 못했습니다."));
   }
 
 
-  //  물건 수정
+  /**
+   * 물건 수정
+   * @param itemId
+   * @param itemUpdateDto
+   * @param files
+   * @param user
+   * @return
+   */
   public ItemUpdateResponseDto updateItem(Integer itemId, ItemUpdateDto itemUpdateDto, List<MultipartFile> files, User user) {
 //    # sudo 코드
 //    1. Controller에서 itemId와 ItemUpdateDto값을 받아온다.
@@ -152,7 +165,11 @@ public class ItemsService {
   }
 
 
-  //  물건 삭제
+  /**
+   * 물건 삭제
+   * @param itemId
+   * @param userId
+   */
   public void deleteItem(Integer itemId, Integer userId) {
     Item item = getFindById(itemId);
     // 사용자 ID 일치 여부 확인

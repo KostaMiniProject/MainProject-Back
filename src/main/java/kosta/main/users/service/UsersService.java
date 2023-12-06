@@ -44,10 +44,11 @@ public class UsersService {
 
     @Transactional
     public UserCreateResponseDTO createUser(UserCreateDTO userCreateDTO) {
+        if(!Objects.equals(userCreateDTO.getPassword(), userCreateDTO.getCheckPassword()))
+            throw new BusinessException(INVALID_PASSWORD);
         String encryptedPassword  = passwordEncoder.encode(userCreateDTO.getPassword());
         userCreateDTO.updatePassword(encryptedPassword);
         User user = User.createUser(userCreateDTO,basicProfileImage);
-
 
         return UserCreateResponseDTO.of(usersRepository.save(user));
     }

@@ -1,14 +1,12 @@
 package kosta.main.chats.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
+@Setter
 public class ChatMessageDTO {
   private String content; // 메시지 내용
   private Integer chatRoomId; // 채팅방

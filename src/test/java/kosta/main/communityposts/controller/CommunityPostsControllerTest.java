@@ -3,7 +3,6 @@ package kosta.main.communityposts.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kosta.main.communityposts.CommunityPostStubData;
 import kosta.main.communityposts.dto.*;
-import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.global.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,17 +22,14 @@ import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.generate.RestDocumentationGenerator;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -89,7 +85,7 @@ class CommunityPostsControllerTest {
     @DisplayName("게시글 목록 조회 성공 테스트")
     void findPosts() throws Exception {
         // given
-        List<CommunityPostListDto> communityPostListDto = communityPostStubData.getCommunityPostListDto();
+        List<CommunityPostListDTO> communityPostListDto = communityPostStubData.getCommunityPostListDto();
         // when
         when(communityPostsService.findPosts()).thenReturn(communityPostListDto);
 
@@ -114,7 +110,7 @@ class CommunityPostsControllerTest {
     @DisplayName("게시글 상세 내용 조회 성공 테스트")
     void findPost() throws Exception {
         // given
-        CommunityPostDetailDto communityPostDetailDto = communityPostStubData.getCommunityPostDetailDto();
+        CommunityPostDetailDTO communityPostDetailDto = communityPostStubData.getCommunityPostDetailDto();
         // when
         when(communityPostsService.findPost(Mockito.anyInt())).thenReturn(communityPostDetailDto);
 
@@ -186,14 +182,14 @@ class CommunityPostsControllerTest {
     @WithMockCustomUser
     void updatePost() throws Exception {
         //Given
-        CommunityPostUpdateDto communityPostUpdateDto = communityPostStubData.getCommunityPostUpdateDto();
-        CommunityPostResponseDto communityPostResponseDto = communityPostStubData.getCommunityPostResponseDto();
+        CommunityPostUpdateDTO communityPostUpdateDto = communityPostStubData.getCommunityPostUpdateDto();
+        CommunityPostResponseDTO communityPostResponseDto = communityPostStubData.getCommunityPostResponseDto();
         String content = objectMapper.writeValueAsString(communityPostUpdateDto);
         MockMultipartFile file = communityPostStubData.getMockMultipartFile();
 
         MockPart communityPostUpdateDto1 = new MockPart("communityPostUpdateDto", content.getBytes(StandardCharsets.UTF_8));
         communityPostUpdateDto1.getHeaders().setContentType(APPLICATION_JSON);
-        given(communityPostsService.updatePost(Mockito.anyInt(),Mockito.any(CommunityPostUpdateDto.class), Mockito.anyList())).willReturn(communityPostResponseDto);
+        given(communityPostsService.updatePost(Mockito.anyInt(),Mockito.any(CommunityPostUpdateDTO.class), Mockito.anyList())).willReturn(communityPostResponseDto);
         //When
 
         //Then

@@ -1,8 +1,8 @@
 package kosta.main.comments.entity;
 
 import jakarta.persistence.*;
-import kosta.main.global.audit.Auditable;
 import kosta.main.communityposts.entity.CommunityPost;
+import kosta.main.global.audit.Auditable;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,6 +46,12 @@ public class Comment extends Auditable {
     public enum CommentStatus {
         PUBLIC, REPORTED, DELETED
     }
+
+    // 부모 댓글을 삭제해도 자식 댓글은 남아있음
+//    @OneToMany(mappedBy = "parent")
+//    private List<Comment> childList = new ArrayList<>();
+
     // 게터와 세터
     // 생략...
+
 }

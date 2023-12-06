@@ -8,10 +8,8 @@ import kosta.main.users.entity.User;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,34 +65,34 @@ public class CommunityPostStubData {
         return communityPost;
     }
 
-    public List<CommunityPostListDto> getCommunityPostListDto(){
+    public List<CommunityPostListDTO> getCommunityPostListDto(){
         CommunityPost communityPost = getCommunityPost();
         CommunityPost anotherCommunityPost = getAnotherCommunityPost();
-        List<CommunityPostListDto> communityPostLists = new ArrayList<>();
-        communityPostLists.add(CommunityPostListDto.from(communityPost));
-        communityPostLists.add(CommunityPostListDto.from(anotherCommunityPost));
+        List<CommunityPostListDTO> communityPostLists = new ArrayList<>();
+        communityPostLists.add(CommunityPostListDTO.from(communityPost));
+        communityPostLists.add(CommunityPostListDTO.from(anotherCommunityPost));
         return communityPostLists;
     }
 
-    public CommunityPostResponseDto getCommunityPostResponseDto(){
+    public CommunityPostResponseDTO getCommunityPostResponseDto(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostResponseDto.of(communityPost);
+        return CommunityPostResponseDTO.of(communityPost);
     }
 
-    public CommunityPostUpdateDto getCommunityPostUpdateDto(){
+    public CommunityPostUpdateDTO getCommunityPostUpdateDto(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostUpdateDto.builder()
+        return CommunityPostUpdateDTO.builder()
                 .title(communityPost.getTitle())
                 .userId(communityPost.getUser().getUserId())
                 .content(communityPost.getContent())
                 .build();
     }
-    public CommunityPostDetailDto getCommunityPostDetailDto(){
+    public CommunityPostDetailDTO getCommunityPostDetailDto(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostDetailDto.from(communityPost);
+        return CommunityPostDetailDTO.from(communityPost);
     }
-    public CommunityPostCreateDto getCommunityPostCreateDto(){
-        return CommunityPostCreateDto.builder()
+    public CommunityPostCreateDTO getCommunityPostCreateDto(){
+        return CommunityPostCreateDTO.builder()
                 .userId(USER_ID)
                 .title(TITLE)
                 .content(CONTENT)

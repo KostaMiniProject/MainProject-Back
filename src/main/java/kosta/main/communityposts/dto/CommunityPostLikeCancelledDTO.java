@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CommunityPostLikeCancelledDto {
+public class CommunityPostLikeCancelledDTO {
     private String message;
 }

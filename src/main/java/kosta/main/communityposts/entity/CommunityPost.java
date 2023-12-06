@@ -2,7 +2,8 @@ package kosta.main.communityposts.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import kosta.main.communityposts.dto.CommunityPostUpdateDto;
+import kosta.main.comments.entity.Comment;
+import kosta.main.communityposts.dto.CommunityPostUpdateDTO;
 import kosta.main.global.audit.Auditable;
 import kosta.main.likes.entity.Like;
 import kosta.main.users.entity.User;
@@ -23,7 +24,7 @@ import java.util.List;
 @Getter
 @Builder
 @SQLDelete(sql = "UPDATE community_posts SET community_post_status = 3 WHERE community_post_id = ?")
-@Where(clause = "community_post_status = 'PUBLIC, PRIVATE'") //문제있을수도있음
+@Where(clause = "community_post_status <> 3")
 public class CommunityPost extends Auditable {
 
     @Id
@@ -53,7 +54,8 @@ public class CommunityPost extends Auditable {
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL)
     private List<Like> likePostList = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentList = new ArrayList<>();
   
     @ElementCollection
     @CollectionTable(name = "community_post_images", joinColumns = @JoinColumn(name = "community_post_id"))
@@ -61,8 +63,7 @@ public class CommunityPost extends Auditable {
     @Builder.Default
     private List<String> images = new ArrayList<>(); // 커뮤니티 게시글의 이미지 리스트
 
-  
-    public CommunityPost updateCommunityPost(CommunityPostUpdateDto communityPostUpdateDto) {
+    public CommunityPost updateCommunityPost(CommunityPostUpdateDTO communityPostUpdateDto) {
         this.content = communityPostUpdateDto.getContent() != null && !communityPostUpdateDto.getTitle().equals(this.content) ? communityPostUpdateDto.getContent() : this.content;
         this.title = communityPostUpdateDto.getTitle() != null && !communityPostUpdateDto.getTitle().equals(this.title) ? communityPostUpdateDto.getTitle() : this.title;
         this.images = communityPostUpdateDto.getImagePaths() != null && !communityPostUpdateDto.getImagePaths().equals(this.images) ? communityPostUpdateDto.getImagePaths() : this.images;

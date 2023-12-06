@@ -8,7 +8,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 
 public class ConnectInterceptor implements ChannelInterceptor {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConnectInterceptor.class );
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConnectInterceptor.class);
   @Override
   public void postSend(Message message, MessageChannel channel, boolean sent) {
     StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);

@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatMessageDTO {
   private String content; // 메시지 내용
-  private Integer chatRoomId; // 채팅방 ID
-  public void updateContent(String content) {
-    this.content = content;
-  }
+  private Integer chatRoomId; // 채팅방
+  private Integer senderId; // 전송 유저 ID
 }

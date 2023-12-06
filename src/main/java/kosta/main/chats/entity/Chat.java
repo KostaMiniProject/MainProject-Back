@@ -44,5 +44,8 @@ public class Chat extends Auditable {
     public void updateUser(User user) {
         this.user = user;
     }
+    public void updateChatRoom(ChatRoom chatRoom){
+        this.chatRoom = chatRoom;
+    }
 
 }

@@ -20,8 +20,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   public void registerStompEndpoints(StompEndpointRegistry registry) {
     // SockJS 지원을 활성화하여 WebSocket이 사용 불가능한 경우에도 사용할 수 있도록 설정
     registry.addEndpoint("/ws")
-        .setAllowedOrigins("*"); // 모든 Origin 허용 (보안상의 이유로 제한적으로 설정하는 것이 좋음)
-        //.withSockJS();
+        .setAllowedOriginPatterns("http://*", "https://*")
+        .withSockJS();
   }
 
   @Override

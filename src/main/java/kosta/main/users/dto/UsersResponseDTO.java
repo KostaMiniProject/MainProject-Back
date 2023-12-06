@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UsersResponseDto {
+public class UsersResponseDTO {
 
     private String email;
 
@@ -20,8 +20,8 @@ public class UsersResponseDto {
 
     private User.UserStatus userStatus;
 
-    public static UsersResponseDto of(User user){
-        return new UsersResponseDto(
+    public static UsersResponseDTO of(User user){
+        return new UsersResponseDTO(
                 user.getEmail(),
                 user.getName(),
                 user.getAddress(),

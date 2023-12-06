@@ -3,7 +3,7 @@ package kosta.main.reports.dto;
 import lombok.Getter;
 
 @Getter
-public class CreateReportDto {
+public class CreateReportDTO {
 
 
 

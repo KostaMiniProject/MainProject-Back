@@ -149,6 +149,7 @@ public class ItemsService {
       throw new BusinessException(ALREADY_BIDDING_ITEM);
     }
     
+
 //    itemUpdateDTO 요소 null값 체크
     String title = itemUpdateDTO.getTitle() != null ? itemUpdateDTO.getTitle() : item.getTitle();
     String description = itemUpdateDTO.getDescription() != null ? itemUpdateDTO.getDescription() : item.getDescription();

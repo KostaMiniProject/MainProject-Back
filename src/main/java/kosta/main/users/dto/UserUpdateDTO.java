@@ -3,11 +3,10 @@ package kosta.main.users.dto;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @AllArgsConstructor
-public class UserUpdateDto {
+public class UserUpdateDTO {
     private String password;
 
     private String checkPassword;

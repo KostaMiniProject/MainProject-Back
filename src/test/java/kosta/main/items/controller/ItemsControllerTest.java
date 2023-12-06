@@ -1,19 +1,13 @@
 package kosta.main.items.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kosta.main.ControllerTest;
-import kosta.main.communityposts.CommunityPostStubData;
-import kosta.main.communityposts.controller.CommunityPostsController;
-import kosta.main.communityposts.dto.*;
-import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.global.annotation.WithMockCustomUser;
 import kosta.main.items.ItemStubData;
-import kosta.main.items.dto.ItemSaveDto;
-import kosta.main.items.dto.ItemUpdateDto;
+import kosta.main.items.dto.ItemSaveDTO;
+import kosta.main.items.dto.ItemUpdateDTO;
 import kosta.main.items.entity.Item;
 import kosta.main.items.service.ItemsService;
-import kosta.main.users.UserStubData;
 import kosta.main.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,36 +17,25 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.generate.RestDocumentationGenerator;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -90,15 +73,15 @@ class ItemsControllerTest extends ControllerTest {
 
         //Given
         Item bidItem = itemStubData.getBidItem();
-        ItemSaveDto itemSaveDto = itemStubData.getItemSaveDto();
+        ItemSaveDTO itemSaveDto = itemStubData.getItemSaveDTO();
         String content = objectMapper.writeValueAsString(itemSaveDto);
         MockMultipartFile file = itemStubData.getMockMultipartFile();
 
-        MockPart itemSaveDto1 = new MockPart("itemSaveDto", content.getBytes(StandardCharsets.UTF_8));
+        MockPart itemSaveDto1 = new MockPart("itemSaveDTO", content.getBytes(StandardCharsets.UTF_8));
         itemSaveDto1.getHeaders().setContentType(APPLICATION_JSON);
 
         //When
-        doNothing().when(itemsService).addItem(Mockito.any(User.class),Mockito.any(ItemSaveDto.class), Mockito.anyList());
+        doNothing().when(itemsService).addItem(Mockito.any(User.class),Mockito.any(ItemSaveDTO.class), Mockito.anyList());
 
         //Then
         ResultActions perform = mockMvc.perform(
@@ -152,15 +135,15 @@ class ItemsControllerTest extends ControllerTest {
     @DisplayName("물건 수정 성공 테스트")
     void updateItem() throws Exception {
         //Given
-        ItemUpdateDto itemUpdateDto = itemStubData.getItemUpdateDto();
+        ItemUpdateDTO itemUpdateDto = itemStubData.getItemUpdateDto();
 
         String content = objectMapper.writeValueAsString(itemUpdateDto);
         MockMultipartFile file = itemStubData.getMockMultipartFile();
 
-        MockPart itemUpdateDto1 = new MockPart("itemUpdateDto", content.getBytes(StandardCharsets.UTF_8));
+        MockPart itemUpdateDto1 = new MockPart("itemUpdateDTO", content.getBytes(StandardCharsets.UTF_8));
         itemUpdateDto1.getHeaders().setContentType(APPLICATION_JSON);
         given(itemsService
-                .updateItem(Mockito.anyInt(),Mockito.any(ItemUpdateDto.class), Mockito.anyList(),Mockito.any(User.class)))
+                .updateItem(Mockito.anyInt(),Mockito.any(ItemUpdateDTO.class), Mockito.anyList(),Mockito.any(User.class)))
                 .willReturn(itemStubData.getItemUpdateResponseDto());
         //When
 
@@ -185,10 +168,10 @@ class ItemsControllerTest extends ControllerTest {
                                 headerWithName("Authorization").description("액세스 토큰")
                         ),
                         requestParts(
-                                partWithName("itemUpdateDto").description("유저 업데이트 정보"),
+                                partWithName("itemUpdateDTO").description("유저 업데이트 정보"),
                                 partWithName("file").description("유저 프로필 사진")
                         ),
-                        requestPartFields("itemUpdateDto",
+                        requestPartFields("itemUpdateDTO",
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("물건 제목"),
                                 fieldWithPath("description").type(JsonFieldType.STRING).description("물건 설명"),
                                 fieldWithPath("itemStatus").type(JsonFieldType.STRING).description("물건 상태(PUBLIC, PRIVATE, DELETED)"),

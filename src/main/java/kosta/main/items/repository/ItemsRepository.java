@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface ItemsRepository extends JpaRepository<Item,Integer> {
-  Page<ItemPageDTO> findByUser_UserId(Integer userId, Pageable pageable);
+  Page<Item> findByUser_UserId(Integer userId, Pageable pageable);
 
 //  @Query("SELECT * from Item where Item.user.userId = :userId")
 //  Page<Item> findItemBypagenation(Integer userId);

@@ -6,13 +6,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class LikeDto {
+public class LikeDTO {
     private Integer id;
     private Integer communityPostId;
     private Integer userId;
 
-    public static LikeDto of(Like like) {
-        return new LikeDto(
+    public static LikeDTO of(Like like) {
+        return new LikeDTO(
                 like.getLikeId(),
                 like.getCommunityPost().getCommunityPostId(),
                 like.getUser().getUserId()

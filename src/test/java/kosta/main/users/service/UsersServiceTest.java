@@ -1,14 +1,12 @@
 package kosta.main.users.service;
 
 import kosta.main.users.UserStubData;
-import kosta.main.users.dto.UserCreateDto;
-import kosta.main.users.dto.UserCreateResponseDto;
-import kosta.main.users.dto.UserUpdateDto;
-import kosta.main.users.dto.UsersResponseDto;
+import kosta.main.users.dto.UserCreateDTO;
+import kosta.main.users.dto.UserCreateResponseDTO;
+import kosta.main.users.dto.UsersResponseDTO;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,7 +43,7 @@ class UsersServiceTest {
         //given
         Integer userId = USER_ID;
         User user = userStubData.getUser();
-        UsersResponseDto usersResponseDto = userStubData.getUsersResponseDto();
+        UsersResponseDTO usersResponseDto = userStubData.getUsersResponseDto();
         given(usersRepository.findUserByUserId(Mockito.anyInt())).willReturn(Optional.of(usersResponseDto));
         //when
 //        UsersResponseDto result = usersService.findMyProfile(userId);
@@ -62,11 +60,11 @@ class UsersServiceTest {
     void 유저_생성() {
         //given
         User user = userStubData.getUser();
-        UserCreateDto userCreateDto = userStubData.getUserCreateDto();
+        UserCreateDTO userCreateDto = userStubData.getUserCreateDto();
 
         given(usersRepository.save(Mockito.any(User.class))).willReturn(user);
         //when
-        UserCreateResponseDto result = usersService.createUser(userCreateDto);
+        UserCreateResponseDTO result = usersService.createUser(userCreateDto);
 
         //then
         assertThat(result.getName()).isEqualTo(user.getName());

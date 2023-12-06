@@ -1,9 +1,9 @@
 package kosta.main.users;
 
-import kosta.main.users.dto.UserCreateDto;
-import kosta.main.users.dto.UserCreateResponseDto;
-import kosta.main.users.dto.UserUpdateDto;
-import kosta.main.users.dto.UsersResponseDto;
+import kosta.main.users.dto.UserCreateDTO;
+import kosta.main.users.dto.UserCreateResponseDTO;
+import kosta.main.users.dto.UserUpdateDTO;
+import kosta.main.users.dto.UsersResponseDTO;
 import kosta.main.users.entity.User;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -55,28 +55,29 @@ public class UserStubData {
                 .build();
 
     }
-    public UsersResponseDto getUsersResponseDto(){
-        return UsersResponseDto.of(getUser());
+    public UsersResponseDTO getUsersResponseDto(){
+        return UsersResponseDTO.of(getUser());
     }
 
-    public UserCreateDto getUserCreateDto(){
+    public UserCreateDTO getUserCreateDto(){
 
-        return UserCreateDto.builder()
+        return UserCreateDTO.builder()
                 .email(EMAIL)
                 .password(PASSWORD)
+                .checkPassword(PASSWORD)
                 .name(NAME)
                 .address(ADDRESS)
                 .phone(PHONE)
                 .build();
     }
 
-    public UserCreateResponseDto getUserCreateResponseDto(){
-        return new UserCreateResponseDto
+    public UserCreateResponseDTO getUserCreateResponseDto(){
+        return new UserCreateResponseDTO
                 (EMAIL, NAME, ADDRESS, PHONE);
     }
 
-    public UserUpdateDto getUserUpdateDto() {
-        return new UserUpdateDto(
+    public UserUpdateDTO getUserUpdateDto() {
+        return new UserUpdateDTO(
                 UPDATE_PASSWORD,
                 UPDATE_PASSWORD,
                 UPDATED_NAME,

@@ -1,8 +1,8 @@
 package kosta.main.users.controller;
 
-import kosta.main.users.dto.UserCreateDto;
-import kosta.main.users.dto.UserUpdateDto;
-import kosta.main.reports.dto.CreateReportDto;
+import kosta.main.users.dto.UserCreateDTO;
+import kosta.main.users.dto.UserUpdateDTO;
+import kosta.main.reports.dto.CreateReportDTO;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.service.UsersService;
@@ -29,16 +29,16 @@ public class UsersController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserCreateDto userCreateDto){
+    public ResponseEntity<?> signup(@RequestBody UserCreateDTO userCreateDto){
         return new ResponseEntity(usersService.createUser(userCreateDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/users")
     public ResponseEntity<?> updateMyInfo(@LoginUser User user,
-                                       @RequestPart("userUpdateDto") UserUpdateDto userUpdateDto,
+                                       @RequestPart("userUpdateDto") UserUpdateDTO userUpdateDTO,
                                        @RequestPart(value = "file") MultipartFile file) {
 
-        return ResponseEntity.ok(usersService.updateUser(user, userUpdateDto,file));
+        return ResponseEntity.ok(usersService.updateUser(user, userUpdateDTO,file));
     }
 
     @PutMapping("/users/withdrawal")
@@ -49,8 +49,8 @@ public class UsersController {
     @PostMapping("/users/report/{reportedUserId}")
     public ResponseEntity<?> reportUser(@PathVariable("reportedUserId") Integer reportedUserId,
                                      @LoginUser User user,
-                                     @RequestBody CreateReportDto createReportDto){
-        usersService.reportUser(reportedUserId, user, createReportDto);
+                                     @RequestBody CreateReportDTO createReportDTO){
+        usersService.reportUser(reportedUserId, user, createReportDTO);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 

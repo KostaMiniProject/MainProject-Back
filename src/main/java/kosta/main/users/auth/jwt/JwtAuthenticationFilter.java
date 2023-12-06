@@ -7,7 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kosta.main.global.dto.LoginResponse;
-import kosta.main.users.auth.dto.LoginDto;
+import kosta.main.users.auth.dto.LoginDTO;
 import kosta.main.users.entity.User;
 import kosta.main.users.entity.UserAdapter;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override //throws나 try-catch 구문을 통해서 Exception에 대해 번거롭게 명시적으로 예외 처리를 해 줘야 하는 경우에 @SneakyThrows 어노테이션을사용하여 명시적인 예외 처리를 생략할 수 있음
 
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        LoginDto loginDto = objectMapper.readValue(request.getInputStream(), LoginDto.class);
+        LoginDTO loginDto = objectMapper.readValue(request.getInputStream(), LoginDTO.class);
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());

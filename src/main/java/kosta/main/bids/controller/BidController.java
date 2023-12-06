@@ -1,6 +1,5 @@
 package kosta.main.bids.controller;
 
-import jakarta.validation.constraints.Max;
 import kosta.main.bids.dto.*;
 import kosta.main.bids.service.BidService;
 import kosta.main.users.entity.LoginUser;
@@ -21,7 +20,7 @@ public class BidController {
 
     // 입찰을 수행하는 기능
     @PostMapping("/{exchangePostId}/bids") // 23.11.30 동작확인
-    public ResponseEntity<Integer> createBid(@LoginUser User user, @PathVariable("exchangePostId") Integer exchangePostId, @RequestBody BidsDto bidDTO) {
+    public ResponseEntity<Integer> createBid(@LoginUser User user, @PathVariable("exchangePostId") Integer exchangePostId, @RequestBody BidsDTO bidDTO) {
         return ResponseEntity.ok(bidService.createBid(user, exchangePostId, bidDTO));
     }
 

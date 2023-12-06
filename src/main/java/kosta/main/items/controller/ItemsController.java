@@ -1,14 +1,18 @@
 package kosta.main.items.controller;
 
+
+import kosta.main.global.dto.PageInfo;
+import kosta.main.global.dto.PageResponseDto;
+import jakarta.validation.Valid;
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.dto.ItemDetailResponseDTO;
-import kosta.main.items.dto.ItemUpdateDto;
-import kosta.main.items.entity.Item;
-import kosta.main.items.dto.ItemSaveDto;
+import kosta.main.items.dto.ItemUpdateDTO;
+import kosta.main.items.dto.ItemSaveDTO;
 import kosta.main.items.service.ItemsService;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api/items")
 @AllArgsConstructor
@@ -30,14 +34,15 @@ public class ItemsController {
   /**
    *  물건 생성
    * @param user
-   * @param itemSaveDto
+   * @param itemSaveDTO
    * @param files
    * @return
    */
   @PostMapping
-  public ResponseEntity<?> addItem(@LoginUser User user, @RequestPart("itemSaveDto") ItemSaveDto itemSaveDto,
+  public ResponseEntity<?> addItem(@LoginUser User user, @RequestPart("itemSaveDTO") ItemSaveDTO itemSaveDTO,
                                 @RequestPart(value = "file") List<MultipartFile> files) {
-     itemsService.addItem(user,itemSaveDto, files);
+     itemsService.addItem(user,itemSaveDTO, files);
+     log.info("###### 물건 생성 Response >> itemSaveDto={}, files={}",itemSaveDTO, files);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
@@ -52,8 +57,9 @@ public class ItemsController {
   @GetMapping
   public ResponseEntity<?> getItems(@LoginUser User user,
                                     @PageableDefault(page = 0, size = 10, sort = "itemId", direction = Sort.Direction.DESC) Pageable pageable) {
-    Page<ItemPageDTO> allItems = itemsService.getItems(user.getUserId(), pageable);
-    return new ResponseEntity<>(allItems,HttpStatus.OK);
+    Page<ItemPageDTO> items = itemsService.getItems(user.getUserId(), pageable);
+    List<ItemPageDTO> list = items.stream().toList();
+    return new ResponseEntity<>(new PageResponseDto(list,PageInfo.of(items)),HttpStatus.OK);
   }
 
 
@@ -72,17 +78,17 @@ public class ItemsController {
   /**
    * 물건 수정
    * @param itemId
-   * @param itemUpdateDto
+   * @param itemUpdateDTO
    * @param files
    * @param user
    * @return
    */
   @PutMapping("/{itemId}")
   public ResponseEntity<?> updateItem(@PathVariable int itemId,
-                         @RequestPart("itemUpdateDto") ItemUpdateDto itemUpdateDto,
+                         @RequestPart("itemUpdateDTO") ItemUpdateDTO itemUpdateDTO,
                          @RequestPart(value = "file") List<MultipartFile> files,
                                       @LoginUser User user) {
-    return new ResponseEntity<>(itemsService.updateItem(itemId, itemUpdateDto, files,user), HttpStatus.OK);
+    return new ResponseEntity<>(itemsService.updateItem(itemId, itemUpdateDTO, files,user), HttpStatus.OK);
   }
 
 

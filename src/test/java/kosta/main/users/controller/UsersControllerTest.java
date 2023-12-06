@@ -131,6 +131,7 @@ class UsersControllerTest extends ControllerTest {
                         requestFields(
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("유저의 비밀번호"),
+                                fieldWithPath("checkPassword").type(JsonFieldType.STRING).description("유저의 확인 비밀번호"),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
                                 fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
                                 fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호")

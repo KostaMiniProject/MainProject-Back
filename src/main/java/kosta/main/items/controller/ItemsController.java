@@ -1,5 +1,8 @@
 package kosta.main.items.controller;
 
+
+import kosta.main.global.dto.PageInfo;
+import kosta.main.global.dto.PageResponseDto;
 import jakarta.validation.Valid;
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.dto.ItemDetailResponseDTO;
@@ -54,8 +57,9 @@ public class ItemsController {
   @GetMapping
   public ResponseEntity<?> getItems(@LoginUser User user,
                                     @PageableDefault(page = 0, size = 10, sort = "itemId", direction = Sort.Direction.DESC) Pageable pageable) {
-    Page<ItemPageDTO> allItems = itemsService.getItems(user.getUserId(), pageable);
-    return new ResponseEntity<>(allItems,HttpStatus.OK);
+    Page<ItemPageDTO> items = itemsService.getItems(user.getUserId(), pageable);
+    List<ItemPageDTO> list = items.stream().toList();
+    return new ResponseEntity<>(new PageResponseDto(list,PageInfo.of(items)),HttpStatus.OK);
   }
 
 

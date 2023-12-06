@@ -64,6 +64,7 @@ public class UserStubData {
         return UserCreateDTO.builder()
                 .email(EMAIL)
                 .password(PASSWORD)
+                .checkPassword(PASSWORD)
                 .name(NAME)
                 .address(ADDRESS)
                 .phone(PHONE)

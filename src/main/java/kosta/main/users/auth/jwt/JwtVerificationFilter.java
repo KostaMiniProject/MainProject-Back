@@ -24,6 +24,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer ";
+    public static final int ONLY_BEARER_LENGTH = 8;
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService userDetailsService;
 
@@ -40,7 +41,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String authorization = request.getHeader(AUTHORIZATION);
 
-        return authorization == null || !authorization.startsWith(BEARER);
+        return authorization == null || !authorization.startsWith(BEARER) || authorization.length() < ONLY_BEARER_LENGTH;
     }
 
     private Map<String,Object> verifyJws(HttpServletRequest request){

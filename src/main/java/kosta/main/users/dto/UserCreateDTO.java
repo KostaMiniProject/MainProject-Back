@@ -13,6 +13,7 @@ public class UserCreateDTO {
     private String email;
 
     private String password;
+    private String checkPassword;
 
     private String name;
 

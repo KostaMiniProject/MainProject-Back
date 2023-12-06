@@ -83,9 +83,10 @@ public class ItemsService {
    * @param pageable
    * @return
    */
-  @Transactional(readOnly = true)
+//  @Transactional(readOnly = true)
   public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
-    return itemsRepository.findByUser_UserId(userId, pageable);
+    Page<Item> byUserUserId = itemsRepository.findByUser_UserId(userId, pageable);
+    return byUserUserId.map(ItemPageDTO::from);
   }
 
 

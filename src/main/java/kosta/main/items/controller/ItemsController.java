@@ -36,8 +36,8 @@ public class ItemsController {
    * @return
    */
   @PostMapping
-  public ResponseEntity<?> addItem(@LoginUser User user, @Valid @RequestPart("itemSaveDTO") ItemSaveDTO itemSaveDTO,
-                                @Valid @RequestPart(value = "file") List<MultipartFile> files) {
+  public ResponseEntity<?> addItem(@LoginUser User user, @RequestPart("itemSaveDTO") ItemSaveDTO itemSaveDTO,
+                                @RequestPart(value = "file") List<MultipartFile> files) {
      itemsService.addItem(user,itemSaveDTO, files);
      log.info("###### 물건 생성 Response >> itemSaveDto={}, files={}",itemSaveDTO, files);
     return new ResponseEntity<>(HttpStatus.CREATED);

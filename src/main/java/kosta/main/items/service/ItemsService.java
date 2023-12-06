@@ -1,6 +1,8 @@
 package kosta.main.items.service;
 
 import kosta.main.categories.repository.CategoriesRepository;
+import kosta.main.global.error.exception.BusinessException;
+import kosta.main.global.error.exception.ErrorCode;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemDetailResponseDTO;
 import kosta.main.items.dto.ItemUpdateDto;
@@ -17,6 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static kosta.main.global.error.exception.ErrorCode.ALREADY_BIDDING_ITEM;
+import static kosta.main.global.error.exception.ErrorCode.NOT_ITEM_OWNER;
 
 @Service
 @Transactional
@@ -80,7 +85,7 @@ public class ItemsService {
   }
 
   private Item findItemByItemId(int itemId) {
-    return itemsRepository.findById(itemId).orElseThrow(() -> new RuntimeException("아이디를 찾지 못했습니다."));
+    return itemsRepository.findById(itemId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
   }
 
 
@@ -118,11 +123,11 @@ public class ItemsService {
 
     // 사용자 ID 일치 여부 확인 (23.12.04)
     if (!item.getUser().getUserId().equals(user.getUserId())) {
-      throw new RuntimeException("You are not authorized to update this item.");
+      throw new BusinessException(NOT_ITEM_OWNER);
     }
     //사용중인 Item은 변경 불가(23.12.04)
     if (item.getIsBiding() == Item.IsBiding.BIDING) {
-      throw new RuntimeException("Item is currently biding and cannot be updated.");
+      throw new BusinessException(ALREADY_BIDDING_ITEM);
     }
     
 //    itemUpdateDto 요소 null값 체크
@@ -156,7 +161,7 @@ public class ItemsService {
     // 사용자 ID 일치 여부 확인
     if (!item.getUser().getUserId().equals(userId)) {
       // 여기서 사용자 ID가 일치하지 않으면 오류를 발생
-      throw new RuntimeException("Item 소유주만 물건을 삭제할 수 있습니다.");
+      throw new BusinessException(NOT_ITEM_OWNER);
     }
     itemsRepository.delete(item);
   }

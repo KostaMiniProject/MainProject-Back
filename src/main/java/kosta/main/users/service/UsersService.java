@@ -4,6 +4,7 @@ import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
 import kosta.main.dibs.dto.DibResponseDto;
 import kosta.main.exchangehistories.dto.ExchangeHistoryResponseDto;
+import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.reports.dto.CreateReportDto;
 import kosta.main.reports.entity.Report;
@@ -20,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
+
+import static kosta.main.global.error.exception.ErrorCode.INVALID_PASSWORD;
+import static kosta.main.global.error.exception.ErrorCode.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +57,7 @@ public class UsersService {
         String imagePath = imageService.resizeToProfileSizeAndUpload(file);
         userUpdateDto.updateProfileImage(imagePath);
         if(!Objects.equals(userUpdateDto.getPassword(), userUpdateDto.getCheckPassword()))
-            throw new RuntimeException("전달해준 두 비밀번호가 일치하지 않습니다");
+            throw new BusinessException(INVALID_PASSWORD);
         User updatedUser = user.updateUser(userUpdateDto);
         return UsersResponseDto.of(usersRepository.save(updatedUser));
     }
@@ -63,7 +67,7 @@ public class UsersService {
     }
 
     public User findUserByUserId(Integer userId) {
-        return usersRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        return usersRepository.findById(userId).orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
     }
 
     public void reportUser(Integer reportedUserId, User reporterUser, CreateReportDto createReportDto) {

@@ -2,9 +2,8 @@ package kosta.main.items.controller;
 
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.dto.ItemDetailResponseDTO;
-import kosta.main.items.dto.ItemUpdateDto;
-import kosta.main.items.entity.Item;
-import kosta.main.items.dto.ItemSaveDto;
+import kosta.main.items.dto.ItemUpdateDTO;
+import kosta.main.items.dto.ItemSaveDTO;
 import kosta.main.items.service.ItemsService;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
@@ -30,14 +29,14 @@ public class ItemsController {
   /**
    *  물건 생성
    * @param user
-   * @param itemSaveDto
+   * @param itemSaveDTO
    * @param files
    * @return
    */
   @PostMapping
-  public ResponseEntity<?> addItem(@LoginUser User user, @RequestPart("itemSaveDto") ItemSaveDto itemSaveDto,
+  public ResponseEntity<?> addItem(@LoginUser User user, @RequestPart("itemSaveDTO") ItemSaveDTO itemSaveDTO,
                                 @RequestPart(value = "file") List<MultipartFile> files) {
-     itemsService.addItem(user,itemSaveDto, files);
+     itemsService.addItem(user,itemSaveDTO, files);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
@@ -72,17 +71,17 @@ public class ItemsController {
   /**
    * 물건 수정
    * @param itemId
-   * @param itemUpdateDto
+   * @param itemUpdateDTO
    * @param files
    * @param user
    * @return
    */
   @PutMapping("/{itemId}")
   public ResponseEntity<?> updateItem(@PathVariable int itemId,
-                         @RequestPart("itemUpdateDto") ItemUpdateDto itemUpdateDto,
+                         @RequestPart("itemUpdateDTO") ItemUpdateDTO itemUpdateDTO,
                          @RequestPart(value = "file") List<MultipartFile> files,
                                       @LoginUser User user) {
-    return new ResponseEntity<>(itemsService.updateItem(itemId, itemUpdateDto, files,user), HttpStatus.OK);
+    return new ResponseEntity<>(itemsService.updateItem(itemId, itemUpdateDTO, files,user), HttpStatus.OK);
   }
 
 

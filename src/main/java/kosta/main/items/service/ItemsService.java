@@ -1,18 +1,14 @@
 package kosta.main.items.service;
 
-import kosta.main.communityposts.dto.CommunityPostListDto;
-import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemPageDTO;
-import kosta.main.categories.repository.CategoriesRepository;
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.error.exception.ErrorCode;
-import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemDetailResponseDTO;
-import kosta.main.items.dto.ItemUpdateDto;
-import kosta.main.items.dto.ItemUpdateResponseDto;
+import kosta.main.items.dto.ItemUpdateDTO;
+import kosta.main.items.dto.ItemUpdateResponseDTO;
 import kosta.main.items.entity.Item;
-import kosta.main.items.dto.ItemSaveDto;
+import kosta.main.items.dto.ItemSaveDTO;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
@@ -43,7 +39,7 @@ public class ItemsService {
    * @param itemSaveDto
    * @param files
    */
-  public void addItem(User user, ItemSaveDto itemSaveDto, List<MultipartFile> files) {
+  public void addItem(User user, ItemSaveDTO itemSaveDto, List<MultipartFile> files) {
 //    # sudo 코드
 //    1. Controller에서 ItemSaveDto값을 받아온다.
 //    2. 추가할 내용을 담는 용도로 Item 객체(newItem)를 생성한다.
@@ -108,12 +104,12 @@ public class ItemsService {
   /**
    * 물건 수정
    * @param itemId
-   * @param itemUpdateDto
+   * @param itemUpdateDTO
    * @param files
    * @param user
    * @return
    */
-  public ItemUpdateResponseDto updateItem(Integer itemId, ItemUpdateDto itemUpdateDto, List<MultipartFile> files, User user) {
+  public ItemUpdateResponseDTO updateItem(Integer itemId, ItemUpdateDTO itemUpdateDTO, List<MultipartFile> files, User user) {
 //    # sudo 코드
 //    1. Controller에서 itemId와 ItemUpdateDto값을 받아온다.
 //    2. 수정할 내용을 담는 용도인 Item 객체(updateItem)를 생성한다.
@@ -140,7 +136,7 @@ public class ItemsService {
 //      updateItem1.setItemStatus(itemUpdateDto.getItemStatus());
 //    }
     List<String> imagePath = new ArrayList<>(files.stream().map(imageService::resizeToBasicSizeAndUpload).toList());
-    itemUpdateDto.updateImagePath(imagePath);
+    itemUpdateDTO.updateImagePath(imagePath);
 //    # Builder 사용
     Item item = findItemByItemId(itemId);
 
@@ -154,10 +150,10 @@ public class ItemsService {
     }
     
 //    itemUpdateDto 요소 null값 체크
-    String title = itemUpdateDto.getTitle() != null ? itemUpdateDto.getTitle() : item.getTitle();
-    String description = itemUpdateDto.getDescription() != null ? itemUpdateDto.getDescription() : item.getDescription();
-    List<String> imageUrl = itemUpdateDto.getImages() != null ? itemUpdateDto.getImages() : item.getImages();
-    Item.ItemStatus itemStatus = itemUpdateDto.getItemStatus() != null ? itemUpdateDto.getItemStatus() : item.getItemStatus();
+    String title = itemUpdateDTO.getTitle() != null ? itemUpdateDTO.getTitle() : item.getTitle();
+    String description = itemUpdateDTO.getDescription() != null ? itemUpdateDTO.getDescription() : item.getDescription();
+    List<String> imageUrl = itemUpdateDTO.getImages() != null ? itemUpdateDTO.getImages() : item.getImages();
+    Item.ItemStatus itemStatus = itemUpdateDTO.getItemStatus() != null ? itemUpdateDTO.getItemStatus() : item.getItemStatus();
 
     Item.builder()
         .itemId(itemId)
@@ -169,7 +165,7 @@ public class ItemsService {
         .build();
 
 
-    return ItemUpdateResponseDto.builder()
+    return ItemUpdateResponseDTO.builder()
         .title(title)
         .description(description)
         .images(imageUrl)

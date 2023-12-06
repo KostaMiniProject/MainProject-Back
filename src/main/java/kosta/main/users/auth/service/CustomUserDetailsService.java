@@ -1,5 +1,7 @@
 package kosta.main.users.auth.service;
 
+import kosta.main.global.error.exception.BusinessException;
+import kosta.main.global.error.exception.ErrorCode;
 import kosta.main.users.entity.User;
 import kosta.main.users.entity.UserAdapter;
 import kosta.main.users.repository.UsersRepository;
@@ -24,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         User user = usersRepository
                 .findUserByEmail(username)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 Email입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         return new UserAdapter(user);
     }
 }

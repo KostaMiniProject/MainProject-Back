@@ -1,6 +1,7 @@
 package kosta.main.items.controller;
 
 import kosta.main.items.dto.ItemPageDTO;
+import kosta.main.items.dto.ItemDetailResponseDTO;
 import kosta.main.items.dto.ItemUpdateDto;
 import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDto;
@@ -63,7 +64,7 @@ public class ItemsController {
    */
   @GetMapping("/{itemId}")
   public ResponseEntity<?> getFindById(@PathVariable int itemId) {
-    Item findById = itemsService.getFindById(itemId);
+    ItemDetailResponseDTO findById = itemsService.getFindById(itemId);
     return new ResponseEntity<>(findById,HttpStatus.OK);
   }
 

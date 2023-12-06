@@ -1,11 +1,13 @@
 package kosta.main.reviews.controller;
 
 
-import kosta.main.reviews.dto.ReviewSaveDto;
+import kosta.main.reviews.dto.ReviewSaveDTO;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,10 +21,11 @@ public class ReviewsController {
 
   // 리뷰 작성하기
   @PostMapping("/api/reviews")
-  public void addReviews(@RequestBody ReviewSaveDto reviewSaveDto, @LoginUser User reviewer) {
+  public ResponseEntity<?> addReviews(@RequestBody ReviewSaveDTO reviewSaveDto, @LoginUser User reviewer) {
 //    TODO @LoginUser 값을 받아와서 new User() 수정
     log.info("{}=================================",reviewer);
     reviewsService.addReviews(reviewSaveDto, reviewer);
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
 }

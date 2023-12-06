@@ -1,5 +1,6 @@
 package kosta.main.items.service;
 
+import jakarta.validation.Valid;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.global.error.exception.BusinessException;
@@ -39,7 +40,9 @@ public class ItemsService {
    * @param itemSaveDTO 물건 저장 DTO
    * @param files
    */
-  public void addItem(User user, ItemSaveDTO itemSaveDTO, List<MultipartFile> files) {
+  public void addItem(User user,
+                      ItemSaveDTO itemSaveDTO,
+                      List<MultipartFile> files) {
 //    # sudo 코드
 //    1. Controller에서 ItemSaveDTO값을 받아온다.
 //    2. 추가할 내용을 담는 용도로 Item 객체(newItem)를 생성한다.
@@ -110,7 +113,9 @@ public class ItemsService {
    * @param user
    * @return
    */
-  public ItemUpdateResponseDTO updateItem(Integer itemId, ItemUpdateDTO itemUpdateDTO, List<MultipartFile> files, User user) {
+  public ItemUpdateResponseDTO updateItem(Integer itemId,
+                                          @Valid ItemUpdateDTO itemUpdateDTO,
+                                          List<MultipartFile> files, User user) {
 //    # sudo 코드
 //    1. Controller에서 itemId와 ItemUpdateDTO값을 받아온다.
 //    2. 수정할 내용을 담는 용도인 Item 객체(updateItem)를 생성한다.

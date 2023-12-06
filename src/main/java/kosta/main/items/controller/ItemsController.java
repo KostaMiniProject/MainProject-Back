@@ -34,7 +34,7 @@ public class ItemsController {
    * @return
    */
   @PostMapping
-  public ResponseEntity<?> addItem(@LoginUser User user, @RequestPart("itemSaveDto") ItemSaveDTO itemSaveDTO,
+  public ResponseEntity<?> addItem(@LoginUser User user, @RequestPart("itemSaveDTO") ItemSaveDTO itemSaveDTO,
                                 @RequestPart(value = "file") List<MultipartFile> files) {
      itemsService.addItem(user,itemSaveDTO, files);
     return new ResponseEntity<>(HttpStatus.CREATED);
@@ -78,7 +78,7 @@ public class ItemsController {
    */
   @PutMapping("/{itemId}")
   public ResponseEntity<?> updateItem(@PathVariable int itemId,
-                         @RequestPart("itemUpdateDto") ItemUpdateDTO itemUpdateDTO,
+                         @RequestPart("itemUpdateDTO") ItemUpdateDTO itemUpdateDTO,
                          @RequestPart(value = "file") List<MultipartFile> files,
                                       @LoginUser User user) {
     return new ResponseEntity<>(itemsService.updateItem(itemId, itemUpdateDTO, files,user), HttpStatus.OK);

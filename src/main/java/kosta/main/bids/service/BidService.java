@@ -56,7 +56,7 @@ public class BidService {
     }
     // 입찰 생성
     @Transactional
-    public Integer createBid(User user, Integer exchangePostId, BidsDto bidDTO) {
+    public Integer createBid(User user, Integer exchangePostId, BidsDTO bidDTO) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
         User bidder = user;
 

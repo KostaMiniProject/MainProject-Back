@@ -1,20 +1,12 @@
 package kosta.main.exchangeposts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kosta.main.communityposts.dto.CommunityPostDetailDto;
-import kosta.main.communityposts.dto.CommunityPostListDto;
 import kosta.main.exchangeposts.ExchangePostStubData;
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
 import kosta.main.exchangeposts.service.ExchangePostsService;
 import kosta.main.global.annotation.WithMockCustomUser;
-import kosta.main.items.entity.Item;
-import kosta.main.users.UserStubData;
-import kosta.main.users.controller.UsersController;
-import kosta.main.users.dto.UserCreateDto;
-import kosta.main.users.dto.UserCreateResponseDto;
 import kosta.main.users.entity.User;
-import kosta.main.users.service.UsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,9 +32,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;

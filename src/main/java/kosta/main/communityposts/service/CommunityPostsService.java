@@ -5,7 +5,7 @@ import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.s3upload.service.ImageService;
-import kosta.main.likes.dto.LikeDto;
+import kosta.main.likes.dto.LikeDTO;
 import kosta.main.likes.entity.Like;
 import kosta.main.likes.repository.LikesRepository;
 import kosta.main.users.entity.User;
@@ -123,7 +123,7 @@ public class CommunityPostsService {
             like.setUser(user); // 좋아요를 누른 사용자를 like 객체에 연결
             communityPost.getLikePostList().add(like); // 좋아요 목록에 like 객체 추가
             communityPostsRepository.save(communityPost); // 좋아요가 추가된 게시글을 DB에 저장
-            return LikeDto.of(like); // like 객체를 LikeDto로 변환하여 반환
+            return LikeDTO.of(like); // like 객체를 LikeDto로 변환하여 반환
         }
     }
 }

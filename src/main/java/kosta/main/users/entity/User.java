@@ -4,12 +4,11 @@ import kosta.main.dibs.entity.Dib;
 import kosta.main.exchangehistories.entity.ExchangeHistory;
 import kosta.main.global.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
-import kosta.main.users.dto.UserCreateDto;
-import kosta.main.users.dto.UserUpdateDto;
+import kosta.main.users.dto.UserCreateDTO;
+import kosta.main.users.dto.UserUpdateDTO;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class User extends Auditable {
     private List<Dib> dibs = new ArrayList<>();
 
 
-    public User updateUser(UserUpdateDto userUpdateDto) {
+    public User updateUser(UserUpdateDTO userUpdateDto) {
         this.userStatus = !nullCheck(userUpdateDto.getUserStatus()) ? userUpdateDto.getUserStatus(): this.userStatus;
         this.address = !nullCheck(userUpdateDto.getAddress()) ? userUpdateDto.getAddress(): this.address;
         this.phone = !nullCheck(userUpdateDto.getPhone()) ? userUpdateDto.getPhone() : this.phone;
@@ -90,7 +89,7 @@ public class User extends Auditable {
     // 게터와 세터
     // 생략...
 
-    public static User createUser(UserCreateDto userCreateDto,String profileImage){
+    public static User createUser(UserCreateDTO userCreateDto, String profileImage){
         return User.builder()
                 .name(userCreateDto.getName())
                 .password(userCreateDto.getPassword())

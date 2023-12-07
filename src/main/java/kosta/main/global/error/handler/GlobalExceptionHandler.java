@@ -1,6 +1,7 @@
 package kosta.main.global.error.handler;
 
 import kosta.main.global.error.dto.ErrorBaseResponse;
+import kosta.main.global.error.dto.ErrorValidationResponse;
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.error.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +24,12 @@ public class GlobalExceptionHandler {
      * Valid & Validated annotation의 binding error를 handling합니다.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<ErrorBaseResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error(">>> handle: MethodArgumentNotValidException ", e);
-        final ErrorBaseResponse errorBaseResponse = ErrorBaseResponse.of(ErrorCode.BAD_REQUEST);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBaseResponse);
+    protected ResponseEntity<ErrorValidationResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error(">>> handle: MethodArgumentNotValidException {}", e.getDetailMessageArguments());
+        Object[] detailMessageArguments = e.getDetailMessageArguments();
+        Object detailMessageArgument = detailMessageArguments[1];
+        final ErrorValidationResponse errorValidationResponse = ErrorValidationResponse.of(e,detailMessageArgument);
+        return new ResponseEntity<>(errorValidationResponse, e.getStatusCode());
     }
 
     /**
@@ -38,6 +41,7 @@ public class GlobalExceptionHandler {
         final ErrorBaseResponse errorBaseResponse = ErrorBaseResponse.of(ErrorCode.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBaseResponse);
     }
+
 
     /**
      * RequestParam annotation의 binding error를 handling합니다.

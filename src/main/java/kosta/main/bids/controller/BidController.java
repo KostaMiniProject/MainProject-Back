@@ -31,9 +31,9 @@ public class BidController {
     }
 
     // 한 입찰에 대한 상세 정보를 제공하는 기능
-    @GetMapping("/bids/{exchangePostId}/{bidId}") // 23.11.30 동작확인
-    public ResponseEntity<BidDetailResponseDTO> getBidById(@PathVariable("bidId") Integer bidId, @PathVariable("exchangePostId") Integer exchangePostId,@LoginUser User user) {
-        return ResponseEntity.ok(bidService.findBidById(bidId, exchangePostId, user));
+    @GetMapping("/bids/{bidId}") // 23.11.30 동작확인
+    public ResponseEntity<BidDetailResponseDTO> getBidById(@PathVariable("bidId") Integer bidId, @LoginUser User user) {
+        return ResponseEntity.ok(bidService.findBidById(bidId,user));
     }
 
     // 입찰을 수정하는 기능

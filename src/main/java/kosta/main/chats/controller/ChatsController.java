@@ -23,7 +23,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 public class ChatsController {
   private final ChatsService chatsService;
   private static final Logger LOGGER = LoggerFactory.getLogger( ChatsController.class );
-  private final SimpMessageSendingOperations simpleMessageSendingOperations;
+  private final SimpMessageSendingOperations messagingTemplate;
 
   // 새로운 사용자가 웹 소켓을 연결할 때 실행됨
   // @EventListener은 한개의 매개변수만 가질 수 있다.
@@ -43,12 +43,10 @@ public class ChatsController {
   @MessageMapping("/send")
   @SendTo("/sub/messages")
   public ChatMessageDTO sendMessage(ChatMessageDTO chatMessage) {
-    log.debug("Received message: {}", chatMessage);
     // 채팅 메시지 저장 및 처리
-    ChatMessageDTO response = chatsService.saveChat(chatMessage, chatMessage.getSenderId());
+    chatsService.saveChat(chatMessage);
     String destination = "/sub/chatroom/" + chatMessage.getChatRoomId();
-    chatsService.sendMessage(destination,chatMessage);
-    log.debug("Sending response: {}", response);
+    messagingTemplate.convertAndSend(destination, chatMessage.getContent());
     return chatMessage;
   }
 

@@ -1,9 +1,15 @@
 package kosta.main.users.auth.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kosta.main.global.error.exception.AuthErrorCode;
+import kosta.main.global.error.exception.CommonErrorCode;
+import kosta.main.global.error.exception.UnauthorizedException;
 import kosta.main.users.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,8 +37,9 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Map<String, Object> claims = verifyJws(request);
-        setAuthenticationToContext(claims);
+
+            Map<String, Object> claims = verifyJws(request);
+            setAuthenticationToContext(claims);
 
         filterChain.doFilter(request,response);
     }
@@ -45,6 +52,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
     }
 
     private Map<String,Object> verifyJws(HttpServletRequest request){
+
         String jws = request.getHeader(AUTHORIZATION).replace(BEARER, "");
         String base64EncodedSecretKey = tokenProvider.encodeBase64SecretKey(tokenProvider.getSecretKey());
         Map<String,Object> claims = tokenProvider.getClaims(jws, base64EncodedSecretKey).getBody();

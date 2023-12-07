@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kosta.main.global.error.exception.ErrorCode.*;
+import static kosta.main.global.error.exception.CommonErrorCode.*;
 
 @Service
 @AllArgsConstructor

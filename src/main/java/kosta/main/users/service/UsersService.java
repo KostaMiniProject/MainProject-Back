@@ -22,8 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 
-import static kosta.main.global.error.exception.ErrorCode.INVALID_PASSWORD;
-import static kosta.main.global.error.exception.ErrorCode.USER_NOT_FOUND;
+import static kosta.main.global.error.exception.CommonErrorCode.INVALID_PASSWORD;
+import static kosta.main.global.error.exception.CommonErrorCode.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

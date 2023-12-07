@@ -20,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
-import static kosta.main.global.error.exception.ErrorCode.*;
+import static kosta.main.global.error.exception.CommonErrorCode.*;
 
 @Service
 @Transactional

@@ -17,12 +17,12 @@ public class ItemSaveDTO {
 // @NotNull : 값이 null이 아닌지를 검증
 // @NotEmpty : 크기가 0이 아닌 객체들을 검증
 
-//  @NotNull
-//  @Size(max = 5, min = 1)
+  @NotNull
+  @Size(max = 5, min = 1)
   private String title;
 
-//  @NotNull
-//  @Size(max = 100, min = 1)
+  @NotNull
+  @Size(max = 100, min = 1)
   private String description;
 
   private List<String> imageUrl;

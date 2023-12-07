@@ -11,13 +11,19 @@ import lombok.Getter;
 @Getter
 public class ErrorBaseResponse {
 
-    private int status;
-    private String message;
+  private int status;
+  private String message;
 
-    public static ErrorBaseResponse of(ErrorCode errorCode) {
-        return ErrorBaseResponse.builder()
-                .status(errorCode.getHttpStatus().value())
-                .message(errorCode.getMessage())
-                .build();
-    }
+  public static ErrorBaseResponse of(ErrorCode errorCode) {
+    return ErrorBaseResponse.builder()
+        .status(errorCode.getHttpStatus().value())
+        .message(errorCode.getMessage())
+        .build();
+  }
+  public static ErrorBaseResponse of(ErrorCode errorCode, String message) {
+    return ErrorBaseResponse.builder()
+        .status(errorCode.getHttpStatus().value())
+        .message(message)
+        .build();
+  }
 }

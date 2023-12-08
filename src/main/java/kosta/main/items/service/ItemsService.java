@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.global.error.exception.BusinessException;
-import kosta.main.global.error.exception.ErrorCode;
+import kosta.main.global.error.exception.CommonErrorCode;
 import kosta.main.items.dto.ItemDetailResponseDTO;
 import kosta.main.items.dto.ItemUpdateDTO;
 import kosta.main.items.dto.ItemUpdateResponseDTO;
@@ -22,8 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
-import static kosta.main.global.error.exception.ErrorCode.ALREADY_BIDDING_ITEM;
-import static kosta.main.global.error.exception.ErrorCode.NOT_ITEM_OWNER;
+import static kosta.main.global.error.exception.CommonErrorCode.ALREADY_BIDDING_ITEM;
+import static kosta.main.global.error.exception.CommonErrorCode.NOT_ITEM_OWNER;
 
 @Service
 @Transactional
@@ -101,7 +101,7 @@ public class ItemsService {
   }
 
   private Item findItemByItemId(int itemId) {
-    return itemsRepository.findById(itemId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    return itemsRepository.findById(itemId).orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
   }
 
 

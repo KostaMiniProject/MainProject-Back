@@ -6,7 +6,7 @@ import kosta.main.bids.repository.BidRepository;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
 import kosta.main.global.error.exception.BusinessException;
-import kosta.main.global.error.exception.ErrorCode;
+import kosta.main.global.error.exception.CommonErrorCode;
 import kosta.main.items.entity.Item;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kosta.main.global.error.exception.ErrorCode.NOT_DENIED_STATUS;
-import static kosta.main.global.error.exception.ErrorCode.NOT_EXCHANGE_POST_OWNER;
+import static kosta.main.global.error.exception.CommonErrorCode.NOT_DENIED_STATUS;
+import static kosta.main.global.error.exception.CommonErrorCode.NOT_EXCHANGE_POST_OWNER;
 
 @Service
 @AllArgsConstructor
@@ -48,10 +48,10 @@ public class BidService {
     // 공통 메서드: 'DELETED' 상태의 아이템이 있는지 확인 및 최소 하나의 아이템이 있는지 확인
     private void validateItemsForBidding(List<Item> items) {
         if (items.isEmpty()) {
-            throw new BusinessException(ErrorCode.INVALID_BID_REQUEST);
+            throw new BusinessException(CommonErrorCode.INVALID_BID_REQUEST);
         }
         if (items.stream().anyMatch(item -> item.getItemStatus() == Item.ItemStatus.DELETED)) {
-            throw new BusinessException(ErrorCode.INVALID_BIDDING_REQUEST);
+            throw new BusinessException(CommonErrorCode.INVALID_BIDDING_REQUEST);
         }
     }
     // 입찰 생성
@@ -62,7 +62,7 @@ public class BidService {
 
         // 게시글 작성자가 본인 게시글에 입찰하는 것 방지
         if (exchangePost.getUser().equals(bidder)) {
-            throw new BusinessException(ErrorCode.MY_POST_BID);
+            throw new BusinessException(CommonErrorCode.MY_POST_BID);
         }
 
         List<Item> items = itemsRepository.findAllById(bidDTO.getItemIds());
@@ -70,10 +70,10 @@ public class BidService {
 
         for (Item item : items) {
             if (!item.getUser().getUserId().equals(user.getUserId())) {
-                throw new BusinessException(ErrorCode.OTHER_ITEM_USE);
+                throw new BusinessException(CommonErrorCode.OTHER_ITEM_USE);
             }
             if (item.getIsBiding() == Item.IsBiding.BIDING) {
-                throw new BusinessException(ErrorCode.ALREADY_BIDDING_ITEM);
+                throw new BusinessException(CommonErrorCode.ALREADY_BIDDING_ITEM);
             }
             item.updateIsBiding(Item.IsBiding.BIDING);
             itemsRepository.save(item);
@@ -131,7 +131,7 @@ public class BidService {
 
         // 입찰자 확인과 유저 검증
         if (!existingBid.getUser().getUserId().equals(user.getUserId())) {
-            throw new BusinessException(ErrorCode.NOT_BID_OWNER);
+            throw new BusinessException(CommonErrorCode.NOT_BID_OWNER);
         }
 
         // DB에서 현재 요청으로 날아온 Item들의 ID 리스트를 업데이트 예정의 상태로 담아둠
@@ -181,7 +181,7 @@ public class BidService {
 
         // 입찰자 확인: 요청한 사용자가 입찰을 생성한 사용자와 동일한지 확인
         if (!bid.getUser().getUserId().equals(user.getUserId())) {
-            throw new BusinessException(ErrorCode.NOT_BID_OWNER);
+            throw new BusinessException(CommonErrorCode.NOT_BID_OWNER);
         }
 
         updateItemsBidingStatus(bid.getItems(), Item.IsBiding.NOT_BIDING, null); // 아이템 상태 변경 및 bid 참조 제거
@@ -211,7 +211,7 @@ public class BidService {
             bidRepository.save(bid);
         }
         Bid selectedBid = bidRepository.findById(selectedBidId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.BID_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.BID_NOT_FOUND));
         transferItemOwnership(List.of(exchangePost.getItem()), selectedBid.getUser()); // 게시글의 아이템 소유권 변경
         exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.COMPLETED);
         exchangePostsRepository.save(exchangePost);
@@ -266,7 +266,7 @@ public class BidService {
         }
 
         Bid selectedBid = bidRepository.findById(bidId)
-            .orElseThrow(() -> new BusinessException(ErrorCode.BID_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(CommonErrorCode.BID_NOT_FOUND));
 
         // 예약 상태 토글
         if (exchangePost.getExchangePostStatus() == ExchangePost.ExchangePostStatus.RESERVATION) {
@@ -279,9 +279,9 @@ public class BidService {
             selectedBid.updateStatus(Bid.BidStatus.RESERVATION);
         } else if( exchangePost.getExchangePostStatus() == ExchangePost.ExchangePostStatus.COMPLETED){
             // 완료 또는 삭제된 게시물인 경우
-            throw new BusinessException(ErrorCode.FINISHED_EXCHANGE);
+            throw new BusinessException(CommonErrorCode.FINISHED_EXCHANGE);
         } else {
-            throw new BusinessException(ErrorCode.EXCHANGE_POST_NOT_FOUND);
+            throw new BusinessException(CommonErrorCode.EXCHANGE_POST_NOT_FOUND);
         }
 
         exchangePostsRepository.save(exchangePost);

@@ -6,7 +6,7 @@ import kosta.main.dibs.repository.DibsRepository;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
 import kosta.main.global.error.exception.BusinessException;
-import kosta.main.global.error.exception.ErrorCode;
+import kosta.main.global.error.exception.CommonErrorCode;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
@@ -27,9 +27,9 @@ public class DibsService {
     @Transactional
     public void toggleDib(Integer userId, Integer exchangePostId) {
         User user = usersRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
         ExchangePost exchangePost = exchangePostsRepository.findById(exchangePostId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.EXCHANGE_POST_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.EXCHANGE_POST_NOT_FOUND));
 
         // dib 테이블에서 해당 게시글에 dib을 누른 userid를 조회한다. 없다면 null을 저장한다.
         Dib existingDib = dibsRepository.findByUserUserIdAndExchangePostExchangePostId(userId, exchangePostId)

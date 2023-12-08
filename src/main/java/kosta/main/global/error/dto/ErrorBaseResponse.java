@@ -1,5 +1,7 @@
 package kosta.main.global.error.dto;
 
+import kosta.main.global.error.exception.AuthErrorCode;
+import kosta.main.global.error.exception.CommonErrorCode;
 import kosta.main.global.error.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

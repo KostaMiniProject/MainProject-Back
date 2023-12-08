@@ -1,11 +1,21 @@
 package kosta.main.global.error.exception;
 
-public class UnauthorizedException extends BusinessException{
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+public class UnauthorizedException extends RuntimeException{
+
+
+
     public UnauthorizedException() {
-        super(ErrorCode.UNAUTHORIZED);
+        super(String.valueOf(AuthErrorCode.UNAUTHORIZED));
     }
 
-    public UnauthorizedException(ErrorCode errorCode) {
-        super(errorCode);
+    public UnauthorizedException(CommonErrorCode commonErrorCode) {
+        super(String.valueOf(commonErrorCode));
+    }
+    public UnauthorizedException(AuthErrorCode authErrorCode) {
+        super(String.valueOf(authErrorCode));
     }
 }

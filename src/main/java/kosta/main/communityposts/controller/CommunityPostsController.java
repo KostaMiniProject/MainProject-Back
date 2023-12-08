@@ -4,6 +4,7 @@ package kosta.main.communityposts.controller;
 import kosta.main.comments.dto.CommentCreateDTO;
 import kosta.main.comments.dto.CommentDTO;
 import kosta.main.comments.dto.CommentListDTO;
+import kosta.main.comments.dto.CommentUpdateDTO;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.users.entity.LoginUser;
@@ -47,19 +48,19 @@ public class CommunityPostsController {
     /* 커뮤니티 게시글 작성 */
     /* 테스트 성공 확인 */
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<CommunityPostDTO> addPost(@LoginUser User user, @RequestPart("communityPostCreateDto") CommunityPostCreateDTO communityPostCreateDto,
+    public ResponseEntity<CommunityPostDTO> addPost(@LoginUser User user, @RequestPart("communityPostCreateDTO") CommunityPostCreateDTO communityPostCreateDTO,
                                                     @RequestPart("file") List<MultipartFile> files) {
-        CommunityPostDTO communityPostDto = communityPostsService.addPost(user, communityPostCreateDto,files);
-        return ResponseEntity.ok(communityPostDto);
+        CommunityPostDTO communityPostDTO = communityPostsService.addPost(user, communityPostCreateDTO,files);
+        return ResponseEntity.ok(communityPostDTO);
     }
 
     /* 커뮤니티 게시글 수정 */
     @PutMapping("/{communityPostId}")
     public ResponseEntity<CommunityPostResponseDTO> updatePost(@LoginUser User user,
                                                                @PathVariable("communityPostId") Integer communityPostId,
-                                                               @RequestPart("communityPostUpdateDto") CommunityPostUpdateDTO communityPostUpdateDto,
+                                                               @RequestPart("communityPostUpdateDTO") CommunityPostUpdateDTO communityPostUpdateDTO,
                                                                @RequestPart("file") List<MultipartFile> files){
-        return new ResponseEntity<>(communityPostsService.updatePost(user, communityPostId, communityPostUpdateDto,files), HttpStatus.OK);
+        return new ResponseEntity<>(communityPostsService.updatePost(user, communityPostId, communityPostUpdateDTO,files), HttpStatus.OK);
     }
 
     /* 커뮤니티 게시글 삭제 */
@@ -84,12 +85,28 @@ public class CommunityPostsController {
         return ResponseEntity.ok(communityPostsService.findCommentsByPostId(communityPostId));
     }
 
+    /* 커뮤니티 댓글 작성 */
     @PostMapping("/{communityPostId}/comments")
     public ResponseEntity<CommentDTO> addComment(@LoginUser User user,
                                                  @PathVariable("communityPostId") Integer communityPostId,
-                                                 @RequestPart("commentCreateDto") CommentCreateDTO commentCreateDto) {
-        CommentDTO commentDTO = communityPostsService.addComment(user, communityPostId, commentCreateDto);
+                                                 @RequestPart("commentCreateDTO") CommentCreateDTO commentCreateDTO) {
+        CommentDTO commentDTO = communityPostsService.addComment(user, communityPostId, commentCreateDTO);
         return ResponseEntity.ok(commentDTO);
+    }
+
+    /* 커뮤니티 댓글 수정 */
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<CommentDTO> updateComment(@LoginUser User user,
+                                                    @PathVariable("commentId") Integer commentId,
+                                                    @RequestPart("commentUpdateDTO") CommentUpdateDTO commentUpdateDTO) {
+        return new ResponseEntity<>(communityPostsService.updateComment(user, commentId, commentUpdateDTO), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable("commentId") Integer commentId,
+                                        @LoginUser User user) {
+        communityPostsService.deleteComment(commentId, user);
+        return ResponseEntity.ok().build();
     }
 }
 

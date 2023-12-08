@@ -63,12 +63,10 @@ public class CommunityPost extends Auditable {
     @Builder.Default
     private List<String> images = new ArrayList<>(); // 커뮤니티 게시글의 이미지 리스트
 
-    public CommunityPost updateCommunityPost(CommunityPostUpdateDTO communityPostUpdateDto) {
+    public void updateCommunityPost(CommunityPostUpdateDTO communityPostUpdateDto) {
         this.content = communityPostUpdateDto.getContent() != null && !communityPostUpdateDto.getTitle().equals(this.content) ? communityPostUpdateDto.getContent() : this.content;
         this.title = communityPostUpdateDto.getTitle() != null && !communityPostUpdateDto.getTitle().equals(this.title) ? communityPostUpdateDto.getTitle() : this.title;
         this.images = communityPostUpdateDto.getImagePaths() != null && !communityPostUpdateDto.getImagePaths().equals(this.images) ? communityPostUpdateDto.getImagePaths() : this.images;
-
-        return this;
     }
 
     public void updateLikes(Like like){

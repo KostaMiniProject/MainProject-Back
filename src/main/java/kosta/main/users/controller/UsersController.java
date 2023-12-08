@@ -1,5 +1,6 @@
 package kosta.main.users.controller;
 
+import jakarta.validation.Valid;
 import kosta.main.users.dto.UserCreateDTO;
 import kosta.main.users.dto.UserUpdateDTO;
 import kosta.main.reports.dto.CreateReportDTO;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +31,7 @@ public class UsersController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserCreateDTO userCreateDto){
+    public ResponseEntity<?> signup(@Valid @RequestBody UserCreateDTO userCreateDto){
         return new ResponseEntity(usersService.createUser(userCreateDto), HttpStatus.CREATED);
     }
 

@@ -162,7 +162,7 @@ public class ItemsService {
     List<String> imageUrl = itemUpdateDTO.getImages() != null ? itemUpdateDTO.getImages() : item.getImages();
     Item.ItemStatus itemStatus = itemUpdateDTO.getItemStatus() != null ? itemUpdateDTO.getItemStatus() : item.getItemStatus();
 
-    Item.builder()
+    Item itemUpdate = Item.builder()
         .itemId(itemId)
         .title(title)
         .description(description)
@@ -170,6 +170,8 @@ public class ItemsService {
         .itemStatus(itemStatus)
         .user(user) // User 객체 대신 userId 사용
         .build();
+
+    itemsRepository.save(itemUpdate);
 
 
     return ItemUpdateResponseDTO.builder()

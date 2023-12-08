@@ -13,18 +13,19 @@ import lombok.Getter;
 @Getter
 public class ErrorBaseResponse {
 
-    private int status;
-    private String message;
+  private int status;
+  private String message;
 
-    public static ErrorBaseResponse of(Integer code, String message){
-        return new ErrorBaseResponse(code, message);
-    }
-
-    public static ErrorBaseResponse of(ErrorCode errorCode){
-        return new ErrorBaseResponse(errorCode.getHttpStatus().value(), errorCode.getMessage());
-    }
-
-    public static ErrorBaseResponse of(AuthErrorCode authErrorCode){
-        return new ErrorBaseResponse(authErrorCode.getCode(), authErrorCode.getMessage());
-    }
+  public static ErrorBaseResponse of(ErrorCode errorCode) {
+    return ErrorBaseResponse.builder()
+        .status(errorCode.getHttpStatus().value())
+        .message(errorCode.getMessage())
+        .build();
+  }
+  public static ErrorBaseResponse of(ErrorCode errorCode, String message) {
+    return ErrorBaseResponse.builder()
+        .status(errorCode.getHttpStatus().value())
+        .message(message)
+        .build();
+  }
 }

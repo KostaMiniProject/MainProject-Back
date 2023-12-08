@@ -18,21 +18,19 @@ import java.net.BindException;
 import java.util.Objects;
 
 @Slf4j
-@RestControllerAdvice(basePackages = "kosta.main")
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+@RestControllerAdvice
+public class GlobalExceptionHandler {
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            final MethodArgumentNotValidException e,
-            final HttpHeaders headers,
-            final HttpStatusCode status,
-            final WebRequest request
-    ) {
-        log.warn(e.getMessage(), e);
-
-        final String errMessage = Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage();
-        return ResponseEntity.badRequest()
-                .body(ErrorBaseResponse.of(CommonErrorCode.BAD_REQUEST.getHttpStatus().value(), errMessage));
+    /**
+     * Valid & Validated annotation의 binding error를 handling합니다.
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorValidationResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error(">>> handle: MethodArgumentNotValidException {}", e.getDetailMessageArguments());
+        Object[] detailMessageArguments = e.getDetailMessageArguments();
+        Object detailMessageArgument = detailMessageArguments[1];
+        final ErrorValidationResponse errorValidationResponse = ErrorValidationResponse.of(e,detailMessageArgument);
+        return new ResponseEntity<>(errorValidationResponse, e.getStatusCode());
     }
 
     @ExceptionHandler(BadRequestException.class)
@@ -48,6 +46,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ResponseEntity<ErrorBaseResponse> errorBaseResponseResponseEntity = handleExceptionInternal(HttpStatus.UNAUTHORIZED, e.getMessage());
         log.info("error==========================", errorBaseResponseResponseEntity);
         return errorBaseResponseResponseEntity;
+
+    /**
+     * RequestParam annotation의 binding error를 handling합니다.
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<ErrorBaseResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.error(">>> handle: MethodArgumentTypeMismatchException ", e);
+        final ErrorBaseResponse errorBaseResponse = ErrorBaseResponse.of(ErrorCode.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBaseResponse);
     }
 
     @ExceptionHandler(RestApiException.class)

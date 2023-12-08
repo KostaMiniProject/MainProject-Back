@@ -42,6 +42,21 @@ public class ExchangePostStubData {
                 .build();
 
     }
+
+    public ExchangePost getExchangePostBid(){
+        UserStubData userStubData = new UserStubData();
+        ItemStubData itemStubData = new ItemStubData();
+        return ExchangePost.builder()
+                .exchangePostId(EXCHANGE_POST_ID)
+                .title(TITLE)
+                .user(userStubData.getUser())
+                .item(itemStubData.getBidItem())
+                .preferItems(PREFER_ITEMS)
+                .address(ADDRESS)
+                .content(CONTENT)
+                .build();
+
+    }
     public ExchangePost getAnotherExchangePostNoBid(){
         UserStubData userStubData = new UserStubData();
         ItemStubData itemStubData = new ItemStubData();

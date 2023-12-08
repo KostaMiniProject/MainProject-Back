@@ -24,4 +24,7 @@ public class UserUpdateDTO {
     public void updateProfileImage(String profileImage){
         this.profileImage = profileImage;
     }
+    public void updatePassword(String encodePassword){
+        this.password = encodePassword;
+    }
 }

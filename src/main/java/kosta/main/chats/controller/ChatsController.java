@@ -2,8 +2,6 @@ package kosta.main.chats.controller;
 
 import kosta.main.chats.dto.ChatMessageDTO;
 import kosta.main.chats.service.ChatsService;
-import kosta.main.users.entity.LoginUser;
-import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -41,10 +39,10 @@ public class ChatsController {
   }
 
   @MessageMapping("/send")
-  @SendTo("/sub/messages")
   public ChatMessageDTO sendMessage(ChatMessageDTO chatMessage) {
     // 채팅 메시지 저장 및 처리
     chatsService.saveChat(chatMessage);
+    // destination을 ChatRoom에 해당하는 구독자로만 지정한다.
     String destination = "/sub/chatroom/" + chatMessage.getChatRoomId();
     messagingTemplate.convertAndSend(destination, chatMessage.getContent());
     return chatMessage;

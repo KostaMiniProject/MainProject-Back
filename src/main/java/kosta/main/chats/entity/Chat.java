@@ -50,4 +50,6 @@ public class Chat extends Auditable {
         this.chatRoom = chatRoom;
     }
 
+    public Boolean updateIsRead(Boolean isRead){return this.isRead = isRead;}
+
 }

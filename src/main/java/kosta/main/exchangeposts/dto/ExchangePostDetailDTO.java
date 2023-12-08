@@ -24,7 +24,7 @@ public class ExchangePostDetailDTO {
     private String name;
     private String address;
     private String imageUrl;
-    //private Double rating; // 평점 필드 추가
+    private Double rating; // 평점 필드 추가
   }
 
   @Getter

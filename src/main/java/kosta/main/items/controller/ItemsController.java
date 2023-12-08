@@ -91,9 +91,10 @@ public class ItemsController {
    */
   @PutMapping("/{itemId}")
   public ResponseEntity<?> updateItem(@PathVariable int itemId,
-                                      @RequestPart("itemUpdateDTO") ItemUpdateDTO itemUpdateDTO,
-                                      @RequestPart(value = "file") List<MultipartFile> files,
+                                      @Validated @RequestPart("itemUpdateDTO") ItemUpdateDTO itemUpdateDTO,
+                                      @Validated @RequestPart(value = "file") List<MultipartFile> files,
                                       @LoginUser User user) {
+    log.info("###### 물건 수정 Response >> itemSaveDto={}, files={}", itemUpdateDTO, files);
     return new ResponseEntity<>(itemsService.updateItem(itemId, itemUpdateDTO, files, user), HttpStatus.OK);
   }
 

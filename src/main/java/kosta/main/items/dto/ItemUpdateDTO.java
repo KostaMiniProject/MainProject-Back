@@ -15,11 +15,11 @@ import java.util.List;
 @Builder
 public class ItemUpdateDTO {
 
-  //  # 조건 : 1~5자 사이
+  //  # 조건 : 1~5자 이내
 //  @Size(max = 5, min = 1)
   private String title;
 
-  //  # 조건 : 1~100자 사이
+  //  # 조건 : 1~100자 이내
 //  @Size(max = 100, min = 1)
   private String description;
 

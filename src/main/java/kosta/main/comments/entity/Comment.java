@@ -1,8 +1,9 @@
 package kosta.main.comments.entity;
 
 import jakarta.persistence.*;
-import kosta.main.global.audit.Auditable;
+import kosta.main.comments.dto.CommentUpdateDTO;
 import kosta.main.communityposts.entity.CommunityPost;
+import kosta.main.global.audit.Auditable;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "comments")
@@ -37,6 +41,9 @@ public class Comment extends Auditable {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    private List<Comment> children = new ArrayList<>();
+
     @Column(columnDefinition = "TEXT")
     private String content;
 
@@ -46,6 +53,20 @@ public class Comment extends Auditable {
     public enum CommentStatus {
         PUBLIC, REPORTED, DELETED
     }
+
+    public void updateComment(CommentUpdateDTO commentUpdateDTO) {
+        this.content = commentUpdateDTO.getContent() != null && !commentUpdateDTO.getContent().equals(this.content) ? commentUpdateDTO.getContent() : this.content;
+    }
+
+    public void updateCommentStatus(Comment.CommentStatus commentStatus) {
+        this.commentStatus = commentStatus;
+    }
+
+    // 부모 댓글을 삭제해도 자식 댓글은 남아있음
+//    @OneToMany(mappedBy = "parent")
+//    private List<Comment> childList = new ArrayList<>();
+
     // 게터와 세터
     // 생략...
+
 }

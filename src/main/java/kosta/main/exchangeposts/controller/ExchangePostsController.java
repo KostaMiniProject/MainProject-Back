@@ -1,6 +1,5 @@
 package kosta.main.exchangeposts.controller;
 
-import kosta.main.communityposts.dto.CommunityPostListDto;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.service.ExchangePostsService;
 import kosta.main.global.dto.PageInfo;

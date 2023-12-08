@@ -26,7 +26,6 @@ import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.generate.RestDocumentationGenerator;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -36,10 +35,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -94,10 +91,11 @@ class CommunityPostsControllerTest {
     @DisplayName("게시글 목록 조회 성공 테스트")
     void findPosts() throws Exception {
         // given
-        Page<CommunityPostListDto> communityPostListDtoPage = communityPostStubData.getCommunityPostListDtoPage();
+
+        Page<CommunityPostListDTO> communityPostListDTOPage = communityPostStubData.getCommunityPostListDTOPage();
 
         // when
-        when(communityPostsService.findPosts(Mockito.any(Pageable.class))).thenReturn(communityPostListDtoPage);
+        when(communityPostsService.findPosts(Mockito.any(Pageable.class))).thenReturn(communityPostListDTOPage);
 
         // then
         mockMvc.perform(get(BASE_URL))
@@ -126,9 +124,9 @@ class CommunityPostsControllerTest {
     @DisplayName("게시글 상세 내용 조회 성공 테스트")
     void findPost() throws Exception {
         // given
-        CommunityPostDetailDto communityPostDetailDto = communityPostStubData.getCommunityPostDetailDto();
+        CommunityPostDetailDTO communityPostDetailDto = communityPostStubData.getCommunityPostDetailDto();
         // when
-        when(communityPostsService.findPost(Mockito.anyInt())).thenReturn(communityPostDetailDto);
+        when(communityPostsService.findPost(Mockito.any(User.class),Mockito.anyInt())).thenReturn(communityPostDetailDto);
 
         // then
         mockMvc.perform(get(BASE_URL + "/{communityPostId}",COMMUNITYPOST_ID))
@@ -140,7 +138,7 @@ class CommunityPostsControllerTest {
                         ),
                         responseFields(
                                 fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
-                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저 ID(고유숫자값)"),
+                                fieldWithPath("postOwner").type(JsonFieldType.BOOLEAN).description("게시글 주인인지 확인여부(주인일 경우 true)"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
                                 fieldWithPath("views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
@@ -150,62 +148,69 @@ class CommunityPostsControllerTest {
                 ));
     }
 
-//    @Test  엔티티 반환이라 일정기간 보류
-//    @DisplayName("커뮤니티 게시글 작성 성공테스트")
-//    @WithMockCustomUser
-//    void addPost() throws Exception {
-//        //Given
-//        CommunityPost communityPost = communityPostStubData.getCommunityPost();
-//        CommunityPostCreateDto communityPostCreateDto1 = communityPostStubData.getCommunityPostCreateDto();
-//        String content = objectMapper.writeValueAsString(communityPostCreateDto1);
-//        MockMultipartFile file = communityPostStubData.getMockMultipartFile();
-//
-//        MockPart communityPostCreateDto = new MockPart("communityPostCreateDto", content.getBytes(StandardCharsets.UTF_8));
-//        communityPostCreateDto.getHeaders().setContentType(APPLICATION_JSON);
-//        given(communityPostsService.addPost(Mockito.any(CommunityPostCreateDto.class), Mockito.anyList())).willReturn(communityPost);
-//        //When
-//
-//        //Then
-//        ResultActions perform = mockMvc.perform(
-//                MockMvcRequestBuilders.multipart(HttpMethod.POST,BASE_URL)
-//                        .file(file)
-//                        .part(communityPostCreateDto)
-//                .with(csrf()));
-//
-//
-//        perform
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andDo(restDocs.document(
-//                        requestParts(
-//                                partWithName("communityPostCreateDto").description("유저 업데이트 정보"),
-//                                partWithName("file").description("유저 프로필 사진")
-//                        ),
-//                        requestPartFields("communityPostCreateDto",
-//                                fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
-//                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저 ID(고유숫자값)"),
-//                                fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용")
-//                        ),
-//                        responseFields(
-//                                fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
-//
-//                                )
-//                ));
-//    }
+    @Test
+    @DisplayName("커뮤니티 게시글 작성 성공테스트")
+    @WithMockCustomUser
+    void addPost() throws Exception {
+        //Given
+        CommunityPost communityPost = communityPostStubData.getCommunityPost();
+        CommunityPostCreateDTO communityPostCreateDTO = communityPostStubData.getCommunityPostCreateDTO();
+        CommunityPostDTO communityPostDTO = communityPostStubData.getCommunityPostDTO();
+        String content = objectMapper.writeValueAsString(communityPostCreateDTO);
+        MockMultipartFile file = communityPostStubData.getMockMultipartFile();
+
+        MockPart communityPostCreateDto = new MockPart("communityPostCreateDTO", content.getBytes(StandardCharsets.UTF_8));
+        communityPostCreateDto.getHeaders().setContentType(APPLICATION_JSON);
+        given(communityPostsService.addPost(Mockito.any(User.class),Mockito.any(CommunityPostCreateDTO.class), Mockito.anyList())).willReturn(communityPostDTO);
+        //When
+
+        //Then
+        ResultActions perform = mockMvc.perform(
+                MockMvcRequestBuilders.multipart(HttpMethod.POST,BASE_URL)
+                        .file(file)
+                        .part(communityPostCreateDto)
+                        .header("Authorization", "Bearer yourAccessToken")
+                        .with(csrf()));
+
+
+        perform
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        requestParts(
+                                partWithName("communityPostCreateDTO").description("유저 업데이트 정보"),
+                                partWithName("file").description("유저 프로필 사진")
+                        ),
+                        requestPartFields("communityPostCreateDTO",
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용")
+                        ),
+                        responseFields(
+                                fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
+                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("조회수"),
+                                fieldWithPath("imagePaths").type(JsonFieldType.ARRAY).description("이미지 주소 경로")
+                                )
+                ));
+    }
 
     @Test
     @DisplayName("커뮤니티 게시글 수정 성공 테스트")
     @WithMockCustomUser
     void updatePost() throws Exception {
         //Given
-        CommunityPostUpdateDto communityPostUpdateDto = communityPostStubData.getCommunityPostUpdateDto();
-        CommunityPostResponseDto communityPostResponseDto = communityPostStubData.getCommunityPostResponseDto();
-        String content = objectMapper.writeValueAsString(communityPostUpdateDto);
+        CommunityPostUpdateDTO communityPostUpdateDTO = communityPostStubData.getCommunityPostUpdateDTO();
+        CommunityPostResponseDTO CommunityPostResponseDTO = communityPostStubData.getCommunityPostResponseDTO();
+        String content = objectMapper.writeValueAsString(communityPostUpdateDTO);
         MockMultipartFile file = communityPostStubData.getMockMultipartFile();
 
-        MockPart communityPostUpdateDto1 = new MockPart("communityPostUpdateDto", content.getBytes(StandardCharsets.UTF_8));
+        MockPart communityPostUpdateDto1 = new MockPart("communityPostUpdateDTO", content.getBytes(StandardCharsets.UTF_8));
         communityPostUpdateDto1.getHeaders().setContentType(APPLICATION_JSON);
-        given(communityPostsService.updatePost(Mockito.anyInt(),Mockito.any(CommunityPostUpdateDto.class), Mockito.anyList())).willReturn(communityPostResponseDto);
+        given(communityPostsService.updatePost(Mockito.any(User.class),Mockito.anyInt(),Mockito.any(CommunityPostUpdateDTO.class), Mockito.anyList())).willReturn(CommunityPostResponseDTO);
         //When
 
         //Then
@@ -214,6 +219,7 @@ class CommunityPostsControllerTest {
                         .file(file)
                         .part(communityPostUpdateDto1)
                         .with(csrf())
+                        .header("Authorization", "Bearer yourAccessToken")
                         .requestAttr(RestDocumentationGenerator.ATTRIBUTE_NAME_URL_TEMPLATE, BASE_URL+"/{communityPostId}"));
 
 
@@ -221,17 +227,19 @@ class CommunityPostsControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
                         ),
                         requestParts(
-                                partWithName("communityPostUpdateDto").description("유저 업데이트 정보"),
+                                partWithName("communityPostUpdateDTO").description("유저 업데이트 정보"),
                                 partWithName("file").description("유저 프로필 사진")
                         ),
-                        requestPartFields("communityPostUpdateDto",
+                        requestPartFields("communityPostUpdateDTO",
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
-                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저 ID(고유숫자값)"),
                                 fieldWithPath("imagePaths").type(JsonFieldType.ARRAY).description("이미지 저장경로(안넣어도 됩니다 내부 로직용임)").optional()
                                 ),
                         responseFields(

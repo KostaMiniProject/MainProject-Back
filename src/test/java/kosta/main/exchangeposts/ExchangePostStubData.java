@@ -1,19 +1,14 @@
 package kosta.main.exchangeposts;
 
-import kosta.main.bids.entity.Bid;
-import kosta.main.communityposts.dto.CommunityPostListDto;
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
-import kosta.main.exchangeposts.dto.ExchangePostDetailDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
 import kosta.main.exchangeposts.dto.ResponseDto;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.ItemStubData;
 import kosta.main.users.UserStubData;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 
 import java.util.ArrayList;
 import java.util.List;

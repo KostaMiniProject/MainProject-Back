@@ -91,13 +91,17 @@ operation::community-posts-controller-test/find-posts[snippets='http-request,htt
 
 operation::community-posts-controller-test/find-post[snippets='http-request,http-response,response-fields']
 
+=== 커뮤니티 게시글 생성
+
+operation::community-posts-controller-test/add-post[snippets='request-headers,request-parts,request-part-communityPostCreateDto-fields,http-response,response-fields']
+
 === 커뮤니티 게시글 수정
 
-operation::community-posts-controller-test/update-post[snippets='request-parts,request-part-communityPostUpdateDto-fields,http-response,response-fields']
+operation::community-posts-controller-test/update-post[snippets='request-headers,request-parts,request-part-communityPostUpdateDto-fields,http-response,response-fields']
 
 === 커뮤니티 게시글 삭제
 
-operation::community-posts-controller-test/delete-post[snippets='http-request,http-response']
+operation::community-posts-controller-test/delete-post[snippets='request-headers,http-request,http-response']
 
 
 == 리뷰 생성

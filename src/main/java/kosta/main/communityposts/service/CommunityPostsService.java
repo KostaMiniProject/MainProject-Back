@@ -1,15 +1,22 @@
 package kosta.main.communityposts.service;
 
+import kosta.main.comments.dto.CommentCreateDTO;
+import kosta.main.comments.dto.CommentDTO;
+import kosta.main.comments.dto.CommentListDTO;
+import kosta.main.comments.dto.CommentUpdateDTO;
+import kosta.main.comments.entity.Comment;
+import kosta.main.comments.repository.CommentsRepository;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
+
 import kosta.main.global.error.exception.BusinessException;
+import kosta.main.global.exception.ErrorCode;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.likes.dto.LikeDTO;
 import kosta.main.likes.entity.Like;
 import kosta.main.likes.repository.LikesRepository;
 import kosta.main.users.entity.User;
-import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.*;
 
@@ -27,8 +35,8 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 @RequiredArgsConstructor
 public class CommunityPostsService {
     private final CommunityPostsRepository communityPostsRepository;
-    private final UsersRepository usersRepository;
     private final LikesRepository likesRepository;
+    private final CommentsRepository commentsRepository;
     private final ImageService imageService;
     /* RuntimeException 추상 메소드 */
 
@@ -36,42 +44,58 @@ public class CommunityPostsService {
         return communityPostsRepository.findById(communityPostId).orElseThrow(() -> new BusinessException(COMMUNITY_POST_NOT_FOUND));
     }
 
-    private User findUserByUserId(Integer userId) {
-        return usersRepository.findById(userId).orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+    public Comment findCommentByCommentId(Integer commentId) {
+        return commentsRepository.findById(commentId).orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
     }
+
 
     /* 커뮤니티 목록 조회 */
     @Transactional(readOnly = true)
-    public Page<CommunityPostListDto> findPosts(Pageable pageable) {
+    public Page<CommunityPostListDTO> findPosts(Pageable pageable) {
         Page<CommunityPost> posts = communityPostsRepository.findAll(pageable);
-        return posts.map(CommunityPostListDto::from);
+        return posts.map(CommunityPostListDTO::from);
     }
 
     /* 커뮤니티 게시글 상세 조회 */
     @Transactional(readOnly = true)
-    public CommunityPostDetailDto findPost(Integer communityPostId){
+    public CommunityPostDetailDTO findPost(User currentUser, Integer communityPostId){
         CommunityPost post = findCommunityPostByCommunityPostId(communityPostId);
-        return CommunityPostDetailDto.from(post);
+
+        boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
+
+        /* 비공개글 일 경우 작성자외 접근 에러 처리 */
+        if (post.getCommunityPostStatus() == CommunityPost.CommunityPostStatus.PRIVATE && !isOwner) {
+            throw new RuntimeException(ErrorCode.ACCESS_DENIED.getMessage());
+        }
+
+        return CommunityPostDetailDTO.builder()
+                .postOwner(isOwner)
+                .communityPostId(post.getCommunityPostId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .views(post.getViews())
+                .communityPostStatus(post.getCommunityPostStatus())
+                .likeCount(post.getLikePostList().size())
+                .build();
     }
 
     /* 커뮤니티 게시글 작성 */
-    public CommunityPost addPost(CommunityPostCreateDto communityPostCreateDto, List<MultipartFile> files) {
+    public CommunityPostDTO addPost(User user, CommunityPostCreateDTO communityPostCreateDTO, List<MultipartFile> files) {
         List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
-        User user = findUserByUserId(communityPostCreateDto.getUserId());
         CommunityPost communityPost = CommunityPost.builder()
                 .user(user)
-                .title(communityPostCreateDto.getTitle())
-                .content(communityPostCreateDto.getContent())
+                .title(communityPostCreateDTO.getTitle())
+                .content(communityPostCreateDTO.getContent())
                 .images(imagePaths)
                 .build();
-        return communityPostsRepository.save(communityPost);
+        return new CommunityPostDTO(communityPostsRepository.save(communityPost));
     }
 
     /* 커뮤니티 게시글 수정 */
-    public CommunityPostResponseDto updatePost(Integer communityPostId, CommunityPostUpdateDto communityPostUpdateDto, List<MultipartFile> files) {
+    public CommunityPostResponseDTO updatePost(User user, Integer communityPostId, CommunityPostUpdateDTO communityPostUpdateDTO, List<MultipartFile> files) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
 
-        if (!communityPost.getUser().getUserId().equals(communityPostUpdateDto.getUserId())) {
+        if (!communityPost.getUser().getUserId().equals(user.getUserId())) {
             throw new BusinessException(NOT_COMMUNITY_POST_OWNER);
         }
 
@@ -79,10 +103,10 @@ public class CommunityPostsService {
         // 변경 불가능한 리스트를 반환하는 toList() 메소드
         // toList()로 생성한 리스트를 new ArrayList<>를 이용해 새로운 ArrayList로 변환
         // ArrayList는 필요에 따라 요소를 추가하거나 삭제하는 등의 작업을 할 수 있다.
-        communityPostUpdateDto.updateImagePaths(imagePaths);
-        communityPost.updateCommunityPost(communityPostUpdateDto);
+        communityPostUpdateDTO.updateImagePaths(imagePaths);
+        communityPost.updateCommunityPost(communityPostUpdateDTO);
         CommunityPost save = communityPostsRepository.save(communityPost);
-        return CommunityPostResponseDto.of(save);
+        return CommunityPostResponseDTO.of(save);
     }
 
     /* 커뮤니티 게시글 삭제 */
@@ -97,9 +121,8 @@ public class CommunityPostsService {
     }
 
     /* 커뮤니티 좋아요 토글 */
-    public Object toggleLikePost(Integer communityPostId, Integer userId) { // 좋아요 누르면 likeDto/ 취소를 누르면 CommunityPostLikeCancelledDto를 반환해야 하므로 Object타입
+    public Object toggleLikePost(Integer communityPostId, User user) { // 좋아요 누르면 likeDto/ 취소를 누르면 CommunityPostLikeCancelledDto를 반환해야 하므로 Object타입
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
-        User user = findUserByUserId(userId);
 
         // 좋아요를 누른 유저가 로그인한 유저와 일치한지의 로직
         Like targetLike = null; // 좋아요 여부를 결정해주는 변수 targetLike 생성
@@ -116,14 +139,62 @@ public class CommunityPostsService {
             targetLike.setCommunityPost(null); // targetLike가 CommunityPost를 더 이상 참조하지 않도록 설정하여 CommunityPost 엔티티에서 Like 엔티티를 제거한다.
             likesRepository.delete(targetLike); // targetLike 객체를 데이터베이스에서 제거한다.
             // 이전 두 단계에서 '좋아요'의 상태를 업데이트했으므로, 이제 안전하게 DB에서 '좋아요'를 제거하는 로직이다.
-            return new CommunityPostLikeCancelledDto("좋아요 취소 했습니다."); //retrurn null이였으나 NullPointerException 발생 가능성이 있어서 수정하여 취소 메세지 반환
+            return new CommunityPostLikeCancelledDTO("좋아요 취소 했습니다."); //retrurn null이였으나 NullPointerException 발생 가능성이 있어서 수정하여 취소 메세지 반환
         } else { // 좋아요 목록에 좋아요가 없다면
             Like like = new Like(); // 새로운 like 객체를 생성한다.
             like.setCommunityPost(communityPost); // 좋아요를 누른 게시글을 like 객체에 연결
             like.setUser(user); // 좋아요를 누른 사용자를 like 객체에 연결
             communityPost.getLikePostList().add(like); // 좋아요 목록에 like 객체 추가
             communityPostsRepository.save(communityPost); // 좋아요가 추가된 게시글을 DB에 저장
-            return LikeDTO.of(like); // like 객체를 LikeDto로 변환하여 반환
+            return LikeDTO.of(like); // like 객체를 LikeDTO로 변환하여 반환
+
         }
+    }
+
+    // 댓글 조회(대댓글 할때는 사용자 아이디 필요)
+    @Transactional(readOnly = true)
+    public List<CommentListDTO> findCommentsByPostId(Integer communityPostId) {
+        CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
+
+        return communityPost.getCommentList().stream()
+                .map(CommentListDTO::from)
+                .collect(Collectors.toList());
+    }
+
+    // 댓글 작성(대댓글 할때는 parentId 사용)
+    public CommentDTO addComment(User user, Integer communityPostId, CommentCreateDTO commentCreateDTO) {
+        CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
+
+        Comment comment = Comment.builder()
+                .user(user)
+                .content(commentCreateDTO.getContent())
+                .communityPost(communityPost)
+                .build();
+        return new CommentDTO(commentsRepository.save(comment));
+    }
+
+    // 댓글 수정
+    public CommentDTO updateComment(User user, Integer commentId, CommentUpdateDTO commentUpdateDTO) {
+        Comment comment = findCommentByCommentId(commentId);
+
+        if (!comment.getUser().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("댓글 수정 권한이 없습니다.");
+        }
+
+        comment.updateComment(commentUpdateDTO);
+        Comment save = commentsRepository.save(comment);
+        return new CommentDTO(save);
+    }
+
+    // 댓글 삭제
+    public void deleteComment(Integer commentId, User user) {
+        Comment comment = findCommentByCommentId(commentId);
+
+        if (!comment.getUser().getUserId().equals(user.getUserId())) {
+            throw new RuntimeException("댓글 삭제 권한이 없습니다.");
+        }
+
+        comment.updateCommentStatus(Comment.CommentStatus.DELETED);
+        commentsRepository.save(comment);
     }
 }

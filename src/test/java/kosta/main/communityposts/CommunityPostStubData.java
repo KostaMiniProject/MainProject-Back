@@ -11,10 +11,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,17 +68,18 @@ public class CommunityPostStubData {
         return communityPost;
     }
 
-    public List<CommunityPostListDto> getCommunityPostListDto(){
+    public List<CommunityPostListDTO> getCommunityPostListDTO(){
         CommunityPost communityPost = getCommunityPost();
         CommunityPost anotherCommunityPost = getAnotherCommunityPost();
-        List<CommunityPostListDto> communityPostLists = new ArrayList<>();
-        communityPostLists.add(CommunityPostListDto.from(communityPost));
-        communityPostLists.add(CommunityPostListDto.from(anotherCommunityPost));
+        List<CommunityPostListDTO> communityPostLists = new ArrayList<>();
+        communityPostLists.add(CommunityPostListDTO.from(communityPost));
+        communityPostLists.add(CommunityPostListDTO.from(anotherCommunityPost));
         return communityPostLists;
     }
 
-    public Page<CommunityPostListDto> getCommunityPostListDtoPage(){
-        List<CommunityPostListDto> communityPostListDto = getCommunityPostListDto();
+
+    public Page<CommunityPostListDTO> getCommunityPostListDTOPage(){
+        List<CommunityPostListDTO> communityPostListDto = getCommunityPostListDTO();
         // 요청으로 들어온 page와 한 page당 원하는 데이터의 갯수
         PageRequest pageRequest = PageRequest.of(0, 10);
         int start = (int) pageRequest.getOffset();
@@ -88,28 +87,39 @@ public class CommunityPostStubData {
         return new PageImpl<>(communityPostListDto.subList(start, end), pageRequest, communityPostListDto.size());
     }
 
-    public CommunityPostResponseDto getCommunityPostResponseDto(){
+    public CommunityPostResponseDTO getCommunityPostResponseDTO(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostResponseDto.of(communityPost);
+        return CommunityPostResponseDTO.of(communityPost);
     }
 
-    public CommunityPostUpdateDto getCommunityPostUpdateDto(){
+
+
+    public CommunityPostUpdateDTO getCommunityPostUpdateDTO(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostUpdateDto.builder()
+        return CommunityPostUpdateDTO.builder()
                 .title(communityPost.getTitle())
-                .userId(communityPost.getUser().getUserId())
                 .content(communityPost.getContent())
                 .build();
     }
-    public CommunityPostDetailDto getCommunityPostDetailDto(){
+    public CommunityPostDetailDTO getCommunityPostDetailDto(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostDetailDto.from(communityPost);
+        return CommunityPostDetailDTO.from(communityPost,true);
     }
-    public CommunityPostCreateDto getCommunityPostCreateDto(){
-        return CommunityPostCreateDto.builder()
-                .userId(USER_ID)
+    public CommunityPostCreateDTO getCommunityPostCreateDTO(){
+        return CommunityPostCreateDTO.builder()
                 .title(TITLE)
                 .content(CONTENT)
+                .build();
+    }
+
+    public CommunityPostDTO getCommunityPostDTO(){
+        CommunityPost communityPost = getCommunityPost();
+        return CommunityPostDTO.builder()
+                .communityPostId(communityPost.getCommunityPostId())
+                .title(communityPost.getTitle())
+                .content(communityPost.getContent())
+                .views(communityPost.getViews())
+                .imagePaths(communityPost.getImages())
                 .build();
     }
 

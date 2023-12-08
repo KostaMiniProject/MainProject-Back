@@ -1,8 +1,11 @@
 package kosta.main.communityposts.controller;
 
 
+import kosta.main.comments.dto.CommentCreateDTO;
+import kosta.main.comments.dto.CommentDTO;
+import kosta.main.comments.dto.CommentListDTO;
+import kosta.main.comments.dto.CommentUpdateDTO;
 import kosta.main.communityposts.dto.*;
-import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.global.dto.PageInfo;
 import kosta.main.global.dto.PageResponseDto;
@@ -33,35 +36,36 @@ public class CommunityPostsController {
     /* 테스트 성공 확인 */
     @GetMapping
     public ResponseEntity<?> findPosts(@PageableDefault(page = 0, size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<CommunityPostListDto> posts = communityPostsService.findPosts(pageable);
-        List<CommunityPostListDto> list = posts.stream().toList();
+        Page<CommunityPostListDTO> posts = communityPostsService.findPosts(pageable);
+        List<CommunityPostListDTO> list = posts.stream().toList();
 
-        return new ResponseEntity<>(new PageResponseDto(list, PageInfo.of(posts)),HttpStatus.OK);
+        return new ResponseEntity<>(new PageResponseDto(list, PageInfo.of(posts)), HttpStatus.OK);
     }
 
     /* 커뮤니티 게시글 상세 조회 */
     /* 테스트 성공 확인 */
     @GetMapping("/{communityPostId}")
-    public ResponseEntity<CommunityPostDetailDto> findPost(@PathVariable("communityPostId") Integer communityPostId) throws Exception {
-        CommunityPostDetailDto communityPost = communityPostsService.findPost(communityPostId);
+    public ResponseEntity<CommunityPostDetailDTO> findPost(@LoginUser User user, @PathVariable("communityPostId") Integer communityPostId) {
+        CommunityPostDetailDTO communityPost = communityPostsService.findPost(user, communityPostId);
         return ResponseEntity.ok(communityPost);
     }
 
     /* 커뮤니티 게시글 작성 */
     /* 테스트 성공 확인 */
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<CommunityPost> addPost(@RequestPart("communityPostCreateDto") CommunityPostCreateDto communityPostCreateDto,
-                                                 @RequestPart("file") List<MultipartFile> files) {
-        CommunityPost communityPost = communityPostsService.addPost(communityPostCreateDto,files);
-        return ResponseEntity.ok(communityPost);
+    public ResponseEntity<CommunityPostDTO> addPost(@LoginUser User user, @RequestPart("communityPostCreateDTO") CommunityPostCreateDTO communityPostCreateDTO,
+                                                    @RequestPart("file") List<MultipartFile> files) {
+        CommunityPostDTO communityPostDTO = communityPostsService.addPost(user, communityPostCreateDTO,files);
+        return ResponseEntity.ok(communityPostDTO);
     }
 
     /* 커뮤니티 게시글 수정 */
     @PutMapping("/{communityPostId}")
-    public ResponseEntity<CommunityPostResponseDto> updatePost(@PathVariable("communityPostId") Integer communityPostId,
-                                                               @RequestPart("communityPostUpdateDto") CommunityPostUpdateDto communityPostUpdateDto,
+    public ResponseEntity<CommunityPostResponseDTO> updatePost(@LoginUser User user,
+                                                               @PathVariable("communityPostId") Integer communityPostId,
+                                                               @RequestPart("communityPostUpdateDTO") CommunityPostUpdateDTO communityPostUpdateDTO,
                                                                @RequestPart("file") List<MultipartFile> files){
-        return new ResponseEntity<>(communityPostsService.updatePost(communityPostId, communityPostUpdateDto,files), HttpStatus.OK);
+        return new ResponseEntity<>(communityPostsService.updatePost(user, communityPostId, communityPostUpdateDTO,files), HttpStatus.OK);
     }
 
     /* 커뮤니티 게시글 삭제 */
@@ -74,9 +78,40 @@ public class CommunityPostsController {
 
     /* 커뮤니티 좋아요 */
     @PutMapping("/likes/{communityPostId}")
-    public ResponseEntity<?> toggleLikePost(@PathVariable("communityPostId") Integer communityPostId, @RequestParam Integer userId) {
-        Object response = communityPostsService.toggleLikePost(communityPostId, userId);
+    public ResponseEntity<?> toggleLikePost(@LoginUser User user,
+                                            @PathVariable("communityPostId") Integer communityPostId) {
+        Object response = communityPostsService.toggleLikePost(communityPostId, user);
         return ResponseEntity.ok(response);
+    }
+
+    /* 커뮤니티 댓글 조회 */
+    @GetMapping("/{communityPostId}/comments")
+    public ResponseEntity<List<CommentListDTO>> findComments(@PathVariable("communityPostId") Integer communityPostId) {
+        return ResponseEntity.ok(communityPostsService.findCommentsByPostId(communityPostId));
+    }
+
+    /* 커뮤니티 댓글 작성 */
+    @PostMapping("/{communityPostId}/comments")
+    public ResponseEntity<CommentDTO> addComment(@LoginUser User user,
+                                                 @PathVariable("communityPostId") Integer communityPostId,
+                                                 @RequestPart("commentCreateDTO") CommentCreateDTO commentCreateDTO) {
+        CommentDTO commentDTO = communityPostsService.addComment(user, communityPostId, commentCreateDTO);
+        return ResponseEntity.ok(commentDTO);
+    }
+
+    /* 커뮤니티 댓글 수정 */
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<CommentDTO> updateComment(@LoginUser User user,
+                                                    @PathVariable("commentId") Integer commentId,
+                                                    @RequestPart("commentUpdateDTO") CommentUpdateDTO commentUpdateDTO) {
+        return new ResponseEntity<>(communityPostsService.updateComment(user, commentId, commentUpdateDTO), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable("commentId") Integer commentId,
+                                        @LoginUser User user) {
+        communityPostsService.deleteComment(commentId, user);
+        return ResponseEntity.ok().build();
     }
 }
 

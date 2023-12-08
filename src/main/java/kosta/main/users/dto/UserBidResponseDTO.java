@@ -18,7 +18,7 @@ public class UserBidResponseDTO {
     private String imageUrl;
 
 
-    private Integer rating;
+    private Double rating;
 
     public static UserBidResponseDTO from(User user){
         return UserBidResponseDTO.builder()

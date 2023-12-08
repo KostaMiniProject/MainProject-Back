@@ -54,7 +54,7 @@ public class User extends Auditable {
 
     @Builder.Default
     @Column(nullable = false)
-    private Integer rating = 3;
+    private Double rating = 3.0;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

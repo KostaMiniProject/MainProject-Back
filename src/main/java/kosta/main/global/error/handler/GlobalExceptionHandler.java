@@ -2,6 +2,7 @@ package kosta.main.global.error.handler;
 
 import jakarta.validation.ConstraintViolationException;
 import kosta.main.global.error.dto.ErrorBaseResponse;
+import kosta.main.global.error.dto.ErrorValidationResponse;
 import kosta.main.global.error.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.BindException;
@@ -46,14 +48,14 @@ public class GlobalExceptionHandler {
         ResponseEntity<ErrorBaseResponse> errorBaseResponseResponseEntity = handleExceptionInternal(HttpStatus.UNAUTHORIZED, e.getMessage());
         log.info("error==========================", errorBaseResponseResponseEntity);
         return errorBaseResponseResponseEntity;
-
+    }
     /**
      * RequestParam annotation의 binding error를 handling합니다.
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<ErrorBaseResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         log.error(">>> handle: MethodArgumentTypeMismatchException ", e);
-        final ErrorBaseResponse errorBaseResponse = ErrorBaseResponse.of(ErrorCode.BAD_REQUEST);
+        final ErrorBaseResponse errorBaseResponse = ErrorBaseResponse.of(CommonErrorCode.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBaseResponse);
     }
 
@@ -85,12 +87,8 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ErrorBaseResponse> handleExceptionInternal(HttpStatus httpStatus, String massage) {
         return ResponseEntity.status(httpStatus)
-                .body(ErrorBaseResponse.of(httpStatus.value(), massage));
+                .body(ErrorBaseResponse.of(httpStatus, massage));
     }
 
-    private ResponseEntity<ErrorBaseResponse> handleExceptionInternal(HttpStatusCode httpStatus, String massage) {
-        return ResponseEntity.status(httpStatus)
-                .body(ErrorBaseResponse.of(httpStatus.value(), massage));
-    }
 }
 

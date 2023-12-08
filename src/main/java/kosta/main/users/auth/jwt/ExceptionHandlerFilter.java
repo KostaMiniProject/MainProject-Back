@@ -37,7 +37,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         response.setStatus(errorCode.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        ErrorBaseResponse errorBaseResponse = ErrorBaseResponse.of(errorCode.getCode(), errorCode.getMessage());
+        ErrorBaseResponse errorBaseResponse = ErrorBaseResponse.of(errorCode, errorCode.getMessage());
         try{
             response.getWriter().write(objectMapper.writeValueAsString(errorBaseResponse));
         }catch (IOException e){

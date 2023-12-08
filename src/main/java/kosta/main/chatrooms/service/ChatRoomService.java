@@ -2,14 +2,18 @@ package kosta.main.chatrooms.service;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
+import kosta.main.chatrooms.dto.ChatListResponseDTO;
 import kosta.main.chatrooms.dto.ChatRoomResponseDTO;
 import kosta.main.chatrooms.dto.CreateChatRoomDTO;
 import kosta.main.chatrooms.dto.CreateChatRoomResponseDTO;
 import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.chatrooms.repository.ChatRoomsRepository;
 import kosta.main.chats.dto.ChatMessageDTO;
+import kosta.main.chats.entity.Chat;
+import kosta.main.chats.repository.ChatsRepository;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
+import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
@@ -18,6 +22,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +32,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class ChatRoomService {
   private final ChatRoomsRepository chatRoomsRepository;
+  private final ChatsRepository chatsRepository;
   private final UsersRepository usersRepository;
   private final ExchangePostsRepository exchangePostsRepository;
   private final BidRepository bidRepository;
@@ -106,6 +112,30 @@ public class ChatRoomService {
         .map(chatRoom -> ChatRoomResponseDTO.of(chatRoom, currentUser))
         .collect(Collectors.toList());
   }
+
+  // 특정 채팅방의 채팅 내역을 불러오는 기능
+  public List<ChatListResponseDTO> getChatList(Integer chatRoomId, User user){
+    ChatRoom chatRoom = findEntityById(chatRoomsRepository, chatRoomId, "ChatRoom Not Found");
+    // 채팅에 참여한 유저가 맞는지 확인
+    if (!chatRoom.getSender().getUserId().equals(user.getUserId()) && !chatRoom.getReceiver().getUserId().equals(user.getUserId())) {
+      throw new RuntimeException("User not a member of the chat room");
+    }
+
+    List<Chat> chats = chatsRepository.findByChatRoom(chatRoom);
+    List<ChatListResponseDTO> chatListResponse = new ArrayList<>();
+
+    for (Chat chat : chats) {
+      // 채팅 내역을 불러올때 본인이 작성한 chat이 아닌건 모두 true 처리
+      if (!chat.getUser().getUserId().equals(user.getUserId()) && !chat.isRead()) {
+        chat.updateIsRead(true);
+        chatsRepository.save(chat);
+      }
+      chatListResponse.add(ChatListResponseDTO.from(chat));
+    }
+
+    return chatListResponse;
+  }
+
 
   // 채팅방 입장 알림
   public void notifyChatRoomEntry(Integer chatRoomId, Integer userId) {

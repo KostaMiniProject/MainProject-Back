@@ -84,34 +84,5 @@ public class CommunityPostsController {
         return ResponseEntity.ok(response);
     }
 
-    /* 커뮤니티 댓글 조회 */
-    @GetMapping("/{communityPostId}/comments")
-    public ResponseEntity<List<CommentListDTO>> findComments(@PathVariable("communityPostId") Integer communityPostId) {
-        return ResponseEntity.ok(communityPostsService.findCommentsByPostId(communityPostId));
-    }
-
-    /* 커뮤니티 댓글 작성 */
-    @PostMapping("/{communityPostId}/comments")
-    public ResponseEntity<CommentDTO> addComment(@LoginUser User user,
-                                                 @PathVariable("communityPostId") Integer communityPostId,
-                                                 @RequestPart("commentCreateDTO") CommentCreateDTO commentCreateDTO) {
-        CommentDTO commentDTO = communityPostsService.addComment(user, communityPostId, commentCreateDTO);
-        return ResponseEntity.ok(commentDTO);
-    }
-
-    /* 커뮤니티 댓글 수정 */
-    @PutMapping("/comments/{commentId}")
-    public ResponseEntity<CommentDTO> updateComment(@LoginUser User user,
-                                                    @PathVariable("commentId") Integer commentId,
-                                                    @RequestPart("commentUpdateDTO") CommentUpdateDTO commentUpdateDTO) {
-        return new ResponseEntity<>(communityPostsService.updateComment(user, commentId, commentUpdateDTO), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable("commentId") Integer commentId,
-                                        @LoginUser User user) {
-        communityPostsService.deleteComment(commentId, user);
-        return ResponseEntity.ok().build();
-    }
 }
 

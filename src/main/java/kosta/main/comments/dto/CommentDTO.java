@@ -16,4 +16,6 @@ public class CommentDTO {
         this.commentId = comment.getCommentId();
         this.content = comment.getContent();
     }
+
+
 }

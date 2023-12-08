@@ -54,6 +54,7 @@ public class CommunityPost extends Auditable {
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL)
     private List<Like> likePostList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
   

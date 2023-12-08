@@ -1,9 +1,6 @@
 package kosta.main.dibs.dto;
 
-import kosta.main.dibs.entity.Dib;
-import kosta.main.exchangeposts.entity.ExchangePost;
-import kosta.main.users.entity.User;
-import lombok.AllArgsConstructor;
+
 import lombok.Builder;
 import lombok.Getter;
 

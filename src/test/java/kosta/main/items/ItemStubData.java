@@ -4,8 +4,9 @@ import kosta.main.bids.entity.Bid;
 import kosta.main.categories.entity.Category;
 import kosta.main.exchangeposts.ExchangePostStubData;
 import kosta.main.exchangeposts.entity.ExchangePost;
-import kosta.main.items.dto.ItemSaveDto;
-import kosta.main.items.dto.ItemUpdateDto;
+import kosta.main.items.dto.ItemSaveDTO;
+import kosta.main.items.dto.ItemUpdateDTO;
+import kosta.main.items.dto.ItemUpdateResponseDTO;
 import kosta.main.items.entity.Item;
 import kosta.main.users.UserStubData;
 import org.springframework.mock.web.MockMultipartFile;
@@ -83,22 +84,32 @@ public class ItemStubData {
         return getBid().getItems().get(0);
     }
 
-    public ItemSaveDto getItemSaveDto(){
+    public ItemSaveDTO getItemSaveDTO(){
         ArrayList<String> images = new ArrayList<>();
         images.add("주소1");
         images.add("주소2");
-        return ItemSaveDto.builder()
+        return ItemSaveDTO.builder()
                 .title(TITLE)
                 .description(DESCRIPTION)
                 .imageUrl(images)
                 .build();
     }
 
-    public ItemUpdateDto getItemUpdateDto(){
+    public ItemUpdateResponseDTO getItemUpdateResponseDto(){
+        Item item = getNoBidItem();
+        return ItemUpdateResponseDTO.builder()
+                .title(item.getTitle())
+                .description(item.getDescription())
+                .itemStatus(item.getItemStatus())
+                .images(item.getImages())
+                .build();
+    }
+
+    public ItemUpdateDTO getItemUpdateDto(){
         ArrayList<String> images = new ArrayList<>();
         images.add("주소1");
         images.add("주소2");
-        return ItemUpdateDto.builder()
+        return ItemUpdateDTO.builder()
                 .title(TITLE)
                 .description(DESCRIPTION)
                 .itemStatus(ITEM_STATUS)

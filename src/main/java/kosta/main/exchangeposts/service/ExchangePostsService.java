@@ -5,16 +5,21 @@ import kosta.main.bids.repository.BidRepository;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
+import kosta.main.global.error.exception.BusinessException;
 import kosta.main.items.entity.Item;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static kosta.main.global.error.exception.CommonErrorCode.*;
 
 @Service
 @AllArgsConstructor
@@ -38,15 +43,15 @@ public class ExchangePostsService {
   public ResponseDto createExchangePost(User user, ExchangePostDTO exchangePostDTO) {
     // 기존 코드: 사용자 및 아이템 조회
     Item item = itemsRepository.findById(exchangePostDTO.getItemId())
-            .orElseThrow(() -> new RuntimeException("Item not found"));
+            .orElseThrow(() -> new BusinessException(ITEM_NOT_FOUND));
     System.out.println(item.getItemId());
 
     // 아이템 소유주 확인
     if (!item.getUser().getUserId().equals(user.getUserId())) {
-      throw new RuntimeException("You can only create an exchange post with your own item");
+      throw new BusinessException(NOT_ITEM_OWNER);
     }
     if (item.getIsBiding() == Item.IsBiding.BIDING) {
-      throw new RuntimeException("This item is already in use for another exchange");
+      throw new BusinessException(ALREADY_BIDDING_ITEM);
     }
 
     // 교환 게시글에 사용된 Item의 상태는 다른 거래에 사용하지 못하도록 BIDING으로 변경되어야한다.
@@ -70,34 +75,36 @@ public class ExchangePostsService {
 
 
 
+  // 전체 게시글 불러오기 (23.12.04 : 최신순으로 제공, 페이지 네이션으로 10개씩 제공)
   @Transactional(readOnly = true)
-  public List<ExchangePostListDTO> findAllExchangePosts() {
-    return exchangePostRepository.findAll().stream().map(post -> {
-              // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
-              String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
+  public Page<ExchangePostListDTO> findAllExchangePosts(Pageable pageable) {
+    return exchangePostRepository.findAll(pageable)
+        .map(post -> {
+          // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
+          String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
 
-              // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
-              Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
+          // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
+          Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
 
-              return ExchangePostListDTO.builder()
-                      .exchangePostId(post.getExchangePostId())
-                      .title(post.getTitle())
-                      .preferItem(post.getPreferItems())
-                      .address(post.getAddress())
-                      .exchangePostStatus(post.getExchangePostStatus().toString())
-                      .createdAt(post.getCreatedAt())
-                      .imgUrl(imgUrl)
-                      .bidCount(bidCount)
-                      .build();
-            })
-            .collect(Collectors.toList());
+          return ExchangePostListDTO.builder()
+              .exchangePostId(post.getExchangePostId())
+              .title(post.getTitle())
+              .preferItem(post.getPreferItems())
+              .address(post.getAddress())
+              .exchangePostStatus(post.getExchangePostStatus().toString())
+              .createdAt(post.getCreatedAt())
+              .imgUrl(imgUrl)
+              .bidCount(bidCount)
+              .build();
+        });
   }
+
 
 
   @Transactional(readOnly = true)
   public ExchangePostDetailDTO findExchangePostById(Integer exchangePostId, User currentUser) {
     ExchangePost post = exchangePostRepository.findById(exchangePostId)
-        .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
+        .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
 
     // 교환 게시글 작성자와 현재 로그인한 사용자가 같은지 확인 (로그인하지 않은 경우 고려)
     boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
@@ -151,22 +158,22 @@ public class ExchangePostsService {
   @Transactional
   public Integer updateExchangePost(User user, Integer exchangePostId, ExchangePostDTO updatedExchangePostDTO) {
     ExchangePost existingExchangePost = exchangePostRepository.findById(exchangePostId)
-        .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
+        .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
 
     // 요청 사용자와 게시글 작성자가 동일한지 확인
     if (!existingExchangePost.getUser().getUserId().equals(user.getUserId())) {
-      throw new RuntimeException("게시글 작성자만 수정을 진행할 수 있습니다.");
+      throw new BusinessException(NOT_EXCHANGE_POST_OWNER);
     }
 
     // Item 엔티티 조회 및 상태 확인 및 변경
     Item newItem = null; // 생성되지 않을수 있기 떄문에 우선 선언
     if (updatedExchangePostDTO.getItemId() != null) {
       newItem = itemsRepository.findById(updatedExchangePostDTO.getItemId())
-          .orElseThrow(() -> new RuntimeException("물건정보를 찾을수 없습니다."));
+          .orElseThrow(() -> new BusinessException(ITEM_NOT_FOUND));
 
       // 아이템 소유주 확인
       if (!newItem.getUser().getUserId().equals(user.getUserId())) {
-        throw new RuntimeException("본인의 물건만 사용 가능합니다.");
+        throw new BusinessException(NOT_ITEM_OWNER);
       }
 
       // 새 아이템의 상태를 BIDING으로 변경
@@ -189,11 +196,11 @@ public class ExchangePostsService {
   @Transactional
   public void deleteExchangePost(Integer exchangePostId, User user) {
     ExchangePost existingExchangePost = exchangePostRepository.findById(exchangePostId)
-        .orElseThrow(() -> new RuntimeException("ExchangePost not found"));
+        .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
 
     // 게시글 작성자와 삭제 요청자가 동일한지 확인
     if (!existingExchangePost.getUser().getUserId().equals(user.getUserId())) {
-      throw new RuntimeException("Only the post creator can delete the post");
+      throw new BusinessException(NOT_EXCHANGE_POST_OWNER);
     }
 
     // 관련된 모든 입찰을 찾아서 처리 (Soft Delete로 상태 변경)
@@ -211,8 +218,5 @@ public class ExchangePostsService {
     // 게시글을 Soft Delete로 처리
     exchangePostRepository.delete(existingExchangePost);
   }
-
-
-
 
 }

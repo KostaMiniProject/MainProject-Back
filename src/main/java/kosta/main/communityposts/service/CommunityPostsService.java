@@ -9,6 +9,8 @@ import kosta.main.comments.repository.CommentsRepository;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
+
+import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.exception.ErrorCode;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.likes.dto.LikeDTO;
@@ -26,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static kosta.main.global.error.exception.CommonErrorCode.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -37,12 +41,13 @@ public class CommunityPostsService {
     /* RuntimeException 추상 메소드 */
 
     public CommunityPost findCommunityPostByCommunityPostId(Integer communityPostId) {
-        return communityPostsRepository.findById(communityPostId).orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+        return communityPostsRepository.findById(communityPostId).orElseThrow(() -> new BusinessException(COMMUNITY_POST_NOT_FOUND));
     }
 
     public Comment findCommentByCommentId(Integer commentId) {
         return commentsRepository.findById(commentId).orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
     }
+
 
     /* 커뮤니티 목록 조회 */
     @Transactional(readOnly = true)
@@ -91,7 +96,7 @@ public class CommunityPostsService {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
 
         if (!communityPost.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("작성자와 수정하는 사용자가 일치하지 않습니다.");
+            throw new BusinessException(NOT_COMMUNITY_POST_OWNER);
         }
 
         List<String> imagePaths = new ArrayList<>(files.stream().map(imageService::resizeToBasicSizeAndUpload).toList());
@@ -108,7 +113,7 @@ public class CommunityPostsService {
     public void deletePost(Integer communityPostId, User user) {
         CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
         if (!communityPost.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("작성자와 삭제하는 사용자가 일치하지 않습니다.");
+            throw new BusinessException(NOT_COMMUNITY_POST_OWNER);
         }
 
         communityPost.updateCommunityPostStatus(CommunityPost.CommunityPostStatus.DELETED);
@@ -142,6 +147,7 @@ public class CommunityPostsService {
             communityPost.getLikePostList().add(like); // 좋아요 목록에 like 객체 추가
             communityPostsRepository.save(communityPost); // 좋아요가 추가된 게시글을 DB에 저장
             return LikeDTO.of(like); // like 객체를 LikeDTO로 변환하여 반환
+
         }
     }
 

@@ -6,6 +6,9 @@ import kosta.main.likes.entity.Like;
 import kosta.main.users.UserStubData;
 import kosta.main.users.entity.User;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -65,7 +68,7 @@ public class CommunityPostStubData {
         return communityPost;
     }
 
-    public List<CommunityPostListDTO> getCommunityPostListDto(){
+    public List<CommunityPostListDTO> getCommunityPostListDTO(){
         CommunityPost communityPost = getCommunityPost();
         CommunityPost anotherCommunityPost = getAnotherCommunityPost();
         List<CommunityPostListDTO> communityPostLists = new ArrayList<>();
@@ -74,28 +77,49 @@ public class CommunityPostStubData {
         return communityPostLists;
     }
 
-    public CommunityPostResponseDTO getCommunityPostResponseDto(){
+
+    public Page<CommunityPostListDTO> getCommunityPostListDTOPage(){
+        List<CommunityPostListDTO> communityPostListDto = getCommunityPostListDTO();
+        // 요청으로 들어온 page와 한 page당 원하는 데이터의 갯수
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), communityPostListDto.size());
+        return new PageImpl<>(communityPostListDto.subList(start, end), pageRequest, communityPostListDto.size());
+    }
+
+    public CommunityPostResponseDTO getCommunityPostResponseDTO(){
         CommunityPost communityPost = getCommunityPost();
         return CommunityPostResponseDTO.of(communityPost);
     }
 
-    public CommunityPostUpdateDTO getCommunityPostUpdateDto(){
+
+
+    public CommunityPostUpdateDTO getCommunityPostUpdateDTO(){
         CommunityPost communityPost = getCommunityPost();
         return CommunityPostUpdateDTO.builder()
                 .title(communityPost.getTitle())
-                .userId(communityPost.getUser().getUserId())
                 .content(communityPost.getContent())
                 .build();
     }
     public CommunityPostDetailDTO getCommunityPostDetailDto(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostDetailDTO.from(communityPost);
+        return CommunityPostDetailDTO.from(communityPost,true);
     }
-    public CommunityPostCreateDTO getCommunityPostCreateDto(){
+    public CommunityPostCreateDTO getCommunityPostCreateDTO(){
         return CommunityPostCreateDTO.builder()
-                .userId(USER_ID)
                 .title(TITLE)
                 .content(CONTENT)
+                .build();
+    }
+
+    public CommunityPostDTO getCommunityPostDTO(){
+        CommunityPost communityPost = getCommunityPost();
+        return CommunityPostDTO.builder()
+                .communityPostId(communityPost.getCommunityPostId())
+                .title(communityPost.getTitle())
+                .content(communityPost.getContent())
+                .views(communityPost.getViews())
+                .imagePaths(communityPost.getImages())
                 .build();
     }
 

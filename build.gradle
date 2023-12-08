@@ -57,10 +57,22 @@ dependencies {
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+
 	// RestDocs
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 	//adoc 파일에서 사용할 snippets 속성이 자동으로 build/generated-snippets를 가키리도록 해줌
+
+	// 채팅 관련
+	// WebSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	// sockjs
+	implementation 'org.webjars:sockjs-client:1.5.1'
+	// stomp
+	implementation 'org.webjars:stomp-websocket:2.3.4'
 
 }
 

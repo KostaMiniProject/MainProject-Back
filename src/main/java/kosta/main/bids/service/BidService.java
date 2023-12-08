@@ -5,6 +5,8 @@ import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
+import kosta.main.global.error.exception.BusinessException;
+import kosta.main.global.error.exception.CommonErrorCode;
 import kosta.main.items.entity.Item;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
@@ -15,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static kosta.main.global.error.exception.CommonErrorCode.NOT_DENIED_STATUS;
+import static kosta.main.global.error.exception.CommonErrorCode.NOT_EXCHANGE_POST_OWNER;
 
 @Service
 @AllArgsConstructor
@@ -43,21 +48,21 @@ public class BidService {
     // 공통 메서드: 'DELETED' 상태의 아이템이 있는지 확인 및 최소 하나의 아이템이 있는지 확인
     private void validateItemsForBidding(List<Item> items) {
         if (items.isEmpty()) {
-            throw new RuntimeException("입찰에는 최소한 하나의 물건 등록이 필요합니다!");
+            throw new BusinessException(CommonErrorCode.INVALID_BID_REQUEST);
         }
         if (items.stream().anyMatch(item -> item.getItemStatus() == Item.ItemStatus.DELETED)) {
-            throw new RuntimeException("삭제된 물건은 입찰에 사용할 수 없습니다.");
+            throw new BusinessException(CommonErrorCode.INVALID_BIDDING_REQUEST);
         }
     }
     // 입찰 생성
     @Transactional
-    public Integer createBid(User user, Integer exchangePostId, BidsDto bidDTO) {
+    public Integer createBid(User user, Integer exchangePostId, BidsDTO bidDTO) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
         User bidder = user;
 
         // 게시글 작성자가 본인 게시글에 입찰하는 것 방지
         if (exchangePost.getUser().equals(bidder)) {
-            throw new RuntimeException("교환 게시글 작성자는 입찰을 진행할 수 없습니다.");
+            throw new BusinessException(CommonErrorCode.MY_POST_BID);
         }
 
         List<Item> items = itemsRepository.findAllById(bidDTO.getItemIds());
@@ -65,10 +70,10 @@ public class BidService {
 
         for (Item item : items) {
             if (!item.getUser().getUserId().equals(user.getUserId())) {
-                throw new RuntimeException("본인의 물건만 입찰에 사용할 수 있습니다.");
+                throw new BusinessException(CommonErrorCode.OTHER_ITEM_USE);
             }
             if (item.getIsBiding() == Item.IsBiding.BIDING) {
-                throw new RuntimeException("이미 입찰에 사용중인 물건입니다.");
+                throw new BusinessException(CommonErrorCode.ALREADY_BIDDING_ITEM);
             }
             item.updateIsBiding(Item.IsBiding.BIDING);
             itemsRepository.save(item);
@@ -92,9 +97,9 @@ public class BidService {
 
     // 특정 입찰에 대한 상세 정보 조회
     @Transactional(readOnly = true)
-    public BidDetailResponseDTO findBidById(Integer bidId, Integer exchangePostId, User currentUser) {
+    public BidDetailResponseDTO findBidById(Integer bidId, User currentUser) {
         Bid bid = findEntityById(bidRepository, bidId, "Bid not found");
-        ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "Post Not Found");
+        ExchangePost exchangePost = bid.getExchangePost(); // Bid 객체에서 ExchangePost를 가져옴
         boolean isOwner = currentUser != null && exchangePost.getUser().getUserId().equals(currentUser.getUserId());
         // 입찰자 정보 저장
         User bidder = bid.getUser();
@@ -126,7 +131,7 @@ public class BidService {
 
         // 입찰자 확인과 유저 검증
         if (!existingBid.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("해당 입찰자 본인만 입찰을 수정할 수 있습니다.");
+            throw new BusinessException(CommonErrorCode.NOT_BID_OWNER);
         }
 
         // DB에서 현재 요청으로 날아온 Item들의 ID 리스트를 업데이트 예정의 상태로 담아둠
@@ -176,7 +181,7 @@ public class BidService {
 
         // 입찰자 확인: 요청한 사용자가 입찰을 생성한 사용자와 동일한지 확인
         if (!bid.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("Only the bidder can delete the bid");
+            throw new BusinessException(CommonErrorCode.NOT_BID_OWNER);
         }
 
         updateItemsBidingStatus(bid.getItems(), Item.IsBiding.NOT_BIDING, null); // 아이템 상태 변경 및 bid 참조 제거
@@ -191,7 +196,7 @@ public class BidService {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
 
         if (!exchangePost.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("교환 게시글 작성자만 거래를 완료할 수 있습니다.");
+            throw new BusinessException(NOT_EXCHANGE_POST_OWNER);
         }
 
         List<Bid> bids = bidRepository.findByExchangePost(exchangePost);
@@ -206,7 +211,7 @@ public class BidService {
             bidRepository.save(bid);
         }
         Bid selectedBid = bidRepository.findById(selectedBidId)
-                .orElseThrow(() -> new RuntimeException("Selected bid not found"));
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.BID_NOT_FOUND));
         transferItemOwnership(List.of(exchangePost.getItem()), selectedBid.getUser()); // 게시글의 아이템 소유권 변경
         exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.COMPLETED);
         exchangePostsRepository.save(exchangePost);
@@ -257,11 +262,11 @@ public class BidService {
 
         // 게시글 작성자 확인
         if (!exchangePost.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("교환 게시글 작성자만 예약 상태를 변경할 수 있습니다.");
+            throw new BusinessException(NOT_EXCHANGE_POST_OWNER);
         }
 
         Bid selectedBid = bidRepository.findById(bidId)
-            .orElseThrow(() -> new RuntimeException("Selected bid not found"));
+            .orElseThrow(() -> new BusinessException(CommonErrorCode.BID_NOT_FOUND));
 
         // 예약 상태 토글
         if (exchangePost.getExchangePostStatus() == ExchangePost.ExchangePostStatus.RESERVATION) {
@@ -272,9 +277,11 @@ public class BidService {
             // 예약되지 않은 경우 예약 설정
             exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.RESERVATION);
             selectedBid.updateStatus(Bid.BidStatus.RESERVATION);
-        } else {
+        } else if( exchangePost.getExchangePostStatus() == ExchangePost.ExchangePostStatus.COMPLETED){
             // 완료 또는 삭제된 게시물인 경우
-            throw new RuntimeException("거래가 완료되었거나 삭제된 게시물입니다.");
+            throw new BusinessException(CommonErrorCode.FINISHED_EXCHANGE);
+        } else {
+            throw new BusinessException(CommonErrorCode.EXCHANGE_POST_NOT_FOUND);
         }
 
         exchangePostsRepository.save(exchangePost);
@@ -286,7 +293,7 @@ public class BidService {
     public void denyBid(Integer exchangePostId, Integer bidId, Integer userId) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
         if (!exchangePost.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("Only the post creator can deny the bid");
+            throw new BusinessException(NOT_EXCHANGE_POST_OWNER);
         }
 
         Bid bid = findEntityById(bidRepository, bidId, "Bid not found");
@@ -299,12 +306,12 @@ public class BidService {
     public void undoDenyBid(Integer exchangePostId, Integer bidId, Integer userId) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
         if (!exchangePost.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("Only the post creator can undo deny the bid");
+            throw new BusinessException(NOT_EXCHANGE_POST_OWNER);
         }
 
         Bid bid = findEntityById(bidRepository, bidId, "Bid not found");
         if (bid.getStatus() != Bid.BidStatus.DENIED) {
-            throw new RuntimeException("Bid is not in DENIED status");
+            throw new BusinessException(NOT_DENIED_STATUS);
         }
         bid.updateStatus(Bid.BidStatus.BIDDING);
         bidRepository.save(bid);
@@ -315,7 +322,7 @@ public class BidService {
     public List<BidListResponseDTO> findDeniedBidsForPost(Integer exchangePostId, Integer userId) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
         if (!exchangePost.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("Only the post creator can view denied bids");
+            throw new BusinessException(NOT_EXCHANGE_POST_OWNER);
         }
 
         return bidRepository.findByExchangePostAndStatus(exchangePost, Bid.BidStatus.DENIED).stream()

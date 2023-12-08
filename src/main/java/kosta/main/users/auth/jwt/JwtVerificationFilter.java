@@ -1,9 +1,15 @@
 package kosta.main.users.auth.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kosta.main.global.error.exception.AuthErrorCode;
+import kosta.main.global.error.exception.CommonErrorCode;
+import kosta.main.global.error.exception.UnauthorizedException;
 import kosta.main.users.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,14 +30,16 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer ";
+    public static final int ONLY_BEARER_LENGTH = 8;
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService userDetailsService;
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Map<String, Object> claims = verifyJws(request);
-        setAuthenticationToContext(claims);
+
+            Map<String, Object> claims = verifyJws(request);
+            setAuthenticationToContext(claims);
 
         filterChain.doFilter(request,response);
     }
@@ -40,10 +48,11 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String authorization = request.getHeader(AUTHORIZATION);
 
-        return authorization == null || !authorization.startsWith(BEARER);
+        return authorization == null || !authorization.startsWith(BEARER) || authorization.length() < ONLY_BEARER_LENGTH;
     }
 
     private Map<String,Object> verifyJws(HttpServletRequest request){
+
         String jws = request.getHeader(AUTHORIZATION).replace(BEARER, "");
         String base64EncodedSecretKey = tokenProvider.encodeBase64SecretKey(tokenProvider.getSecretKey());
         Map<String,Object> claims = tokenProvider.getClaims(jws, base64EncodedSecretKey).getBody();

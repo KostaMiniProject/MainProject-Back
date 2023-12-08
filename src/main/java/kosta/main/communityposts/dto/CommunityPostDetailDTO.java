@@ -18,4 +18,16 @@ public class CommunityPostDetailDTO {
     private CommunityPost.CommunityPostStatus communityPostStatus;
 
     private Integer likeCount;
+
+    public static CommunityPostDetailDTO from(CommunityPost communityPost,boolean postOwner){
+        return CommunityPostDetailDTO.builder()
+                .communityPostId(communityPost.getCommunityPostId())
+                .postOwner(postOwner)
+                .title(communityPost.getTitle())
+                .content(communityPost.getContent())
+                .views(communityPost.getViews())
+                .communityPostStatus(communityPost.getCommunityPostStatus())
+                .likeCount(communityPost.getLikePostList().size())
+                .build();
+    }
 }

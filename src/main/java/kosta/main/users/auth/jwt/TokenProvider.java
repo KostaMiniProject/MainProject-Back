@@ -50,6 +50,19 @@ public class TokenProvider {
                 .signWith(key)
                 .compact();
     }
+    //테스트용
+    public String generateExpiredAccessToken(Map<String, Object> claims,
+                                      String subject,
+                                      String base64EncodedSecretKey){
+        Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(Calendar.getInstance().getTime())
+                .setExpiration(Calendar.getInstance().getTime())
+                .signWith(key)
+                .compact();
+    }
 
     public String generateRefreshToken(String subject, Date expiration, String base64EncodedSecretKey){
         Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);

@@ -3,12 +3,11 @@ package kosta.main.users.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kosta.main.ControllerTest;
 import kosta.main.global.annotation.WithMockCustomUser;
-import kosta.main.items.entity.Item;
 import kosta.main.users.UserStubData;
-import kosta.main.users.dto.UserCreateDto;
-import kosta.main.users.dto.UserCreateResponseDto;
-import kosta.main.users.dto.UserUpdateDto;
-import kosta.main.users.dto.UsersResponseDto;
+import kosta.main.users.dto.UserCreateDTO;
+import kosta.main.users.dto.UserCreateResponseDTO;
+import kosta.main.users.dto.UserUpdateDTO;
+import kosta.main.users.dto.UsersResponseDTO;
 import kosta.main.users.entity.User;
 import kosta.main.users.service.UsersService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,23 +18,16 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
@@ -45,7 +37,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -118,11 +109,11 @@ class UsersControllerTest extends ControllerTest {
     @DisplayName("회원가입")
     void signup() throws Exception {
         //given
-        UserCreateDto userCreateDto = userStubData.getUserCreateDto();
-        UserCreateResponseDto userCreateResponseDto = userStubData.getUserCreateResponseDto();
+        UserCreateDTO userCreateDto = userStubData.getUserCreateDto();
+        UserCreateResponseDTO userCreateResponseDto = userStubData.getUserCreateResponseDto();
         String content = objectMapper.writeValueAsString(userCreateDto);
 
-        given(usersService.createUser(Mockito.any(UserCreateDto.class))).willReturn(userCreateResponseDto);
+        given(usersService.createUser(Mockito.any(UserCreateDTO.class))).willReturn(userCreateResponseDto);
         //when
 
         ResultActions result = mockMvc.perform(
@@ -140,6 +131,7 @@ class UsersControllerTest extends ControllerTest {
                         requestFields(
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("유저의 비밀번호"),
+                                fieldWithPath("checkPassword").type(JsonFieldType.STRING).description("유저의 확인 비밀번호"),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
                                 fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
                                 fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호")
@@ -159,10 +151,10 @@ class UsersControllerTest extends ControllerTest {
     @DisplayName("내 정보 수정")
     void updateMyInfo() throws Exception {
         User user = userStubData.getUser();
-        UserUpdateDto userUpdateDto = userStubData.getUserUpdateDto();
+        UserUpdateDTO userUpdateDto = userStubData.getUserUpdateDto();
         String content = objectMapper.writeValueAsString(userUpdateDto);
 
-        UsersResponseDto usersResponseDto = userStubData.getUsersResponseDto();
+        UsersResponseDTO usersResponseDto = userStubData.getUsersResponseDto();
         MockMultipartFile file = userStubData.getMockMultipartFile();
 
         MockPart userUpdateDto1 = new MockPart("userUpdateDto",content.getBytes(StandardCharsets.UTF_8));
@@ -170,7 +162,7 @@ class UsersControllerTest extends ControllerTest {
 
         given(usersService.updateUser(
                 Mockito.any(User.class),
-                Mockito.any(UserUpdateDto.class),
+                Mockito.any(UserUpdateDTO.class),
                 Mockito.any(MultipartFile.class)))
                 .willReturn(usersResponseDto);
 

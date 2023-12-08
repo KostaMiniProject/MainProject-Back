@@ -1,10 +1,8 @@
 package kosta.main.users.repository;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kosta.main.users.dto.UsersResponseDto;
-import kosta.main.users.entity.User;
+import kosta.main.users.dto.UsersResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -21,8 +19,8 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
 
 
     @Override
-    public Optional<UsersResponseDto> findUserByUserId(Integer userId){
-        UsersResponseDto result = queryFactory.select(Projections.constructor(UsersResponseDto.class,
+    public Optional<UsersResponseDTO> findUserByUserId(Integer userId){
+        UsersResponseDTO result = queryFactory.select(Projections.constructor(UsersResponseDTO.class,
                         user.email,
                         user.name,
                         user.address,

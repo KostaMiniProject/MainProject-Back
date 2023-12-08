@@ -4,8 +4,9 @@ import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
 import kosta.main.dibs.dto.DibResponseDto;
 import kosta.main.exchangehistories.dto.ExchangeHistoryResponseDto;
+import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.s3upload.service.ImageService;
-import kosta.main.reports.dto.CreateReportDto;
+import kosta.main.reports.dto.CreateReportDTO;
 import kosta.main.reports.entity.Report;
 import kosta.main.reports.repository.ReportsRepository;
 import kosta.main.users.dto.*;
@@ -21,6 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 
+import static kosta.main.global.error.exception.CommonErrorCode.INVALID_PASSWORD;
+import static kosta.main.global.error.exception.CommonErrorCode.USER_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class UsersService {
@@ -34,45 +38,46 @@ public class UsersService {
     private String basicProfileImage;
 
     @Transactional(readOnly = true)
-    public UsersResponseDto findMyProfile(User user) {
-        return UsersResponseDto.of(user);
+    public UsersResponseDTO findMyProfile(User user) {
+        return UsersResponseDTO.of(user);
     }
 
     @Transactional
-    public UserCreateResponseDto createUser(UserCreateDto userCreateDto) {
-        String encryptedPassword  = passwordEncoder.encode(userCreateDto.getPassword());
-        userCreateDto.updatePassword(encryptedPassword);
-        User user = User.createUser(userCreateDto,basicProfileImage);
+    public UserCreateResponseDTO createUser(UserCreateDTO userCreateDTO) {
+        if(!Objects.equals(userCreateDTO.getPassword(), userCreateDTO.getCheckPassword()))
+            throw new BusinessException(INVALID_PASSWORD);
+        String encryptedPassword  = passwordEncoder.encode(userCreateDTO.getPassword());
+        userCreateDTO.updatePassword(encryptedPassword);
+        User user = User.createUser(userCreateDTO,basicProfileImage);
 
-
-        return UserCreateResponseDto.of(usersRepository.save(user));
+        return UserCreateResponseDTO.of(usersRepository.save(user));
     }
 
     @Transactional
-    public UsersResponseDto updateUser(User user, UserUpdateDto userUpdateDto, MultipartFile file) {
+    public UsersResponseDTO updateUser(User user, UserUpdateDTO userUpdateDTO, MultipartFile file) {
         String imagePath = imageService.resizeToProfileSizeAndUpload(file);
-        userUpdateDto.updateProfileImage(imagePath);
-        if(!Objects.equals(userUpdateDto.getPassword(), userUpdateDto.getCheckPassword()))
-            throw new RuntimeException("전달해준 두 비밀번호가 일치하지 않습니다");
-        User updatedUser = user.updateUser(userUpdateDto);
-        return UsersResponseDto.of(usersRepository.save(updatedUser));
+        userUpdateDTO.updateProfileImage(imagePath);
+        if(!Objects.equals(userUpdateDTO.getPassword(), userUpdateDTO.getCheckPassword()))
+            throw new BusinessException(INVALID_PASSWORD);
+        User updatedUser = user.updateUser(userUpdateDTO);
+        return UsersResponseDTO.of(usersRepository.save(updatedUser));
     }
     @Transactional
     public void withdrawalUser(User user) {
         usersRepository.delete(user);
     }
 
-    private User findUserByUserId(Integer userId) {
-        return usersRepository.findById(userId).orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+    public User findUserByUserId(Integer userId) {
+        return usersRepository.findById(userId).orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
     }
 
-    public void reportUser(Integer reportedUserId, User reporterUser, CreateReportDto createReportDto) {
+    public void reportUser(Integer reportedUserId, User reporterUser, CreateReportDTO createReportDTO) {
         User reportedUser = findUserByUserId(reportedUserId);
         reportsRepository
                 .save(Report.builder()
                 .reporter(reporterUser)
                 .reportedUser(reportedUser)
-                .reason(createReportDto.getReason())
+                .reason(createReportDTO.getReason())
                 .build());
     }
 

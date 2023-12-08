@@ -1,9 +1,11 @@
 package kosta.main.global.config;
 
+import kosta.main.users.auth.jwt.ExceptionHandlerFilter;
 import kosta.main.users.auth.jwt.JwtAuthenticationFilter;
 import kosta.main.users.auth.jwt.JwtVerificationFilter;
 import kosta.main.users.auth.jwt.TokenProvider;
 import kosta.main.users.auth.service.CustomUserDetailsService;
+import kosta.main.users.auth.service.TokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -34,14 +37,16 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService userDetailsService;
+    private final TokenService tokenService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    public SecurityConfig(TokenProvider tokenProvider,CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(TokenProvider tokenProvider,CustomUserDetailsService userDetailsService, TokenService tokenService) {
         this.tokenProvider = tokenProvider;
         this.userDetailsService = userDetailsService;
+        this.tokenService = tokenService;
     }
 
     @Bean
@@ -70,11 +75,15 @@ public class SecurityConfig {
                         new AntPathRequestMatcher("/h2-console/**"),
                         new AntPathRequestMatcher("/error"),
                         // 일단 모든 API 허용되게 설정
-                        new AntPathRequestMatcher("/**")
-
+                        new AntPathRequestMatcher("/**"),
+                        new AntPathRequestMatcher("/ws/**") // WebSocket 경로 예외 추가
                 ).permitAll()
                         .anyRequest().permitAll()
 //                .anyRequest().authenticated()
+        );
+        http.addFilterBefore(
+                new ExceptionHandlerFilter(),
+                UsernamePasswordAuthenticationFilter.class
         );
 
         http.headers((headers -> headers
@@ -94,8 +103,8 @@ public class SecurityConfig {
                 List.of("http://localhost:3000",
                         "http://localhost:8080",
                         "https://main-project-front.vercel.app",
-                        "www.itsop.shop",
-                "kosta-mini-project.vercel.app"));
+                        "https://www.itsop.shop",
+                "https://kosta-mini-project.vercel.app"));
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Set-Cookie", "*"));
         corsConfiguration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
         corsConfiguration.setAllowedMethods(List.of("POST", "GET", "PATCH", "DELETE", "OPTIONS","PUT"));
@@ -108,7 +117,7 @@ public class SecurityConfig {
         @Override
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenProvider, authenticationManager);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenProvider, authenticationManager,tokenService);
             jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
             JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(tokenProvider,userDetailsService);
             builder.addFilter(jwtAuthenticationFilter)

@@ -1,14 +1,14 @@
 package kosta.main.communityposts.dto;
 
 import kosta.main.communityposts.entity.CommunityPost;
-import kosta.main.users.dto.UsersResponseDto;
+import kosta.main.users.dto.UsersResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public class CommunityPostResponseDTO {
-    private UsersResponseDto user;
+    private UsersResponseDTO user;
 
     private String title;
 
@@ -20,7 +20,7 @@ public class CommunityPostResponseDTO {
 
     public static CommunityPostResponseDTO of(CommunityPost communityPost){ //of : 데이터를 가지고 새로운 객체를 만들때 사용
         return new CommunityPostResponseDTO(
-                UsersResponseDto.of(communityPost.getUser()),
+                UsersResponseDTO.of(communityPost.getUser()),
                 communityPost.getTitle(),
                 communityPost.getContent(),
                 communityPost.getViews(),

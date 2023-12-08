@@ -1,11 +1,11 @@
 package kosta.main.bids.controller;
 
-import jakarta.validation.constraints.Max;
 import kosta.main.bids.dto.*;
 import kosta.main.bids.service.BidService;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +20,7 @@ public class BidController {
 
     // 입찰을 수행하는 기능
     @PostMapping("/{exchangePostId}/bids") // 23.11.30 동작확인
-    public ResponseEntity<Integer> createBid(@LoginUser User user, @PathVariable("exchangePostId") Integer exchangePostId, @RequestBody BidsDto bidDTO) {
+    public ResponseEntity<Integer> createBid(@LoginUser User user, @PathVariable("exchangePostId") Integer exchangePostId, @RequestBody BidsDTO bidDTO) {
         return ResponseEntity.ok(bidService.createBid(user, exchangePostId, bidDTO));
     }
 
@@ -31,9 +31,9 @@ public class BidController {
     }
 
     // 한 입찰에 대한 상세 정보를 제공하는 기능
-    @GetMapping("/bids/{exchangePostId}/{bidId}") // 23.11.30 동작확인
-    public ResponseEntity<BidDetailResponseDTO> getBidById(@PathVariable("bidId") Integer bidId, @PathVariable("exchangePostId") Integer exchangePostId,@LoginUser User user) {
-        return ResponseEntity.ok(bidService.findBidById(bidId, exchangePostId, user));
+    @GetMapping("/bids/{bidId}") // 23.11.30 동작확인
+    public ResponseEntity<BidDetailResponseDTO> getBidById(@PathVariable("bidId") Integer bidId, @LoginUser User user) {
+        return ResponseEntity.ok(bidService.findBidById(bidId,user));
     }
 
     // 입찰을 수정하는 기능
@@ -45,9 +45,9 @@ public class BidController {
 
     // 입찰을 삭제하는 기능
     @DeleteMapping("/bids/{bidId}") // 23.11.30 동작확인
-    public ResponseEntity<Void> deleteBid(@PathVariable("bidId") Integer bidId, @LoginUser User user) {
+    public ResponseEntity<?> deleteBid(@PathVariable("bidId") Integer bidId, @LoginUser User user) {
         bidService.deleteBid(bidId, user);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     // 거래를 완료하는 기능

@@ -1,10 +1,12 @@
 package kosta.main.chatrooms.controller;
 
+import kosta.main.chatrooms.dto.ChatListResponseDTO;
 import kosta.main.chatrooms.dto.ChatRoomResponseDTO;
 import kosta.main.chatrooms.dto.CreateChatRoomDTO;
 import kosta.main.chatrooms.dto.CreateChatRoomResponseDTO;
 import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.chatrooms.service.ChatRoomService;
+import kosta.main.chats.entity.Chat;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,14 @@ public class ChatRoomsController {
     List<ChatRoomResponseDTO> chatRooms = chatRoomService.getChatRooms(user.getUserId());
     return new ResponseEntity<>(chatRooms, HttpStatus.OK);
   }
+
+  // 특정 채팅방의 채팅 내역을 불러오는 기능
+  @GetMapping("/{chatRoomId}")
+  public ResponseEntity<List<ChatListResponseDTO>> getChatList(@PathVariable("chatRoomId") Integer chatRoomId, @LoginUser User user){
+    List<ChatListResponseDTO> chatList = chatRoomService.getChatList(chatRoomId, user);
+    return new ResponseEntity<>(chatList, HttpStatus.OK);
+  }
+
   // 채팅방 입장 알림
   @PostMapping("/{chatRoomId}/notify-entry")
   public ResponseEntity<Void> notifyChatRoomEntry(@PathVariable Integer chatRoomId, @LoginUser User user) {

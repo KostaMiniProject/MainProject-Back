@@ -13,13 +13,13 @@ import java.util.List;
 @Builder
 public class ItemSaveDTO {
 
-  //  # 조건 : 1~5자 사이
-//  @NotNull
+  //  # 조건 : 1~5자 이내
+//  @NotEmpty(message = "제목은 필수 항목입니다.")
 //  @Size(max = 5, min = 1)
   private String title;
 
-  //  # 조건 : 1~100자 사이
-//  @NotNull
+  //  # 조건 : 1~100자 이내
+//  @NotEmpty(message = "상세 설명은 필수 항목입니다.")
 //  @Size(max = 100, min = 1)
   private String description;
 

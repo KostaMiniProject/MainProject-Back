@@ -26,7 +26,6 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 public class ExchangePostsService {
 
   private final ExchangePostsRepository exchangePostRepository;
-  private final UsersRepository usersRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
   

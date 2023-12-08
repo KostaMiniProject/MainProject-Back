@@ -104,23 +104,8 @@ public class BidService {
         // 입찰자 정보 저장
         User bidder = bid.getUser();
 
-        // 입찰에 사용된 아이템 상세 정보
-        List<BidDetailResponseDTO.ItemDetails> itemDetails = bid.getItems().stream().map(item ->
-                BidDetailResponseDTO.ItemDetails.builder()
-                        .title(item.getTitle())
-                        .description(item.getDescription())
-                        .imageUrls(item.getImages())
-                        .build()
-        ).collect(Collectors.toList());
+        return BidDetailResponseDTO.of(bid, isOwner);
 
-        return BidDetailResponseDTO.builder()
-                .isOwner(isOwner)
-                //.bidId(bid.getBidId())
-                //.bidderId(bidder.getUserId())
-                .bidderNickname(bidder.getName())
-                .bidderAddress(bidder.getAddress())
-                .items(itemDetails)
-                .build();
     }
 
     // 입찰 서비스 클래스 내 updateBid 메서드

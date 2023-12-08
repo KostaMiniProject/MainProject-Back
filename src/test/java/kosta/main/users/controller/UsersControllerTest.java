@@ -110,7 +110,7 @@ class UsersControllerTest extends ControllerTest {
     void signup() throws Exception {
         //given
         UserCreateDTO userCreateDto = userStubData.getUserCreateDto();
-        UserCreateResponseDTO userCreateResponseDto = userStubData.getUserCreateResponseDto();
+        UserCreateResponseDTO userCreateResponseDto = userStubData.getUserCreateResponseDTO();
         String content = objectMapper.writeValueAsString(userCreateDto);
 
         given(usersService.createUser(Mockito.any(UserCreateDTO.class))).willReturn(userCreateResponseDto);
@@ -151,7 +151,7 @@ class UsersControllerTest extends ControllerTest {
     @DisplayName("내 정보 수정")
     void updateMyInfo() throws Exception {
         User user = userStubData.getUser();
-        UserUpdateDTO userUpdateDto = userStubData.getUserUpdateDto();
+        UserUpdateDTO userUpdateDto = userStubData.getUserUpdateDTO();
         String content = objectMapper.writeValueAsString(userUpdateDto);
 
         UsersResponseDTO usersResponseDto = userStubData.getUsersResponseDto();

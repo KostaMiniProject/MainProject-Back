@@ -31,9 +31,13 @@ public class UserUpdateDTO {
 
   private String profileImage;
 
+
   private User.UserStatus userStatus;
 
-  public void updateProfileImage(String profileImage) {
-    this.profileImage = profileImage;
-  }
+    public void updateProfileImage(String profileImage){
+        this.profileImage = profileImage;
+    }
+    public void updatePassword(String encodePassword){
+        this.password = encodePassword;
+    }
 }

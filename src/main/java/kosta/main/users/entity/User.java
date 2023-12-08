@@ -53,6 +53,10 @@ public class User extends Auditable {
     private String roles = Role.ROLE_USER.getRole();
 
     @Builder.Default
+    @Column(nullable = false)
+    private Integer rating = 3;
+
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BlockedUser> blockedUsers = new ArrayList<>(); // 클래스 이름을 단수형으로 변경
 

@@ -30,6 +30,7 @@ public class ReviewsService {
 
     User reviewedUser = usersService.findUserByUserId(reviewSaveDto.getReviewedUserId());
 
+    //현재 유저 점수와 리뷰 개수를 통해 리뷰 점수 평균치 계산 로직 필요
     Review newReview = Review.builder()
         .reviewer(reviewer)
         .reviewedUser(reviewedUser)

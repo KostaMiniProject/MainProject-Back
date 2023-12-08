@@ -113,7 +113,7 @@ public class ExchangePostsService {
         .name(post.getUser().getName())
         .address(post.getUser().getAddress())
         .imageUrl(post.getUser().getProfileImage())
-        //.rating(calculateRating(post.getUser()))
+        .rating((post.getUser().getRating()))
         .build();
 
     // 아이템 상세 정보 생성

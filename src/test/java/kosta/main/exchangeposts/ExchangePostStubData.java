@@ -10,6 +10,7 @@ import kosta.main.users.UserStubData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +89,20 @@ public class ExchangePostStubData {
         return exchangePostListDTOS;
     }
 
+    public List<ExchangePost> getExchangePosts(){
+        List<ExchangePost> exchangePosts = new ArrayList<ExchangePost>();
+        exchangePosts.add(getExchangePostNoBid());
+        exchangePosts.add(getExchangePostBid());
+        return exchangePosts;
+    }
+    public Page<ExchangePost> getExchangePostPages(){
+        List<ExchangePost> exchangePosts = getExchangePosts();
+        Pageable pageable = getPageable();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), exchangePosts.size());
+        return new PageImpl<>(exchangePosts.subList(start, end), pageable, exchangePosts.size());
+    }
+
     public ExchangePostUpdateResponseDTO getExchangePostUpdateResponseDTO(){
         ExchangePost exchangePostBid = getExchangePostBid();
         return ExchangePostUpdateResponseDTO.from(exchangePostBid);
@@ -106,4 +121,9 @@ public class ExchangePostStubData {
         return ResponseDto.of(EXCHANGE_POST_ID);
     }
 
+
+    public Pageable getPageable() {
+        return PageRequest.of(0, 10);
+
+    }
 }

@@ -45,7 +45,7 @@ public class CommunityPostsService {
     }
 
     public Comment findCommentByCommentId(Integer commentId) {
-        return commentsRepository.findById(commentId).orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
+        return commentsRepository.findById(commentId).orElseThrow(() -> new BusinessException(COMMENT_NOT_FOUND));
     }
 
 

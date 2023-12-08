@@ -6,6 +6,7 @@ import kosta.main.users.dto.UserUpdateDTO;
 import kosta.main.users.dto.UsersResponseDTO;
 import kosta.main.users.entity.User;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -71,12 +72,12 @@ public class UserStubData {
                 .build();
     }
 
-    public UserCreateResponseDTO getUserCreateResponseDto(){
+    public UserCreateResponseDTO getUserCreateResponseDTO(){
         return new UserCreateResponseDTO
                 (EMAIL, NAME, ADDRESS, PHONE);
     }
 
-    public UserUpdateDTO getUserUpdateDto() {
+    public UserUpdateDTO getUserUpdateDTO() {
         return new UserUpdateDTO(
                 UPDATE_PASSWORD,
                 UPDATE_PASSWORD,
@@ -96,6 +97,22 @@ public class UserStubData {
 
         //Mock파일생성
         MockMultipartFile image1 = new MockMultipartFile(
+                "file", //name
+                fileName + "." + contentType, //originalFilename
+                "image/png",
+                fileInputStream
+        );
+
+        return image1;
+    }
+    public MultipartFile getMultipartFile() throws IOException {
+        final String fileName = "testImage1"; //파일명
+        final String contentType = "png"; //파일타입
+        final String filePath = "src/test/resources/testImage/"+fileName+"."+contentType; //파일경로
+        FileInputStream fileInputStream = new FileInputStream(filePath);
+
+        //파일생성
+        MultipartFile image1 = new MockMultipartFile(
                 "file", //name
                 fileName + "." + contentType, //originalFilename
                 "image/png",

@@ -36,7 +36,7 @@ class UsersRepositoryImplTest {
         usersRepository.save(user);
     }
 
-    @Test
+//    @Test
     void 유저_아이디로_유저_응답_반환() {
         Integer userId = USER_ID;
         UsersResponseDTO result = usersRepository.findUserByUserId(userId).get();

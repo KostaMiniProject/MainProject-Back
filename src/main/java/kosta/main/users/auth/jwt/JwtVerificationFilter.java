@@ -1,15 +1,9 @@
 package kosta.main.users.auth.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kosta.main.global.error.exception.AuthErrorCode;
-import kosta.main.global.error.exception.CommonErrorCode;
-import kosta.main.global.error.exception.UnauthorizedException;
 import kosta.main.users.auth.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

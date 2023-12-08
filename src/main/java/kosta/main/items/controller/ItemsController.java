@@ -3,7 +3,6 @@ package kosta.main.items.controller;
 
 import kosta.main.global.dto.PageInfo;
 import kosta.main.global.dto.PageResponseDto;
-import jakarta.validation.Valid;
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.dto.ItemDetailResponseDTO;
 import kosta.main.items.dto.ItemUpdateDTO;

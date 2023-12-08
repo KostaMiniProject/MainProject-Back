@@ -1,6 +1,5 @@
 package kosta.main.users.auth;
 
-import jakarta.servlet.http.HttpServletRequest;
 import kosta.main.users.auth.jwt.TokenProvider;
 import kosta.main.users.entity.User;
 import kosta.main.users.service.UsersService;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 

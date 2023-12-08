@@ -2,6 +2,7 @@ package kosta.main.exchangeposts;
 
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
+import kosta.main.exchangeposts.dto.ExchangePostUpdateResponseDTO;
 import kosta.main.exchangeposts.dto.ResponseDto;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.ItemStubData;
@@ -85,6 +86,11 @@ public class ExchangePostStubData {
         exchangePostListDTOS.add(ExchangePostListDTO.of(getExchangePostNoBid(), "대표이미지1", 1));
         exchangePostListDTOS.add(ExchangePostListDTO.of(getAnotherExchangePostNoBid(), "대표이미지2", 2));
         return exchangePostListDTOS;
+    }
+
+    public ExchangePostUpdateResponseDTO getExchangePostUpdateResponseDTO(){
+        ExchangePost exchangePostBid = getExchangePostBid();
+        return ExchangePostUpdateResponseDTO.from(exchangePostBid);
     }
 
     public Page<ExchangePostListDTO> getExchangePostListDTOPage() {

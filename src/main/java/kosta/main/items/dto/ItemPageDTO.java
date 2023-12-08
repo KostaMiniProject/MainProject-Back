@@ -1,14 +1,13 @@
 package kosta.main.items.dto;
 
-import kosta.main.communityposts.dto.CommunityPostListDto;
-import kosta.main.communityposts.entity.CommunityPost;
+
 import kosta.main.items.entity.Item;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @Getter
 @AllArgsConstructor

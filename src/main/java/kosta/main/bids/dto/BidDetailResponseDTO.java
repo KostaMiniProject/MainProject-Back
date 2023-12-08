@@ -1,6 +1,5 @@
 package kosta.main.bids.dto;
 
-import kosta.main.bids.entity.Bid.BidStatus;
 import lombok.Builder;
 import lombok.Getter;
 

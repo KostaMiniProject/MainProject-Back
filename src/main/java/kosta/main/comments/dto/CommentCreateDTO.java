@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CommentCreateDTO {
     private String content;
+    private Integer parentId;
 }

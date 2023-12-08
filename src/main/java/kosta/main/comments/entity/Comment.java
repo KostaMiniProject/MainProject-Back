@@ -29,7 +29,7 @@ public class Comment extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer commentId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
@@ -51,12 +51,22 @@ public class Comment extends Auditable {
     @Column(length = 10)
     @Builder.Default
     private Comment.CommentStatus commentStatus = CommentStatus.PUBLIC;
+
+    public void updateChild(Comment comment) {
+        this.children.add(comment);
+    }
+
     public enum CommentStatus {
         PUBLIC, REPORTED, DELETED
     }
 
     public void updateComment(CommentUpdateDTO commentUpdateDTO) {
         this.content = commentUpdateDTO.getContent() != null && !commentUpdateDTO.getContent().equals(this.content) ? commentUpdateDTO.getContent() : this.content;
+    }
+
+    // 부모 댓글 수정
+    public void updateParent(Comment parent){
+        this.parent = parent;
     }
 
     public void updateCommentStatus(Comment.CommentStatus commentStatus) {

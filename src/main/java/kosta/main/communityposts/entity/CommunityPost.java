@@ -41,8 +41,9 @@ public class CommunityPost extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Builder.Default
     @Column
-    private Integer views;
+    private Integer views = 0;
 
     @Column(length = 20)
     @Builder.Default
@@ -55,7 +56,7 @@ public class CommunityPost extends Auditable {
     private List<Like> likePostList = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "communityPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "communityPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
   
     @ElementCollection

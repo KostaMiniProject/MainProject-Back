@@ -200,12 +200,12 @@ public class ItemsService {
 
   
   //  물건 검색
-  //  ex - /items/search?name=메롱!
-//  public Item searchItems() {
-//    return null;
-//  }
-  // 물건 검색
+  //  ex - /items/search?keyword=제목1
+  public List<Item> searchItems(String keyword) {
+    // ItemStatus가 PUBLIC인 것만 출력
 
+    return itemsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+  }
 }
 
 

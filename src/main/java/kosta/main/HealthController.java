@@ -24,6 +24,7 @@ public class HealthController {
 
     private int count = 0;
 
+    //로드밸런서 확인용 api
     @GetMapping("/loadcheck")
     public ResponseEntity<Map<String, Integer>> count() {
         count ++;
@@ -31,5 +32,11 @@ public class HealthController {
         data.put("Server Number", serverNumber);
         data.put("Visiting Count", count);
         return ResponseEntity.ok(data);
+    }
+
+    //무중단 배포용 api
+    @GetMapping("/api/check")
+    public String checkServerStatus(){
+        return "check";
     }
 }

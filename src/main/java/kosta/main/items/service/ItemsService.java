@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.ALREADY_BIDDING_ITEM;
 import static kosta.main.global.error.exception.CommonErrorCode.NOT_ITEM_OWNER;
@@ -36,6 +37,7 @@ public class ItemsService {
 
   /**
    * 물건 생성
+   *
    * @param user
    * @param itemSaveDTO 물건 저장 DTO
    * @param files
@@ -66,12 +68,12 @@ public class ItemsService {
 
     // Item 객체 생성
     Item newItem = Item.builder()
-            .user(user)
-            //.category(category)
-            .title(itemSaveDTO.getTitle())
-            .description(itemSaveDTO.getDescription())
-            .images(imagePaths)
-            .build();
+        .user(user)
+        //.category(category)
+        .title(itemSaveDTO.getTitle())
+        .description(itemSaveDTO.getDescription())
+        .images(imagePaths)
+        .build();
 
     // Item 저장
     itemsRepository.save(newItem);
@@ -79,6 +81,7 @@ public class ItemsService {
 
   /**
    * 물건 목록 조회
+   *
    * @param userId
    * @param pageable
    * @return
@@ -92,6 +95,7 @@ public class ItemsService {
 
   /**
    * 물건 상세 조회
+   *
    * @param itemId
    * @return
    */
@@ -107,6 +111,7 @@ public class ItemsService {
 
   /**
    * 물건 수정
+   *
    * @param itemId
    * @param itemUpdateDTO 물건 수정 DTO
    * @param files
@@ -154,7 +159,7 @@ public class ItemsService {
     if (item.getIsBiding() == Item.IsBiding.BIDING) {
       throw new BusinessException(ALREADY_BIDDING_ITEM);
     }
-    
+
 
 //    itemUpdateDTO 요소 null값 체크
     String title = itemUpdateDTO.getTitle() != null ? itemUpdateDTO.getTitle() : item.getTitle();
@@ -185,6 +190,7 @@ public class ItemsService {
 
   /**
    * 물건 삭제
+   *
    * @param itemId
    * @param userId
    */
@@ -198,13 +204,22 @@ public class ItemsService {
     itemsRepository.delete(item);
   }
 
-  
-  //  물건 검색
-  //  ex - /items/search?keyword=제목1
+  /**
+   * 물건 검색
+   * ex - /items/search?keyword=제목1
+   *
+   * @param keyword
+   * @return
+   */
   public List<Item> searchItems(String keyword) {
-    // ItemStatus가 PUBLIC인 것만 출력
+    List<Item> allItemList = itemsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
 
-    return itemsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+    // 검색 결과 리스트 중 ItemStatus가 PUBLIC인 것만 필터링
+    List<Item> publicItemList = allItemList.stream()
+        .filter(item -> item.getItemStatus() == Item.ItemStatus.PUBLIC)
+        .collect(Collectors.toList());
+
+    return publicItemList;
   }
 }
 

@@ -13,8 +13,5 @@ import java.util.List;
 public interface ItemsRepository extends JpaRepository<Item, Integer> {
   Page<Item> findByUser_UserId(Integer userId, Pageable pageable);
 
-//  @Query("SELECT * from Item where Item.user.userId = :userId")
-//  Page<Item> findItemBypagenation(Integer userId);
-
   List<Item> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String titleKeyword, String descriptionKeyword);
 }

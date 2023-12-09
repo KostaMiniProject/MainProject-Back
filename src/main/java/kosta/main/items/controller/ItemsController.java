@@ -114,13 +114,19 @@ public class ItemsController {
   }
 
 
-  //  물건 검색
-  //  ex - /items/search?keyword=제목1
+
+  /**
+   * 물건 검색
+   * ex - /items/search?keyword=제목1
+   *
+   * @param keyword
+   * @return
+   */
   @GetMapping("/search")
   public ResponseEntity<?> searchItems(@RequestPart(value = "keyword") String keyword) {
     log.info("keword = {}", keyword);
     List<Item> items = itemsService.searchItems(keyword);
-//    return "검색 완료 : " + keyword + "\n 검색 결과 : \n" + items.size();
+    log.info("items = {}", items.size());
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

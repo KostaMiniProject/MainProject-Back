@@ -7,6 +7,7 @@ import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.dto.ItemDetailResponseDTO;
 import kosta.main.items.dto.ItemUpdateDTO;
 import kosta.main.items.dto.ItemSaveDTO;
+import kosta.main.items.entity.Item;
 import kosta.main.items.service.ItemsService;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
@@ -114,10 +115,13 @@ public class ItemsController {
 
 
   //  물건 검색
-  //  ex - /items/search?name=제목!!!
-//  @GetMapping("/search")
-//  public Item searchItems() {
-//    return null;
-//  }
+  //  ex - /items/search?keyword=제목1
+  @GetMapping("/search")
+  public ResponseEntity<?> searchItems(@RequestPart(value = "keyword") String keyword) {
+    log.info("keword = {}", keyword);
+    List<Item> items = itemsService.searchItems(keyword);
+//    return "검색 완료 : " + keyword + "\n 검색 결과 : \n" + items.size();
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
 
 }

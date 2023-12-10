@@ -216,7 +216,7 @@ class UsersControllerTest extends ControllerTest {
         doNothing().when(usersService).withdrawalUser(Mockito.any());
         //when
         ResultActions result = mockMvc.perform(
-                put(BASIC_URL+"/withdrawal")
+                delete(BASIC_URL+"/withdrawal")
                         .header("Authorization", "Bearer yourAccessToken")
                         .with(csrf())
         );

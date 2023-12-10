@@ -1,12 +1,14 @@
 package kosta.main.communityposts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kosta.main.ControllerTest;
 import kosta.main.communityposts.CommunityPostStubData;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.global.annotation.WithMockCustomUser;
 import kosta.main.likes.dto.LikeDTO;
+import kosta.main.users.controller.UsersController;
 import kosta.main.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,11 +58,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 
 
-@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@ExtendWith({SpringExtension.class})
 @WebMvcTest(CommunityPostsController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-@Import(kosta.main.RestDocsConfiguration.class)
-class CommunityPostsControllerTest {
+class CommunityPostsControllerTest extends ControllerTest {
 
     public static final int COMMUNITYPOST_ID = 1;
     public static final int ONE_ACTION = 1;
@@ -69,8 +70,6 @@ class CommunityPostsControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private MockMvc mockMvc;
 
     @MockBean
     private CommunityPostsService communityPostsService;
@@ -79,14 +78,8 @@ class CommunityPostsControllerTest {
     private final String BASE_URL = "/api/community-posts";
 
     @BeforeEach
-    public void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentationContextProvider) {
+    public void setup() {
         communityPostStubData = new CommunityPostStubData();
-             mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                    .apply(documentationConfiguration(restDocumentationContextProvider))
-                    .alwaysDo(print())														// 이건 왜하는지 모르겠음.
-                    .alwaysDo(restDocs)														// 재정의한 핸들러를 적용함. 적용하면 일반 document에도 적용됨. 일반 document로 선언되면 그부분도 같이 생성됨에 유의해야 함.
-                    .addFilters(new CharacterEncodingFilter("UTF-8", true))					// 한글깨짐 방지 처리
-                    .build();
     }
     @Test
     @WithMockCustomUser

@@ -43,7 +43,7 @@ public class UsersController {
     return ResponseEntity.ok(usersService.updateUser(user, userUpdateDTO, file));
   }
 
-  @PutMapping("/users/withdrawal")
+  @DeleteMapping("/users/withdrawal")
   public ResponseEntity<?> withdrawal(@LoginUser User user) {
     usersService.withdrawalUser(user);
     return new ResponseEntity(HttpStatus.NO_CONTENT);

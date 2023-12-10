@@ -111,6 +111,23 @@ operation::community-posts-controller-test/toggle-like-post[snippets='request-he
 
 operation::community-posts-controller-test/toggle-like-post-delete[snippets='request-headers,http-request,http-response']
 
+== 댓글
+
+=== 댓글 추가
+
+operation::comments-controller-test/add-comment[snippets='request-headers,http-request,http-response']
+
+=== 댓글 수정
+
+operation::comments-controller-test/update-comment[snippets='request-headers,http-request,http-response']
+
+=== 댓글 조회
+
+operation::comments-controller-test/find-comments[snippets='request-headers,http-request,http-response']
+
+=== 댓글 삭제
+
+operation::comments-controller-test/delete-comment[snippets='request-headers,http-request,http-response']
 == 리뷰 생성
 
 operation::reviews-controller-test/add-reviews[snippets='request-headers,http-request,request-fields,http-response']

@@ -1,12 +1,14 @@
 package kosta.main.exchangeposts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kosta.main.ControllerTest;
 import kosta.main.exchangeposts.ExchangePostStubData;
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
 import kosta.main.exchangeposts.dto.ExchangePostUpdateResponseDTO;
 import kosta.main.exchangeposts.service.ExchangePostsService;
 import kosta.main.global.annotation.WithMockCustomUser;
+import kosta.main.users.controller.UsersController;
 import kosta.main.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,29 +18,21 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -47,11 +41,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@WebMvcTest(ExchangePostsController.class)
+@ExtendWith({SpringExtension.class})
+@WebMvcTest(UsersController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-@Import(kosta.main.RestDocsConfiguration.class)
-class ExchangePostsControllerTest {
+class ExchangePostsControllerTest extends ControllerTest {
 
     public static final int EXCHANGE_POST_ID = 1;
     public static final String BASIC_URL = "/api/exchange-posts";
@@ -66,14 +59,12 @@ class ExchangePostsControllerTest {
     public static final String DESC_IMAGE_URL = "교환 게시글에 등록된 item의 대표이미지 URL";
     public static final String DESC_BID_COUNT = "해당 교환 게시글에 등록된 입찰의 갯수를 세서 Integer 값으로 반환";
     public static final String DATA = "전달하는 데이터 배열";
-    public static final String DESC_PAGEINFO = "페이지 정보를 감싸고 있는 배열";
-    public static final String DESC_PAGESIZE = "현재 페이지 숫자";
+    public static final String DESC_PAGE_INFO = "페이지 정보를 감싸고 있는 배열";
+    public static final String DESC_PAGE_SIZE = "현재 페이지 숫자";
     public static final String DESC_SIZE = "페이지 크기(한 번에 몇개의 정보를 가져올지";
     public static final String DESC_TOTAL_ELEMENTS = "전체 데이터 개수";
-    public static final String DESC_TOTALPAGES = "전체 페이지 숫자";
+    public static final String DESC_TOTAL_PAGES = "전체 페이지 숫자";
 
-    @Autowired
-    private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -84,16 +75,8 @@ class ExchangePostsControllerTest {
     private ExchangePostStubData exchangePostStubData;
 
     @BeforeEach
-    public void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentationContextProvider) {
-
+    public void setup() {
         exchangePostStubData = new ExchangePostStubData();
-
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentationContextProvider))
-                .alwaysDo(print())														// 이건 왜하는지 모르겠음.
-                .alwaysDo(restDocs)														// 재정의한 핸들러를 적용함. 적용하면 일반 document에도 적용됨. 일반 document로 선언되면 그부분도 같이 생성됨에 유의해야 함.
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))					// 한글깨짐 방지 처리
-                .build();
     }
     @Test
     @WithMockCustomUser
@@ -169,11 +152,11 @@ class ExchangePostsControllerTest {
                                 fieldWithPath("data.[].createdAt").type(JsonFieldType.NULL).description(DESC_CREATED_AT),
                                 fieldWithPath("data.[].imgUrl").type(JsonFieldType.STRING).description(DESC_IMAGE_URL),
                                 fieldWithPath("data.[].bidCount").type(JsonFieldType.NUMBER).description(DESC_BID_COUNT),
-                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description(DESC_PAGEINFO),
-                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description(DESC_PAGESIZE),
+                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description(DESC_PAGE_INFO),
+                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description(DESC_PAGE_SIZE),
                                 fieldWithPath("pageInfo.size").type(JsonFieldType.NUMBER).description(DESC_SIZE),
                                 fieldWithPath("pageInfo.totalElements").type(JsonFieldType.NUMBER).description(DESC_TOTAL_ELEMENTS),
-                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description(DESC_TOTALPAGES)
+                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description(DESC_TOTAL_PAGES)
                         )
                 ));
     }

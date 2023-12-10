@@ -85,7 +85,7 @@ operation::items-controller-test/add-item[snippets='request-headers,request-part
 
 === 물건 수정
 
-operation::items-controller-test/update-item[snippets='request-headers,request-parts,request-part-itemUpdateDto-fields,http-response,response-fields']
+operation::items-controller-test/update-item[snippets='request-headers,request-parts,request-part-itemUpdateDTO-fields,http-response,response-fields']
 
 === 단일 물건 조회
 

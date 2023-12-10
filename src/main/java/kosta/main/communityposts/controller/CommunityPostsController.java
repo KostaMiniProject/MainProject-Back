@@ -1,10 +1,6 @@
 package kosta.main.communityposts.controller;
 
 
-import kosta.main.comments.dto.CommentCreateDTO;
-import kosta.main.comments.dto.CommentDTO;
-import kosta.main.comments.dto.CommentListDTO;
-import kosta.main.comments.dto.CommentUpdateDTO;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.global.dto.PageInfo;
@@ -84,5 +80,11 @@ public class CommunityPostsController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /* 커뮤니티 게시글 검색 */
+    @GetMapping("/search")
+    public ResponseEntity<List<CommunityPostDTO>> search(@RequestParam String keyword) {
+        List<CommunityPostDTO> searchList = communityPostsService.search(keyword);
+        return ResponseEntity.ok(searchList);
+    }
 }
 

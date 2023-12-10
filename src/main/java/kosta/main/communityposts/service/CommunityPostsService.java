@@ -1,10 +1,5 @@
 package kosta.main.communityposts.service;
 
-import kosta.main.comments.dto.CommentCreateDTO;
-import kosta.main.comments.dto.CommentDTO;
-import kosta.main.comments.dto.CommentListDTO;
-import kosta.main.comments.dto.CommentUpdateDTO;
-import kosta.main.comments.entity.Comment;
 import kosta.main.comments.repository.CommentsRepository;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
@@ -145,5 +140,13 @@ public class CommunityPostsService {
             communityPostsRepository.save(communityPost); // 좋아요가 추가된 게시글을 DB에 저장
             return LikeDTO.of(like); // like 객체를 LikeDTO로 변환하여 반환
         }
+    }
+
+    /* 커뮤니티 게시글 검색 */
+    public List<CommunityPostDTO> search(String keyword) {
+        List<CommunityPost> posts = communityPostsRepository.findAllTitleContaining("%" + keyword + "%");
+        return posts.stream()
+                .map(CommunityPostDTO::new) // CommunityPost 객체를 CommunityPostDTO로 변환합니다.
+                .collect(Collectors.toList());
     }
 }

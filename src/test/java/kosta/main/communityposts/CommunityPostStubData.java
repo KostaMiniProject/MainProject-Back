@@ -2,6 +2,7 @@ package kosta.main.communityposts;
 
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
+import kosta.main.likes.dto.LikeDTO;
 import kosta.main.likes.entity.Like;
 import kosta.main.users.UserStubData;
 import kosta.main.users.entity.User;
@@ -123,6 +124,22 @@ public class CommunityPostStubData {
                 .build();
     }
 
+    public Like getLike() {
+        Like like = new Like(LIKE_ID,null,null);
+        like.setCommunityPost(getCommunityPost());
+        like.setUser(like.getCommunityPost().getUser());
+        CommunityPost communityPost = like.getCommunityPost();
+        communityPost.getLikePostList().add(like);
+        return like;
+    }
+
+    public LikeDTO getLikeDTO() {
+        return LikeDTO.of(getLike());
+    }
+
+    public CommunityPostLikeCancelledDTO getCommunityPostLikeCancelledDTO() {
+         return new CommunityPostLikeCancelledDTO("좋아요 취소 했습니다.");
+    }
     public MockMultipartFile getMockMultipartFile() throws IOException {
         final String fileName = "testImage1"; //파일명
         final String contentType = "png"; //파일타입

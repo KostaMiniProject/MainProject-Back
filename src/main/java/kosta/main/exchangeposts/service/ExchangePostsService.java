@@ -76,7 +76,8 @@ public class ExchangePostsService {
   // 전체 게시글 불러오기 (23.12.04 : 최신순으로 제공, 페이지 네이션으로 10개씩 제공)
   @Transactional(readOnly = true)
   public Page<ExchangePostListDTO> findAllExchangePosts(Pageable pageable) {
-    return exchangePostRepository.findAll(pageable)
+    Page<ExchangePost> all = exchangePostRepository.findAll(pageable);
+    return all
         .map(post -> {
           // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
           String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
@@ -109,7 +110,7 @@ public class ExchangePostsService {
 
     // 사용자 프로필 정보 생성
     ExchangePostDetailDTO.UserProfile userProfile = ExchangePostDetailDTO.UserProfile.builder()
-        .id(post.getUser().getUserId())
+        .userId(post.getUser().getUserId())
         .name(post.getUser().getName())
         .address(post.getUser().getAddress())
         .imageUrl(post.getUser().getProfileImage())
@@ -126,7 +127,7 @@ public class ExchangePostsService {
     // 입찰 목록 생성
     List<ExchangePostDetailDTO.BidDetails> bidDetailsList = post.getBids().stream()
         .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
-            .id(bid.getBidId())
+            .bidId(bid.getBidId())
             .name(bid.getUser().getName())
             .imageUrl(bid.getUser().getProfileImage())
             .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드

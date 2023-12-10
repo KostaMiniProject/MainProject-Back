@@ -123,7 +123,7 @@ public class ItemsController {
    * @return
    */
   @GetMapping("/search")
-  public ResponseEntity<?> searchItems(@RequestPart(value = "keyword") String keyword) {
+  public ResponseEntity<?> searchItems(@RequestParam(value = "keyword") String keyword) {
     log.info("keword = {}", keyword);
     List<Item> items = itemsService.searchItems(keyword);
     log.info("items = {}", items.size());

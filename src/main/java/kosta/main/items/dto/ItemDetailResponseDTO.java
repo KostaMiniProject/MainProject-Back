@@ -18,7 +18,7 @@ public class ItemDetailResponseDTO {
     private Item.ItemStatus itemStatus;
     private List<String> images;
     private Item.IsBiding isBiding;
-    private LocalDateTime createdAt;
+    private LocalDateTime createAt;
     private UserItemResponseDTO user;
 
     public static ItemDetailResponseDTO of(Item item){

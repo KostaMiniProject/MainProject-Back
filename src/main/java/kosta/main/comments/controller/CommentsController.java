@@ -33,7 +33,7 @@ public class CommentsController {
                                                  @PathVariable("communityPostId") Integer communityPostId,
                                                  @RequestBody CommentCreateDTO commentCreateDTO) {
         CommentDTO commentDTO = commentsService.addComment(user, communityPostId, commentCreateDTO);
-        return ResponseEntity.ok(commentDTO);
+        return new ResponseEntity<>(commentDTO, HttpStatus.CREATED);
     }
 
 
@@ -49,6 +49,6 @@ public class CommentsController {
     public ResponseEntity<?> deleteComment(@PathVariable("commentId") Integer commentId,
                                            @LoginUser User user) {
         commentsService.deleteComment(commentId, user);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

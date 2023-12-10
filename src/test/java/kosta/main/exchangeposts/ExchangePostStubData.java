@@ -1,18 +1,19 @@
 package kosta.main.exchangeposts;
 
-import kosta.main.exchangeposts.dto.ExchangePostDTO;
-import kosta.main.exchangeposts.dto.ExchangePostListDTO;
-import kosta.main.exchangeposts.dto.ExchangePostUpdateResponseDTO;
-import kosta.main.exchangeposts.dto.ResponseDto;
+import kosta.main.bids.entity.Bid;
+import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.ItemStubData;
+import kosta.main.items.entity.Item;
 import kosta.main.users.UserStubData;
+import kosta.main.users.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ExchangePostStubData {
@@ -48,6 +49,9 @@ public class ExchangePostStubData {
     public ExchangePost getExchangePostBid(){
         UserStubData userStubData = new UserStubData();
         ItemStubData itemStubData = new ItemStubData();
+        Bid bid = itemStubData.getBid();
+        ArrayList<Bid> bids = new ArrayList<>();
+        bids.add(bid);
         return ExchangePost.builder()
                 .exchangePostId(EXCHANGE_POST_ID)
                 .title(TITLE)
@@ -56,6 +60,7 @@ public class ExchangePostStubData {
                 .preferItems(PREFER_ITEMS)
                 .address(ADDRESS)
                 .content(CONTENT)
+                .bids(bids)
                 .build();
 
     }
@@ -125,5 +130,38 @@ public class ExchangePostStubData {
     public Pageable getPageable() {
         return PageRequest.of(0, 10);
 
+    }
+
+    public ExchangePostDetailDTO getExchangePostDetailDTO() {
+        ExchangePost exchangePostBid = getExchangePostBid();
+        User user = exchangePostBid.getUser();
+        Item item = exchangePostBid.getItem();
+        List<Bid> bids = exchangePostBid.getBids();
+        return ExchangePostDetailDTO.builder()
+                .postOwner(true)
+                .title(exchangePostBid.getTitle())
+                .preferItems(exchangePostBid.getPreferItems())
+                .address(exchangePostBid.getAddress())
+                .content(exchangePostBid.getContent())
+                .profile(ExchangePostDetailDTO.UserProfile.builder()
+                        .userId(user.getUserId())
+                        .name(user.getName())
+                        .address(user.getAddress())
+                        .imageUrl(user.getProfileImage())
+                        .rating(user.getRating()).build())
+                .item(ExchangePostDetailDTO.ItemDetails.builder()
+                        .title(item.getTitle())
+                        .description(item.getDescription())
+                        .imageUrls(item.getImages()).build())
+                .bidList(bids.stream()
+                        .map(bid ->
+                                ExchangePostDetailDTO.BidDetails.builder()
+                                        .bidId(bid.getBidId())
+                                        .name(bid.getUser().getName())
+                                        .imageUrl(bid.getUser().getProfileImage())
+                                        .items(Arrays.toString(bid.getItems().stream().map(Item::getTitle).toArray()).replace("[","").replace("]",""))
+                                        .build()
+                        ).toList())
+                .build();
     }
 }

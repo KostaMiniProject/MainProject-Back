@@ -1,11 +1,14 @@
 package kosta.main.communityposts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kosta.main.ControllerTest;
 import kosta.main.communityposts.CommunityPostStubData;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.global.annotation.WithMockCustomUser;
+import kosta.main.likes.dto.LikeDTO;
+import kosta.main.users.controller.UsersController;
 import kosta.main.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +29,7 @@ import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.generate.RestDocumentationGenerator;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -54,11 +58,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 
 
-@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@ExtendWith({SpringExtension.class})
 @WebMvcTest(CommunityPostsController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-@Import(kosta.main.RestDocsConfiguration.class)
-class CommunityPostsControllerTest {
+class CommunityPostsControllerTest extends ControllerTest {
 
     public static final int COMMUNITYPOST_ID = 1;
     public static final int ONE_ACTION = 1;
@@ -67,8 +70,6 @@ class CommunityPostsControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private MockMvc mockMvc;
 
     @MockBean
     private CommunityPostsService communityPostsService;
@@ -77,14 +78,8 @@ class CommunityPostsControllerTest {
     private final String BASE_URL = "/api/community-posts";
 
     @BeforeEach
-    public void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentationContextProvider) {
+    public void setup() {
         communityPostStubData = new CommunityPostStubData();
-             mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                    .apply(documentationConfiguration(restDocumentationContextProvider))
-                    .alwaysDo(print())														// 이건 왜하는지 모르겠음.
-                    .alwaysDo(restDocs)														// 재정의한 핸들러를 적용함. 적용하면 일반 document에도 적용됨. 일반 document로 선언되면 그부분도 같이 생성됨에 유의해야 함.
-                    .addFilters(new CharacterEncodingFilter("UTF-8", true))					// 한글깨짐 방지 처리
-                    .build();
     }
     @Test
     @WithMockCustomUser
@@ -170,7 +165,7 @@ class CommunityPostsControllerTest {
                         .file(file)
                         .part(communityPostCreateDto)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf()));
+                        );
 
 
         perform
@@ -218,7 +213,6 @@ class CommunityPostsControllerTest {
                 multipart(HttpMethod.PUT,BASE_URL+"/{communityPostId}", COMMUNITYPOST_ID)
                         .file(file)
                         .part(communityPostUpdateDto1)
-                        .with(csrf())
                         .header("Authorization", "Bearer yourAccessToken")
                         .requestAttr(RestDocumentationGenerator.ATTRIBUTE_NAME_URL_TEMPLATE, BASE_URL+"/{communityPostId}"));
 
@@ -270,7 +264,7 @@ class CommunityPostsControllerTest {
         ResultActions actions = mockMvc.perform(
                 delete(BASE_URL+"/{communityPostId}", COMMUNITYPOST_ID)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf()));
+                        );
         verify(communityPostsService, times(ONE_ACTION)).deletePost(Mockito.anyInt(),Mockito.any(User.class));
         //then
         actions
@@ -283,21 +277,66 @@ class CommunityPostsControllerTest {
                 ));
     }
 
-    //TODO: 추후 구현
+//    TODO: 추후 구현
+    @Test
+    @WithMockCustomUser
+    @DisplayName("커뮤니티게시글 좋아요 추가 성공 테스트")
     void toggleLikePost() throws Exception {
+        //given
+        LikeDTO likeDTO = communityPostStubData.getLikeDTO();
+        given(communityPostsService.toggleLikePost(Mockito.anyInt(), Mockito.any(User.class))).willReturn(likeDTO);
+        //when
 
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put(BASE_URL + "/likes/{communityPostId}", COMMUNITYPOST_ID)
+                .header("Authorization", "Bearer yourAccessToken")
+                );
+        //then
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("likeId").type(JsonFieldType.NUMBER).description("좋아요 ID"),
+                                fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티 게시글 ID"),
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저 ID")
+                        )
+                ));
     }
-//
-//    @Test
-//    @DisplayName("댓글 목록 조회")
-//    @WithMockCustomUser
-//    void findComments(){
-//        //given
-//
-//
-//        given(communityPostsService.findCommentsByPostId(Mockito.anyInt())).willReturn()
-//        //when
-//
-//        //then
-//    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("커뮤니티게시글 좋아요 삭제 성공 테스트")
+    void toggleLikePostDelete() throws Exception {
+        //given
+        CommunityPostLikeCancelledDTO communityPostLikeCancelledDTO
+                = communityPostStubData.getCommunityPostLikeCancelledDTO();
+        given(communityPostsService.toggleLikePost(Mockito.anyInt(), Mockito.any(User.class))).willReturn(communityPostLikeCancelledDTO);
+        //when
+
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.put(BASE_URL + "/likes/{communityPostId}", COMMUNITYPOST_ID)
+                .header("Authorization", "Bearer yourAccessToken")
+                );
+        //then
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("좋아요 취소가 정상적으로 작동했다는 메세지를 보냄")
+                        )
+                ));
+    }
 }

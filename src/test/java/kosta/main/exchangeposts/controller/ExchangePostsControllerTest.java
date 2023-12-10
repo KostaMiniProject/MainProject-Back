@@ -1,12 +1,15 @@
 package kosta.main.exchangeposts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kosta.main.ControllerTest;
 import kosta.main.exchangeposts.ExchangePostStubData;
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
+import kosta.main.exchangeposts.dto.ExchangePostDetailDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
 import kosta.main.exchangeposts.dto.ExchangePostUpdateResponseDTO;
 import kosta.main.exchangeposts.service.ExchangePostsService;
 import kosta.main.global.annotation.WithMockCustomUser;
+import kosta.main.users.controller.UsersController;
 import kosta.main.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,29 +19,21 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -47,11 +42,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@ExtendWith({SpringExtension.class})
 @WebMvcTest(ExchangePostsController.class)
 @MockBean(JpaMetamodelMappingContext.class)
-@Import(kosta.main.RestDocsConfiguration.class)
-class ExchangePostsControllerTest {
+class ExchangePostsControllerTest extends ControllerTest {
 
     public static final int EXCHANGE_POST_ID = 1;
     public static final String BASIC_URL = "/api/exchange-posts";
@@ -66,14 +60,12 @@ class ExchangePostsControllerTest {
     public static final String DESC_IMAGE_URL = "교환 게시글에 등록된 item의 대표이미지 URL";
     public static final String DESC_BID_COUNT = "해당 교환 게시글에 등록된 입찰의 갯수를 세서 Integer 값으로 반환";
     public static final String DATA = "전달하는 데이터 배열";
-    public static final String DESC_PAGEINFO = "페이지 정보를 감싸고 있는 배열";
-    public static final String DESC_PAGESIZE = "현재 페이지 숫자";
+    public static final String DESC_PAGE_INFO = "페이지 정보를 감싸고 있는 배열";
+    public static final String DESC_PAGE_SIZE = "현재 페이지 숫자";
     public static final String DESC_SIZE = "페이지 크기(한 번에 몇개의 정보를 가져올지";
     public static final String DESC_TOTAL_ELEMENTS = "전체 데이터 개수";
-    public static final String DESC_TOTALPAGES = "전체 페이지 숫자";
+    public static final String DESC_TOTAL_PAGES = "전체 페이지 숫자";
 
-    @Autowired
-    private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -84,16 +76,8 @@ class ExchangePostsControllerTest {
     private ExchangePostStubData exchangePostStubData;
 
     @BeforeEach
-    public void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentationContextProvider) {
-
+    public void setup() {
         exchangePostStubData = new ExchangePostStubData();
-
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentationContextProvider))
-                .alwaysDo(print())														// 이건 왜하는지 모르겠음.
-                .alwaysDo(restDocs)														// 재정의한 핸들러를 적용함. 적용하면 일반 document에도 적용됨. 일반 document로 선언되면 그부분도 같이 생성됨에 유의해야 함.
-                .addFilters(new CharacterEncodingFilter("UTF-8", true))					// 한글깨짐 방지 처리
-                .build();
     }
     @Test
     @WithMockCustomUser
@@ -116,7 +100,6 @@ class ExchangePostsControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf())
         );
 
         //then
@@ -169,11 +152,11 @@ class ExchangePostsControllerTest {
                                 fieldWithPath("data.[].createdAt").type(JsonFieldType.NULL).description(DESC_CREATED_AT),
                                 fieldWithPath("data.[].imgUrl").type(JsonFieldType.STRING).description(DESC_IMAGE_URL),
                                 fieldWithPath("data.[].bidCount").type(JsonFieldType.NUMBER).description(DESC_BID_COUNT),
-                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description(DESC_PAGEINFO),
-                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description(DESC_PAGESIZE),
+                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description(DESC_PAGE_INFO),
+                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description(DESC_PAGE_SIZE),
                                 fieldWithPath("pageInfo.size").type(JsonFieldType.NUMBER).description(DESC_SIZE),
                                 fieldWithPath("pageInfo.totalElements").type(JsonFieldType.NUMBER).description(DESC_TOTAL_ELEMENTS),
-                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description(DESC_TOTALPAGES)
+                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description(DESC_TOTAL_PAGES)
                         )
                 ));
     }
@@ -181,8 +164,50 @@ class ExchangePostsControllerTest {
     @Test
     @WithMockCustomUser
     @DisplayName("교환 게시글 상세 조회 성공 테스트")
-    void getExchangePostById() {
-        //TODO 구현필요
+    void getExchangePostById() throws Exception {
+        //given
+        ExchangePostDetailDTO exchangePostDetailDTO = exchangePostStubData.getExchangePostDetailDTO();
+        given(exchangePostsService.findExchangePostById(Mockito.anyInt(), Mockito.any(User.class))).willReturn(exchangePostDetailDTO);
+
+        //when
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get(BASIC_URL + "/{exchangePostId}", EXCHANGE_POST_ID)
+                .header("Authorization", "Bearer yourAccessToken")
+        );
+        //then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰(옵션)").optional()
+                        ),
+                        pathParameters(
+                                parameterWithName("exchangePostId").description("교환 게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("postOwner").type(JsonFieldType.BOOLEAN).description("물물교환 게시글 주인인지 여부(주인일 경우 True)"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("물물교환 게시글 제목"),
+                                fieldWithPath("preferItems").type(JsonFieldType.STRING).description("선호하는 물건"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("물건을 교환할 위치"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
+                                fieldWithPath("profile").type(JsonFieldType.OBJECT).description("물물교환 게시글을 올린 유저의 정보"),
+                                fieldWithPath("profile.userId").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("profile.name").type(JsonFieldType.STRING).description("유저 이름"),
+                                fieldWithPath("profile.address").type(JsonFieldType.STRING).description("유저의 주소"),
+                                fieldWithPath("profile.imageUrl").type(JsonFieldType.STRING).description("유저의 프로필 사진"),
+                                fieldWithPath("profile.rating").type(JsonFieldType.NUMBER).description("유저의 평점"),
+                                fieldWithPath("item").type(JsonFieldType.OBJECT).description("게시글 물건정보 객체"),
+                                fieldWithPath("item.title").type(JsonFieldType.STRING).description("물건 제목"),
+                                fieldWithPath("item.description").type(JsonFieldType.STRING).description("물건 설명"),
+                                fieldWithPath("item.imageUrls").type(JsonFieldType.ARRAY).description("물건 이미지"),
+                                fieldWithPath("bidList").type(JsonFieldType.ARRAY).description("해당 게시글의 입찰 리스트"),
+                                fieldWithPath("bidList.[].bidId").type(JsonFieldType.NUMBER).description("입찰 ID"),
+                                fieldWithPath("bidList.[].name").type(JsonFieldType.STRING).description("사용자 이름"),
+                                fieldWithPath("bidList.[].imageUrl").type(JsonFieldType.STRING).description("사용자 프로필 이미지"),
+                                fieldWithPath("bidList.[].items").type(JsonFieldType.STRING).description("입찰에 사용된 아이템 목록을 문자열로 표현")
+
+                        )
+
+                ));
     }
 
     @Test
@@ -203,7 +228,6 @@ class ExchangePostsControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf())
         );
 
         //then
@@ -237,7 +261,6 @@ class ExchangePostsControllerTest {
         //when
         ResultActions result = mockMvc.perform(
                 delete(BASIC_URL+"/{exchangePostId}",EXCHANGE_POST_ID)
-                        .with(csrf())
         );
 
         //then

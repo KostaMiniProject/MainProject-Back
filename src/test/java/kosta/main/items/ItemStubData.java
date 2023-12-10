@@ -4,11 +4,13 @@ import kosta.main.bids.entity.Bid;
 import kosta.main.categories.entity.Category;
 import kosta.main.exchangeposts.ExchangePostStubData;
 import kosta.main.exchangeposts.entity.ExchangePost;
-import kosta.main.items.dto.ItemSaveDTO;
-import kosta.main.items.dto.ItemUpdateDTO;
-import kosta.main.items.dto.ItemUpdateResponseDTO;
+import kosta.main.items.dto.*;
 import kosta.main.items.entity.Item;
 import kosta.main.users.UserStubData;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.FileInputStream;
@@ -121,6 +123,21 @@ public class ItemStubData {
         items.add(getNoBidItem());
         items.add(getAnotherNoBidItem());
         return items;
+    }
+
+    public Page<ItemPageDTO> getItemPageDTOs(){
+        List<ItemPageDTO> list = getItems().stream().map(ItemPageDTO::from).toList();
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), list.size());
+        return new PageImpl<>(list.subList(start, end), pageRequest, list.size());
+
+    }
+
+    public ItemDetailResponseDTO getItemDetailResponse() {
+        Item bidItem = getBidItem();
+        return ItemDetailResponseDTO.of(bidItem);
     }
 
     public MockMultipartFile getMockMultipartFile() throws IOException {

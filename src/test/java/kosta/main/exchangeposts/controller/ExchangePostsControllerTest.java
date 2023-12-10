@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kosta.main.exchangeposts.ExchangePostStubData;
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
+import kosta.main.exchangeposts.dto.ExchangePostUpdateResponseDTO;
 import kosta.main.exchangeposts.service.ExchangePostsService;
 import kosta.main.global.annotation.WithMockCustomUser;
 import kosta.main.users.entity.User;
@@ -190,9 +191,10 @@ class ExchangePostsControllerTest {
     void updateExchangePost() throws Exception {
         //given
         ExchangePostDTO exchangePostDTO = exchangePostStubData.getExchangePostDTO();
+        ExchangePostUpdateResponseDTO exchangePostUpdateResponseDTO = exchangePostStubData.getExchangePostUpdateResponseDTO();
         String content = objectMapper.writeValueAsString(exchangePostDTO);
 
-        given(exchangePostsService.updateExchangePost(Mockito.any(User.class),Mockito.anyInt(),Mockito.any(ExchangePostDTO.class))).willReturn(EXCHANGE_POST_ID);
+        given(exchangePostsService.updateExchangePost(Mockito.any(User.class),Mockito.anyInt(),Mockito.any(ExchangePostDTO.class))).willReturn(exchangePostUpdateResponseDTO);
         //when
 
         ResultActions result = mockMvc.perform(

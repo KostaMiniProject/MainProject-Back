@@ -44,9 +44,6 @@ public class CommunityPostsService {
         return communityPostsRepository.findById(communityPostId).orElseThrow(() -> new BusinessException(COMMUNITY_POST_NOT_FOUND));
     }
 
-    public Comment findCommentByCommentId(Integer commentId) {
-        return commentsRepository.findById(commentId).orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
-    }
 
 
     /* 커뮤니티 목록 조회 */
@@ -149,52 +146,5 @@ public class CommunityPostsService {
             return LikeDTO.of(like); // like 객체를 LikeDTO로 변환하여 반환
 
         }
-    }
-
-    //댓글 조회(대댓글 할때는 사용자 아이디 필요)
-    @Transactional(readOnly = true)
-    public List<CommentListDTO> findCommentsByPostId(Integer communityPostId) {
-        CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
-
-        return communityPost.getCommentList().stream()
-                .map(CommentListDTO::from)
-                .collect(Collectors.toList());
-    }
-
-    // 댓글 작성(대댓글 할때는 parentId 사용)
-    public CommentDTO addComment(User user, Integer communityPostId, CommentCreateDTO commentCreateDTO) {
-        CommunityPost communityPost = findCommunityPostByCommunityPostId(communityPostId);
-
-        Comment comment = Comment.builder()
-                .user(user)
-                .content(commentCreateDTO.getContent())
-                .communityPost(communityPost)
-                .build();
-        return new CommentDTO(commentsRepository.save(comment));
-    }
-
-    // 댓글 수정
-    public CommentDTO updateComment(User user, Integer commentId, CommentUpdateDTO commentUpdateDTO) {
-        Comment comment = findCommentByCommentId(commentId);
-
-        if (!comment.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("댓글 수정 권한이 없습니다.");
-        }
-
-        comment.updateComment(commentUpdateDTO);
-        Comment save = commentsRepository.save(comment);
-        return new CommentDTO(save);
-    }
-
-    // 댓글 삭제
-    public void deleteComment(Integer commentId, User user) {
-        Comment comment = findCommentByCommentId(commentId);
-
-        if (!comment.getUser().getUserId().equals(user.getUserId())) {
-            throw new RuntimeException("댓글 삭제 권한이 없습니다.");
-        }
-
-        comment.updateCommentStatus(Comment.CommentStatus.DELETED);
-        commentsRepository.save(comment);
     }
 }

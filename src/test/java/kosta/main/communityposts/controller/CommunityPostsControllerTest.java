@@ -283,4 +283,21 @@ class CommunityPostsControllerTest {
                 ));
     }
 
+    //TODO: 추후 구현
+    void toggleLikePost() throws Exception {
+
+    }
+//
+//    @Test
+//    @DisplayName("댓글 목록 조회")
+//    @WithMockCustomUser
+//    void findComments(){
+//        //given
+//
+//
+//        given(communityPostsService.findCommentsByPostId(Mockito.anyInt())).willReturn()
+//        //when
+//
+//        //then
+//    }
 }

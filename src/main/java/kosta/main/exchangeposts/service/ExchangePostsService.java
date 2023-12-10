@@ -9,7 +9,6 @@ import kosta.main.global.error.exception.BusinessException;
 import kosta.main.items.entity.Item;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
-import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +25,6 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 public class ExchangePostsService {
 
   private final ExchangePostsRepository exchangePostRepository;
-  private final UsersRepository usersRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
   
@@ -115,7 +113,7 @@ public class ExchangePostsService {
         .name(post.getUser().getName())
         .address(post.getUser().getAddress())
         .imageUrl(post.getUser().getProfileImage())
-        //.rating(calculateRating(post.getUser()))
+        .rating((post.getUser().getRating()))
         .build();
 
     // 아이템 상세 정보 생성
@@ -156,7 +154,7 @@ public class ExchangePostsService {
   }
 
   @Transactional
-  public Integer updateExchangePost(User user, Integer exchangePostId, ExchangePostDTO updatedExchangePostDTO) {
+  public ExchangePostUpdateResponseDTO updateExchangePost(User user, Integer exchangePostId, ExchangePostDTO updatedExchangePostDTO) {
     ExchangePost existingExchangePost = exchangePostRepository.findById(exchangePostId)
         .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
 
@@ -190,7 +188,7 @@ public class ExchangePostsService {
 
     // ExchangePost 엔티티 업데이트
     existingExchangePost.updateWithBuilder(user, newItem != null ? newItem : existingItem, updatedExchangePostDTO);
-    return existingExchangePost.getExchangePostId();
+    return ExchangePostUpdateResponseDTO.from(existingExchangePost);
   }
 
   @Transactional

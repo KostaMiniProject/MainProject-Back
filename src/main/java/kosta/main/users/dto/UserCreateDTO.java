@@ -1,8 +1,9 @@
 package kosta.main.users.dto;
 
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,40 +14,37 @@ import lombok.Getter;
 public class UserCreateDTO {
 
   //    # 조건 :
-//    ^ : 시작
-//    [0-9a-zA-Z] : 숫자, 소문자, 대문자
-//    ([-_.] : 특수문자
-//    ? : 앞 내용이 있거나 없음
-//    .[a-zA-Z]{2,3} : 2~3개 소문자, 대문자로 구성
-//    $ : 끝
-//  @NotNull(message = "이름은 필수 항목입니다.")
-//  @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$",
-//      message = "이메일 형식을 지켜주세요.")
+//  @NotEmpty(message = "이메일은 필수 항목입니다.")
+//  @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "올바른 이메일 주소를 입력해주세요.")
   private String email;
 
   //    # 조건 : 숫자, 문자, 특수문자(!@#$%^&+=) 포함 8~15자리 이내
-//  @NotNull(message = "이름은 필수 항목입니다.")
-//  @Pattern(regexp = "^.*(?=^.{8,15}$)(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$",
-//      message = "숫자, 문자, 특수문자(!@#$%^&+=) 포함 8~15자리 이내로 작성해주세요.")
+//  @NotEmpty(message = "비밀번호는 필수 항목입니다.")
+//  @Size(min = 8, max = 15, message = "비밀번호는 8~15자리여야 합니다.")
+//  @Pattern(regexp = "^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$", message = "숫자, 문자, 특수문자를 모두 포함해야 합니다.")
   private String password;
 
   //    # 조건 : 숫자, 문자, 특수문자(!@#$%^&+=) 포함 8~15자리 이내
-//  @NotNull(message = "이름은 필수 항목입니다.")
-//  @Pattern(regexp = "^.*(?=^.{8,15}$)(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$",
-//      message = "숫자, 문자, 특수문자(!@#$%^&+=) 포함 8~15자리 이내로 작성해주세요.")
+//  @NotEmpty(message = "다시한번 작성해주세요.")
+//  @Size(min = 8, max = 15, message = "비밀번호는 8~15자리여야 합니다.")
+//  @Pattern(regexp = "^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$", message = "숫자, 문자, 특수문자를 모두 포함해야 합니다.")
   private String checkPassword;
 
-//  @NotNull(message = "이름은 필수 항목입니다.")
+//  @NotEmpty(message = "이름은 필수 항목입니다.")
   private String name;
 
   private String address;
 
-  //    # 조건 : 3글자 - 3~4글자 - 4글자
-//  @NotNull(message = "이름은 필수 항목입니다.")
-//  @Pattern(regexp = "^\\d{3}-\\d{3,4}-\\d{4}$", message = "전화번호 형식을 지켜주세요.")
+  //    # 조건 : 숫자와 하이픈(-)만 작성가능
+//  @NotEmpty(message = "전화번호는 필수 항목입니다.")
+//  @Pattern(regexp = "^[0-9-]+$", message = "숫자와 하이픈(-)만 입력해주세요.")
   private String phone;
 
   public void updatePassword(String password) {
     this.password = password;
   }
+
+//  public boolean passwordsMatch() {
+//    return password.equals(checkPassword);
+//  }
 }

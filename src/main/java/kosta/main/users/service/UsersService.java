@@ -57,8 +57,17 @@ public class UsersService {
     public UsersResponseDTO updateUser(User user, UserUpdateDTO userUpdateDTO, MultipartFile file) {
         String imagePath = imageService.resizeToProfileSizeAndUpload(file);
         userUpdateDTO.updateProfileImage(imagePath);
-        if(!Objects.equals(userUpdateDTO.getPassword(), userUpdateDTO.getCheckPassword()))
-            throw new BusinessException(INVALID_PASSWORD);
+
+        //만약 비밀번호가 하나라도 널일경우 비밀번호는 통과
+        //만약 두 비밀번호가 일치할 경우 userUpdateDto의 비밀번호를 encode한 비밀번호로 변경
+        //일치하지 않을 경우 비밀번호가 다르다는 에러를 던짐
+        if(userUpdateDTO.getPassword() != null && userUpdateDTO.getCheckPassword() != null){
+            if(Objects.equals(userUpdateDTO.getPassword(), userUpdateDTO.getCheckPassword())){
+                String encodePassword = passwordEncoder.encode(userUpdateDTO.getPassword());
+                userUpdateDTO.updatePassword(encodePassword);
+            } else throw new BusinessException(INVALID_PASSWORD);
+
+        }
         User updatedUser = user.updateUser(userUpdateDTO);
         return UsersResponseDTO.of(usersRepository.save(updatedUser));
     }

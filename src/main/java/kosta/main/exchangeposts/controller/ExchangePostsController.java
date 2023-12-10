@@ -41,7 +41,7 @@ public class ExchangePostsController {
 
   @PutMapping("/{exchangePostId}") //필요한 데이터만 클라이언트 측으로 전송하도록 변경(23.11.27)
   public ResponseEntity<?> updateExchangePost(@LoginUser User user,  @PathVariable("exchangePostId") Integer exchangePostId, @RequestBody ExchangePostDTO exchangePostDTO) {
-    return ResponseEntity.ok(exchangePostsService.updateExchangePost(user, exchangePostId, exchangePostDTO));
+    return new ResponseEntity<>(exchangePostsService.updateExchangePost(user, exchangePostId, exchangePostDTO), HttpStatus.OK);
   }
   @DeleteMapping("/{exchangePostId}")
   public ResponseEntity<?> deleteExchangePost(@PathVariable("exchangePostId") Integer exchangePostId, @LoginUser  User user) {

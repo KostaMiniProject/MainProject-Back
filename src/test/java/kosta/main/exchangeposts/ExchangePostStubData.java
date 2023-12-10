@@ -2,6 +2,7 @@ package kosta.main.exchangeposts;
 
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
+import kosta.main.exchangeposts.dto.ExchangePostUpdateResponseDTO;
 import kosta.main.exchangeposts.dto.ResponseDto;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.ItemStubData;
@@ -9,6 +10,7 @@ import kosta.main.users.UserStubData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,21 @@ public class ExchangePostStubData {
                 .title(TITLE)
                 .user(userStubData.getUser())
                 .item(itemStubData.getNoBidItem())
+                .preferItems(PREFER_ITEMS)
+                .address(ADDRESS)
+                .content(CONTENT)
+                .build();
+
+    }
+
+    public ExchangePost getExchangePostBid(){
+        UserStubData userStubData = new UserStubData();
+        ItemStubData itemStubData = new ItemStubData();
+        return ExchangePost.builder()
+                .exchangePostId(EXCHANGE_POST_ID)
+                .title(TITLE)
+                .user(userStubData.getUser())
+                .item(itemStubData.getBidItem())
                 .preferItems(PREFER_ITEMS)
                 .address(ADDRESS)
                 .content(CONTENT)
@@ -72,6 +89,25 @@ public class ExchangePostStubData {
         return exchangePostListDTOS;
     }
 
+    public List<ExchangePost> getExchangePosts(){
+        List<ExchangePost> exchangePosts = new ArrayList<ExchangePost>();
+        exchangePosts.add(getExchangePostNoBid());
+        exchangePosts.add(getExchangePostBid());
+        return exchangePosts;
+    }
+    public Page<ExchangePost> getExchangePostPages(){
+        List<ExchangePost> exchangePosts = getExchangePosts();
+        Pageable pageable = getPageable();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), exchangePosts.size());
+        return new PageImpl<>(exchangePosts.subList(start, end), pageable, exchangePosts.size());
+    }
+
+    public ExchangePostUpdateResponseDTO getExchangePostUpdateResponseDTO(){
+        ExchangePost exchangePostBid = getExchangePostBid();
+        return ExchangePostUpdateResponseDTO.from(exchangePostBid);
+    }
+
     public Page<ExchangePostListDTO> getExchangePostListDTOPage() {
         List<ExchangePostListDTO> exchangePostListDTO = getExchangePostListDTO();
         // 요청으로 들어온 page와 한 page당 원하는 데이터의 갯수
@@ -85,4 +121,9 @@ public class ExchangePostStubData {
         return ResponseDto.of(EXCHANGE_POST_ID);
     }
 
+
+    public Pageable getPageable() {
+        return PageRequest.of(0, 10);
+
+    }
 }

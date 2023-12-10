@@ -27,7 +27,7 @@ public enum CommonErrorCode implements ErrorCode {
     NOT_COMMUNITY_POST_OWNER(HttpStatus.BAD_REQUEST, "사용자와 작성자가 일치하지 않습니다."),
     NOT_ITEM_OWNER(HttpStatus.BAD_REQUEST,"물건의 주인이 아닙니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST,"비밀번호가 일치하지 않습니다."),
-
+    NOT_EQUAL_COMMUNITY_POST(HttpStatus.BAD_REQUEST, "부모댓글과 자식댓글의 커뮤니티 게시글이 일치하지 않습니다"),
 
 
     /**
@@ -39,6 +39,7 @@ public enum CommonErrorCode implements ErrorCode {
     COMMUNITY_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "커뮤니티 게시글을 찾을 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "물건을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
 
     /**
      * 405 Method Not Allowed

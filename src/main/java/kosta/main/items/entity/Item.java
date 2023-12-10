@@ -24,62 +24,65 @@ import java.util.List;
 @Where(clause = "item_status <> 2")
 public class Item extends Auditable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer itemId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer itemId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "bid_id")
-    private Bid bid;
+  @ManyToOne
+  @JoinColumn(name = "bid_id")
+  private Bid bid;
 
-    @JsonIgnore//DTO생기면 지울것
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+  @JsonIgnore//DTO생기면 지울것
+  @ManyToOne
+  @JoinColumn(name = "category_id")
+  private Category category;
 
-    @Column(length = 255)
-    private String title;
+  @Column(length = 255)
+  private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
+  @Column(columnDefinition = "TEXT")
+  private String description;
 
-    @Builder.Default
-    @Column(length = 20, nullable = false)
-    private ItemStatus itemStatus = ItemStatus.PUBLIC;
+  @Builder.Default
+  @Column(length = 20, nullable = false)
+  private ItemStatus itemStatus = ItemStatus.PUBLIC;
 
-    @ElementCollection
-    @Builder.Default
-    @CollectionTable(name = "item_images", joinColumns = @JoinColumn(name = "item_id"))
-    @Column(name = "item_image")
-    private List<String> images = new ArrayList<>(); // 아이템의 이미지 리스트
+  @ElementCollection
+  @Builder.Default
+  @CollectionTable(name = "item_images", joinColumns = @JoinColumn(name = "item_id"))
+  @Column(name = "item_image")
+  private List<String> images = new ArrayList<>(); // 아이템의 이미지 리스트
 
-    @Builder.Default
-    @Column(length = 20, nullable = false)
-    private IsBiding isBiding = IsBiding.NOT_BIDING;
+  @Builder.Default
+  @Column(length = 20, nullable = false)
+  private IsBiding isBiding = IsBiding.NOT_BIDING;
 
-    public enum ItemStatus {
-        PUBLIC, PRIVATE, DELETED
-    }
+  public enum ItemStatus {
+    PUBLIC, PRIVATE, DELETED
+  }
 
-    public enum IsBiding {
-        NOT_BIDING, BIDING
-    }
-    public void updateIsBiding(IsBiding isBiding) {
-        this.isBiding = isBiding;
-    }
-    public void updateBid(Bid bid) {
-        this.bid = bid;
-    }
-    public void updateUser(User newUser) {
-        this.user = newUser;
-    }
+  public enum IsBiding {
+    NOT_BIDING, BIDING
+  }
+
+  public void updateIsBiding(IsBiding isBiding) {
+    this.isBiding = isBiding;
+  }
+
+  public void updateBid(Bid bid) {
+    this.bid = bid;
+  }
+
+  public void updateUser(User newUser) {
+    this.user = newUser;
+  }
 
 
-    public void itemStatusUpdate(ItemStatus itemStatus) {
-        this.itemStatus = itemStatus;
-    }
+  public void itemStatusUpdate(ItemStatus itemStatus) {
+    this.itemStatus = itemStatus;
+  }
 }

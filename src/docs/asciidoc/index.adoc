@@ -35,6 +35,8 @@ include::{snippets}/users-controller-test/signup/response-fields.adoc[]
 === 내 정보 수정
 
 
+include::{snippets}/users-controller-test/update-my-info/curl-request.adoc[]
+
 include::{snippets}/users-controller-test/update-my-info/request-headers.adoc[]
 
 include::{snippets}/users-controller-test/update-my-info/request-parts.adoc[]
@@ -67,11 +69,12 @@ operation::exchange-posts-controller-test/get-exchange-post-by-id[snippets='requ
 
 === 물물교환 게시글 생성
 
-operation::exchange-posts-controller-test/create-exchange-post[snippets='request-headers,http-request,http-response,response-fields']
+operation::exchange-posts-controller-test/create-exchange-post[snippets='curl-request,request-headers,http-request,http-response,response-fields']
 
 === 물물교환 게시글 자료 수정
 
-operation::exchange-posts-controller-test/update-exchange-post[snippets='request-headers,http-request,http-response']
+
+operation::exchange-posts-controller-test/update-exchange-post[snippets='curl-request,request-headers,http-request,http-response']
 
 === 물물교환 게시글 삭제
 
@@ -81,11 +84,11 @@ operation::exchange-posts-controller-test/delete-exchange-post[snippets='http-re
 
 == 물건 생성
 
-operation::items-controller-test/add-item[snippets='request-headers,request-parts,request-part-itemSaveDTO-fields,http-response']
+operation::items-controller-test/add-item[snippets='curl-request,request-headers,request-parts,request-part-itemSaveDTO-fields,http-response']
 
 === 물건 수정
 
-operation::items-controller-test/update-item[snippets='request-headers,request-parts,request-part-itemUpdateDTO-fields,http-response,response-fields']
+operation::items-controller-test/update-item[snippets='curl-request,request-headers,request-parts,request-part-itemUpdateDTO-fields,http-response,response-fields']
 
 === 단일 물건 조회
 
@@ -112,11 +115,11 @@ operation::community-posts-controller-test/find-post[snippets='http-request,http
 
 === 커뮤니티 게시글 생성
 
-operation::community-posts-controller-test/add-post[snippets='request-headers,request-parts,request-part-communityPostCreateDTO-fields,http-response,response-fields']
+operation::community-posts-controller-test/add-post[snippets='curl-request,request-headers,request-parts,request-part-communityPostCreateDTO-fields,http-response,response-fields']
 
 === 커뮤니티 게시글 수정
 
-operation::community-posts-controller-test/update-post[snippets='request-headers,request-parts,request-part-communityPostUpdateDTO-fields,http-response,response-fields']
+operation::community-posts-controller-test/update-post[snippets='curl-request,request-headers,request-parts,request-part-communityPostUpdateDTO-fields,http-response,response-fields']
 
 === 커뮤니티 게시글 삭제
 

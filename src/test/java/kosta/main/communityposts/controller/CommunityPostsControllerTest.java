@@ -176,8 +176,8 @@ class CommunityPostsControllerTest extends ControllerTest {
                                 headerWithName("Authorization").description("액세스 토큰")
                         ),
                         requestParts(
-                                partWithName("communityPostCreateDTO").description("유저 업데이트 정보"),
-                                partWithName("file").description("유저 프로필 사진")
+                                partWithName("communityPostCreateDTO").description("커뮤니티 게시글 생성 DTO"),
+                                partWithName("file").description("커뮤니티 게시글에 올라갈사진(여러장 가능)")
                         ),
                         requestPartFields("communityPostCreateDTO",
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
@@ -228,8 +228,8 @@ class CommunityPostsControllerTest extends ControllerTest {
                                 parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
                         ),
                         requestParts(
-                                partWithName("communityPostUpdateDTO").description("유저 업데이트 정보"),
-                                partWithName("file").description("유저 프로필 사진")
+                                partWithName("communityPostUpdateDTO").description("커뮤니티 게시글 업데이트 정보DTO"),
+                                partWithName("file").description("커뮤니티 게시글에 올라갈사진(여러장 가능)")
                         ),
                         requestPartFields("communityPostUpdateDTO",
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),

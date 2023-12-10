@@ -1,6 +1,5 @@
 package kosta.main.comments.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kosta.main.ControllerTest;
 import kosta.main.comments.dto.CommentCreateDTO;
@@ -8,9 +7,7 @@ import kosta.main.comments.dto.CommentDTO;
 import kosta.main.comments.dto.CommentListDTO;
 import kosta.main.comments.dto.CommentUpdateDTO;
 import kosta.main.comments.service.CommentsService;
-import kosta.main.communityposts.CommunityPostStubData;
 import kosta.main.global.annotation.WithMockCustomUser;
-import kosta.main.users.controller.UsersController;
 import kosta.main.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,8 +20,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;

@@ -93,16 +93,23 @@ operation::community-posts-controller-test/find-post[snippets='http-request,http
 
 === 커뮤니티 게시글 생성
 
-operation::community-posts-controller-test/add-post[snippets='request-headers,request-parts,request-part-communityPostCreateDto-fields,http-response,response-fields']
+operation::community-posts-controller-test/add-post[snippets='request-headers,request-parts,request-part-communityPostCreateDTO-fields,http-response,response-fields']
 
 === 커뮤니티 게시글 수정
 
-operation::community-posts-controller-test/update-post[snippets='request-headers,request-parts,request-part-communityPostUpdateDto-fields,http-response,response-fields']
+operation::community-posts-controller-test/update-post[snippets='request-headers,request-parts,request-part-communityPostUpdateDTO-fields,http-response,response-fields']
 
 === 커뮤니티 게시글 삭제
 
 operation::community-posts-controller-test/delete-post[snippets='request-headers,http-request,http-response']
 
+=== 커뮤니티 게시글 좋아요 추가
+
+operation::community-posts-controller-test/toggle-like-post[snippets='request-headers,http-request,http-response']
+
+=== 커뮤니티 게시글 좋아요 삭제 (기존에 추가된 상태에서 한번더 요청이 갈 경우)
+
+operation::community-posts-controller-test/toggle-like-post-delete[snippets='request-headers,http-request,http-response']
 
 == 리뷰 생성
 

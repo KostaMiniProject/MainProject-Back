@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LikeDTO {
-    private Integer id;
+    private Integer likeId;
     private Integer communityPostId;
     private Integer userId;
 

@@ -144,7 +144,6 @@ public class CommunityPostsService {
             communityPost.getLikePostList().add(like); // 좋아요 목록에 like 객체 추가
             communityPostsRepository.save(communityPost); // 좋아요가 추가된 게시글을 DB에 저장
             return LikeDTO.of(like); // like 객체를 LikeDTO로 변환하여 반환
-
         }
     }
 }

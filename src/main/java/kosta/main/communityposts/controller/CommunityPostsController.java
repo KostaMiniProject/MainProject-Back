@@ -81,7 +81,7 @@ public class CommunityPostsController {
     public ResponseEntity<?> toggleLikePost(@LoginUser User user,
                                             @PathVariable("communityPostId") Integer communityPostId) {
         Object response = communityPostsService.toggleLikePost(communityPostId, user);
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

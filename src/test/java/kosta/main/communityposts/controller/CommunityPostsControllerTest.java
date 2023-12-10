@@ -6,6 +6,7 @@ import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.service.CommunityPostsService;
 import kosta.main.global.annotation.WithMockCustomUser;
+import kosta.main.likes.dto.LikeDTO;
 import kosta.main.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,7 @@ import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.generate.RestDocumentationGenerator;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -283,21 +285,66 @@ class CommunityPostsControllerTest {
                 ));
     }
 
-    //TODO: 추후 구현
+//    TODO: 추후 구현
+    @Test
+    @WithMockCustomUser
+    @DisplayName("커뮤니티게시글 좋아요 추가 성공 테스트")
     void toggleLikePost() throws Exception {
+        //given
+        LikeDTO likeDTO = communityPostStubData.getLikeDTO();
+        given(communityPostsService.toggleLikePost(Mockito.anyInt(), Mockito.any(User.class))).willReturn(likeDTO);
+        //when
 
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put(BASE_URL + "/likes/{communityPostId}", COMMUNITYPOST_ID)
+                .header("Authorization", "Bearer yourAccessToken")
+                .with(csrf()));
+        //then
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("likeId").type(JsonFieldType.NUMBER).description("좋아요 ID"),
+                                fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티 게시글 ID"),
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저 ID")
+                        )
+                ));
     }
-//
-//    @Test
-//    @DisplayName("댓글 목록 조회")
-//    @WithMockCustomUser
-//    void findComments(){
-//        //given
-//
-//
-//        given(communityPostsService.findCommentsByPostId(Mockito.anyInt())).willReturn()
-//        //when
-//
-//        //then
-//    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("커뮤니티게시글 좋아요 삭제 성공 테스트")
+    void toggleLikePostDelete() throws Exception {
+        //given
+        CommunityPostLikeCancelledDTO communityPostLikeCancelledDTO
+                = communityPostStubData.getCommunityPostLikeCancelledDTO();
+        given(communityPostsService.toggleLikePost(Mockito.anyInt(), Mockito.any(User.class))).willReturn(communityPostLikeCancelledDTO);
+        //when
+
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders.put(BASE_URL + "/likes/{communityPostId}", COMMUNITYPOST_ID)
+                .header("Authorization", "Bearer yourAccessToken")
+                .with(csrf()));
+        //then
+
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("좋아요 취소가 정상적으로 작동했다는 메세지를 보냄")
+                        )
+                ));
+    }
 }

@@ -110,7 +110,7 @@ public class ExchangePostsService {
 
     // 사용자 프로필 정보 생성
     ExchangePostDetailDTO.UserProfile userProfile = ExchangePostDetailDTO.UserProfile.builder()
-        .id(post.getUser().getUserId())
+        .userId(post.getUser().getUserId())
         .name(post.getUser().getName())
         .address(post.getUser().getAddress())
         .imageUrl(post.getUser().getProfileImage())
@@ -127,7 +127,7 @@ public class ExchangePostsService {
     // 입찰 목록 생성
     List<ExchangePostDetailDTO.BidDetails> bidDetailsList = post.getBids().stream()
         .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
-            .id(bid.getBidId())
+            .bidId(bid.getBidId())
             .name(bid.getUser().getName())
             .imageUrl(bid.getUser().getProfileImage())
             .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드

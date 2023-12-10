@@ -20,7 +20,7 @@ public class ExchangePostDetailDTO {
   @Getter
   @Builder
   public static class UserProfile {
-    private Integer id;
+    private Integer userId;
     private String name;
     private String address;
     private String imageUrl;
@@ -38,7 +38,7 @@ public class ExchangePostDetailDTO {
   @Getter
   @Builder
   public static class BidDetails {
-    private Integer id;
+    private Integer bidId;
     private String name;
     private String imageUrl; // 사용자 프로필 이미지
     private String items; // 입찰에 사용된 아이템 목록을 문자열로 표현

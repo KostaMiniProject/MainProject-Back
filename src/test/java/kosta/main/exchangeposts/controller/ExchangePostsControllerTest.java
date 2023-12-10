@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kosta.main.ControllerTest;
 import kosta.main.exchangeposts.ExchangePostStubData;
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
+import kosta.main.exchangeposts.dto.ExchangePostDetailDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
 import kosta.main.exchangeposts.dto.ExchangePostUpdateResponseDTO;
 import kosta.main.exchangeposts.service.ExchangePostsService;
@@ -42,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith({SpringExtension.class})
-@WebMvcTest(UsersController.class)
+@WebMvcTest(ExchangePostsController.class)
 @MockBean(JpaMetamodelMappingContext.class)
 class ExchangePostsControllerTest extends ControllerTest {
 
@@ -164,8 +165,51 @@ class ExchangePostsControllerTest extends ControllerTest {
     @Test
     @WithMockCustomUser
     @DisplayName("교환 게시글 상세 조회 성공 테스트")
-    void getExchangePostById() {
-        //TODO 구현필요
+    void getExchangePostById() throws Exception {
+        //given
+        ExchangePostDetailDTO exchangePostDetailDTO = exchangePostStubData.getExchangePostDetailDTO();
+        given(exchangePostsService.findExchangePostById(Mockito.anyInt(), Mockito.any(User.class))).willReturn(exchangePostDetailDTO);
+
+        //when
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get(BASIC_URL + "/{exchangePostId}", EXCHANGE_POST_ID)
+                .header("Authorization", "Bearer yourAccessToken")
+                .with(csrf())
+        );
+        //then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰(옵션)").optional()
+                        ),
+                        pathParameters(
+                                parameterWithName("exchangePostId").description("교환 게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("postOwner").type(JsonFieldType.BOOLEAN).description("물물교환 게시글 주인인지 여부(주인일 경우 True)"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("물물교환 게시글 제목"),
+                                fieldWithPath("preferItems").type(JsonFieldType.STRING).description("선호하는 물건"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("물건을 교환할 위치"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
+                                fieldWithPath("profile").type(JsonFieldType.OBJECT).description("물물교환 게시글을 올린 유저의 정보"),
+                                fieldWithPath("profile.userId").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("profile.name").type(JsonFieldType.STRING).description("유저 이름"),
+                                fieldWithPath("profile.address").type(JsonFieldType.STRING).description("유저의 주소"),
+                                fieldWithPath("profile.imageUrl").type(JsonFieldType.STRING).description("유저의 프로필 사진"),
+                                fieldWithPath("profile.rating").type(JsonFieldType.NUMBER).description("유저의 평점"),
+                                fieldWithPath("item").type(JsonFieldType.OBJECT).description("게시글 물건정보 객체"),
+                                fieldWithPath("item.title").type(JsonFieldType.STRING).description("물건 제목"),
+                                fieldWithPath("item.description").type(JsonFieldType.STRING).description("물건 설명"),
+                                fieldWithPath("item.imageUrls").type(JsonFieldType.ARRAY).description("물건 이미지"),
+                                fieldWithPath("bidList").type(JsonFieldType.ARRAY).description("해당 게시글의 입찰 리스트"),
+                                fieldWithPath("bidList.[].bidId").type(JsonFieldType.NUMBER).description("입찰 ID"),
+                                fieldWithPath("bidList.[].name").type(JsonFieldType.STRING).description("사용자 이름"),
+                                fieldWithPath("bidList.[].imageUrl").type(JsonFieldType.STRING).description("사용자 프로필 이미지"),
+                                fieldWithPath("bidList.[].items").type(JsonFieldType.STRING).description("입찰에 사용된 아이템 목록을 문자열로 표현")
+
+                        )
+
+                ));
     }
 
     @Test

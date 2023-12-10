@@ -9,7 +9,6 @@ import kosta.main.comments.repository.CommentsRepository;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
-
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.exception.ErrorCode;
 import kosta.main.global.s3upload.service.ImageService;
@@ -28,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kosta.main.global.error.exception.CommonErrorCode.*;
+import static kosta.main.global.error.exception.CommonErrorCode.COMMUNITY_POST_NOT_FOUND;
+import static kosta.main.global.error.exception.CommonErrorCode.NOT_COMMUNITY_POST_OWNER;
 
 @Service
 @Transactional
@@ -147,5 +147,4 @@ public class CommunityPostsService {
 
         }
     }
-
 }

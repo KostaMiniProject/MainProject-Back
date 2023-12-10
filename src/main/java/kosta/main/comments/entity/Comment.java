@@ -43,7 +43,7 @@ public class Comment extends Auditable {
 
     @Builder.Default
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
-    private List<Comment> children = new ArrayList<>();
+    private List<Comment> children = new ArrayList<>(); //자식 댓글
 
     @Column(columnDefinition = "TEXT")
     private String content;

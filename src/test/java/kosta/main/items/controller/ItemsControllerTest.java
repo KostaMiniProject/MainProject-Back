@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kosta.main.ControllerTest;
 import kosta.main.global.annotation.WithMockCustomUser;
 import kosta.main.items.ItemStubData;
+import kosta.main.items.dto.ItemDetailResponseDTO;
+import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.dto.ItemSaveDTO;
 import kosta.main.items.dto.ItemUpdateDTO;
 import kosta.main.items.entity.Item;
@@ -17,11 +19,14 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.generate.RestDocumentationGenerator;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -29,6 +34,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -88,47 +94,106 @@ class ItemsControllerTest extends ControllerTest {
                 MockMvcRequestBuilders.multipart(HttpMethod.POST,BASE_URL)
                         .file(file)
                         .part(itemSaveDto1)
-                        .with(csrf()));
+                        .header("Authorization", "Bearer yourAccessToken")
+                        );
 
 
         perform
                 .andDo(print())
-                .andExpect(status().isCreated());
-//                .andDo(restDocs.document());
+                .andExpect(status().isCreated())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        requestParts(
+                                partWithName("itemSaveDTO").description("아이템 저장 정보"),
+                                partWithName("file").description("이미지 파일")
+                        ),
+                        requestPartFields("itemSaveDTO",
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("물건 제목"),
+                                fieldWithPath("description").type(JsonFieldType.STRING).description("물건 내용"),
+                                fieldWithPath("imageUrl").type(JsonFieldType.ARRAY).description("물건의 이미지를 담는 배열(내부 로직용입니다 안적어도됨)").optional()
+                        )
+                ));
     }
 
-//    @Test
-//    @WithMockCustomUser
-//    @DisplayName("물건 목록 조회 성공 테스트")
-//    void getItems() throws Exception {
-//
-//        // given
-//        List<Item> items = itemStubData.getItems();
-//        // when
-//        when(itemsService.getItems(Mockito.anyInt())).thenReturn(items);
-//
-//        // then
-//        this.mockMvc.perform(get(BASE_URL))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-////                .andDo(restDocs.document());
-//    }
+    @Test
+    @WithMockCustomUser
+    @DisplayName("물건 목록 조회 성공 테스트")
+    void getItems() throws Exception {
 
-//    @Test 순환참조 오류로 인해 보류
-//    @WithMockCustomUser
-//    @DisplayName("물건 조회 성공 테스트")
-//    void getFindById() throws Exception {
-//        // given
-//        Item bidItem = itemStubData.getBidItem();
-//        // when
-//        when(itemsService.getFindById(Mockito.anyInt())).thenReturn(bidItem);
-//
-//        // then
-//        this.mockMvc.perform(get(BASE_URL+"/{itemId}",ITEM_ID))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-////                .andDo(restDocs.document())
-//    }
+        // given
+        Page<ItemPageDTO> itemPageDTOs = itemStubData.getItemPageDTOs();
+        // when
+        given(itemsService.getItems(Mockito.anyInt(), Mockito.any(Pageable.class))).willReturn(itemPageDTOs);
+        ResultActions perform = mockMvc.perform(get(BASE_URL)
+                .header("Authorization", "Bearer yourAccessToken")
+        );
+        // then
+
+        perform
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("data").type(JsonFieldType.ARRAY).description("물건 목록 정보를 감싸고 있는 배열"),
+                                fieldWithPath("data.[].itemId").type(JsonFieldType.NUMBER).description("물건 ID"),
+                                fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("물건 제목"),
+                                fieldWithPath("data.[].description").type(JsonFieldType.STRING).description("물건에 대한 설명"),
+                                fieldWithPath("data.[].itemStatus").type(JsonFieldType.STRING).description("물건의 상태(PUBLIC, PRIVATE, DELETED)"),
+                                fieldWithPath("data.[].images").type(JsonFieldType.STRING).description("물건의 가장 첫번째 이미지"),
+                                fieldWithPath("data.[].crateAt").type(JsonFieldType.NULL).description("물건 생성 시각"),
+                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description("페이지 정보를 감싸고 있는 배열"),
+                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description("현재 페이지 숫자"),
+                                fieldWithPath("pageInfo.size").type(JsonFieldType.NUMBER).description("페이지 크기(한 번에 몇개의 정보를 가져올지"),
+                                fieldWithPath("pageInfo.totalElements").type(JsonFieldType.NUMBER).description("전체 데이터 개수"),
+                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 숫자")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("물건 조회 성공 테스트")
+    void getFindById() throws Exception {
+        // given
+        ItemDetailResponseDTO itemDetailResponse = itemStubData.getItemDetailResponse();
+
+        given(itemsService.getFindById(Mockito.anyInt())).willReturn(itemDetailResponse);
+        // when
+        ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/{itemId}", ITEM_ID));
+
+        // then
+
+
+        result
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("itemId").description("물건 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("itemId").type(JsonFieldType.NUMBER).description("물건 ID"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("물건 제목"),
+                                fieldWithPath("description").type(JsonFieldType.STRING).description("물건에 대한 설명"),
+                                fieldWithPath("itemStatus").type(JsonFieldType.STRING).description("물건의 상태(PUBLIC, PRIVATE, DELETED)"),
+                                fieldWithPath("images").type(JsonFieldType.ARRAY).description("물건의 가장 첫번째 이미지"),
+                                fieldWithPath("isBiding").type(JsonFieldType.STRING).description("물건이 입찰관련 상태를 나타내는 스테이터스(NOT_BIDING, BIDING) "),
+                                fieldWithPath("createAt").type(JsonFieldType.NULL).description("물건 생성 시각"),
+                                fieldWithPath("user").type(JsonFieldType.OBJECT).description("유저 정보를 담고있는 객체"),
+                                fieldWithPath("user.userId").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("user.email").type(JsonFieldType.STRING).description("유저 이메일"),
+                                fieldWithPath("user.name").type(JsonFieldType.STRING).description("유저 이름"),
+                                fieldWithPath("user.address").type(JsonFieldType.STRING).description("유저 주소"),
+                                fieldWithPath("user.phone").type(JsonFieldType.STRING).description("유저 전화번호"),
+                                fieldWithPath("user.profileImage").type(JsonFieldType.STRING).description("유저 프로필 이미지")
+                        )
+                ));
+    }
 
     @Test
     @WithMockCustomUser
@@ -153,7 +218,6 @@ class ItemsControllerTest extends ControllerTest {
                         .file(file)
                         .part(itemUpdateDto1)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf())
                         .requestAttr(RestDocumentationGenerator.ATTRIBUTE_NAME_URL_TEMPLATE, BASE_URL+"/{itemId}"));
 
 
@@ -161,12 +225,12 @@ class ItemsControllerTest extends ControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
-                        pathParameters(
-                                parameterWithName("itemId").description("물건 ID")
-                        ),
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰")
                         ),
+                        pathParameters(
+                                parameterWithName("itemId").description("물건 ID")
+                                ),
                         requestParts(
                                 partWithName("itemUpdateDTO").description("유저 업데이트 정보"),
                                 partWithName("file").description("유저 프로필 사진")
@@ -182,7 +246,9 @@ class ItemsControllerTest extends ControllerTest {
                                 fieldWithPath("description").type(JsonFieldType.STRING).description("물건 설명"),
                                 fieldWithPath("itemStatus").type(JsonFieldType.STRING).description("물건 상태(PUBLIC, PRIVATE, DELETED)"),
                                 fieldWithPath("images").type(JsonFieldType.ARRAY).description("이미지 저장경로")
+
                         )
+
                 ));
     }
 
@@ -195,12 +261,34 @@ class ItemsControllerTest extends ControllerTest {
         //when
         doNothing().when(itemsService).deleteItem(Mockito.anyInt() , Mockito.anyInt());
         ResultActions actions = mockMvc.perform(
-                delete(BASE_URL+"/{itemId}", ITEM_ID)
-                        .with(csrf()));
+                RestDocumentationRequestBuilders.delete(BASE_URL+"/{itemId}", ITEM_ID)
+                        .header("Authorization", "Bearer yourAccessToken")
+                        );
         verify(itemsService, times(ONE_ACTION)).deleteItem(Mockito.anyInt(),Mockito.anyInt());
         //then
         actions
                 .andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("itemId").description("물건 ID")
+                        )
+                ));
     }
+
+////    @Test 덜구현된듯 ㅠ
+//    @WithMockCustomUser
+//    @DisplayName("물건 검색")
+//    void searchItems(){
+//        //given
+//
+//        itemStubData.get
+//        given(itemsService.searchItems(Mockito.anyString())).willReturn()
+//        //when
+//
+//        //then
+//    }
 }

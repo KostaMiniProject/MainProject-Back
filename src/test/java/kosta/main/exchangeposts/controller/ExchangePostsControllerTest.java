@@ -100,7 +100,6 @@ class ExchangePostsControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf())
         );
 
         //then
@@ -173,7 +172,6 @@ class ExchangePostsControllerTest extends ControllerTest {
         //when
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.get(BASIC_URL + "/{exchangePostId}", EXCHANGE_POST_ID)
                 .header("Authorization", "Bearer yourAccessToken")
-                .with(csrf())
         );
         //then
         result.andDo(print())
@@ -230,7 +228,6 @@ class ExchangePostsControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf())
         );
 
         //then
@@ -264,7 +261,6 @@ class ExchangePostsControllerTest extends ControllerTest {
         //when
         ResultActions result = mockMvc.perform(
                 delete(BASIC_URL+"/{exchangePostId}",EXCHANGE_POST_ID)
-                        .with(csrf())
         );
 
         //then

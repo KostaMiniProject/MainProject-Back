@@ -121,7 +121,6 @@ class UsersControllerTest extends ControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content)
-                        .with(csrf())
         );
 
         //then
@@ -174,7 +173,7 @@ class UsersControllerTest extends ControllerTest {
                         .header("Authorization", "Bearer yourAccessToken")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .with(csrf().asHeader()));
+                        );
 
 
         perform
@@ -218,7 +217,6 @@ class UsersControllerTest extends ControllerTest {
         ResultActions result = mockMvc.perform(
                 delete(BASIC_URL+"/withdrawal")
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf())
         );
 
         //then

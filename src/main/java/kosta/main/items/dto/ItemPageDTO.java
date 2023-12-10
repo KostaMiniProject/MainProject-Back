@@ -18,7 +18,7 @@ public class ItemPageDTO {
   private String description;
   private Item.ItemStatus itemStatus;
   private String images; // 가장 첫번째 아이템 이미지 URL 1개만
-  private LocalDateTime localDateTime;
+  private LocalDateTime crateAt;
 
   public void updateImagePath(String imagePaths){
     this.images = imagePaths;

@@ -36,7 +36,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,7 +74,7 @@ class CommentsControllerTest extends ControllerTest {
         given(commentsService.findCommentsByPostId(Mockito.anyInt())).willReturn(commentListDTO);
         //when & then
         mockMvc.perform(get(BASIC_URL + "/{communityPostId}/comments", COMMUNITY_POST_ID)
-                        .with(csrf()))
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
@@ -109,7 +108,6 @@ class CommentsControllerTest extends ControllerTest {
         //when
         ResultActions result = mockMvc.perform(post(BASIC_URL + "/{communityPostId}/comments", COMMUNITY_POST_ID)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf())
                         .content(content)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -151,7 +149,6 @@ class CommentsControllerTest extends ControllerTest {
         //when
         ResultActions result = mockMvc.perform(put(BASIC_URL + "/comments/{commentId}", COMMENT_ID)
                 .header("Authorization", "Bearer yourAccessToken")
-                .with(csrf())
                 .content(content)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -189,7 +186,7 @@ class CommentsControllerTest extends ControllerTest {
 
         ResultActions result = mockMvc.perform(delete(BASIC_URL + "/comments/{commentId}", COMMENT_ID)
                 .header("Authorization", "Bearer yourAccessToken")
-                .with(csrf()));
+                );
 
         //then
         verify(commentsService, times(ONE_ACTION)).deleteComment(Mockito.anyInt(),Mockito.any(User.class));

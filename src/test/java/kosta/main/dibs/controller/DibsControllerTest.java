@@ -74,7 +74,7 @@ class DibsControllerTest extends ControllerTest {
         doNothing().when(dibsService).toggleDib(Mockito.anyInt(),Mockito.anyInt());
         ResultActions result = mockMvc.perform(post(BASIC_URL + "/{exchangePostId}/dibs", EXCHANGE_POST_ID)
                 .header("Authorization", "Bearer yourAccessToken")
-                .with(csrf()));
+                );
         //then
         result.andDo(print())
                 .andExpect(status().isOk())
@@ -99,7 +99,7 @@ class DibsControllerTest extends ControllerTest {
         given(dibsService.getUserDibs(Mockito.anyInt())).willReturn(dibbedExchangePostDTOs);
         ResultActions result = mockMvc.perform(get(BASIC_URL + "/dibs/{userId}", USER_ID)
                 .header("Authorization", "Bearer yourAccessToken")
-                .with(csrf()));
+                );
         //then
 
         result.andDo(print())

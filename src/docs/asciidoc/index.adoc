@@ -79,9 +79,25 @@ operation::exchange-posts-controller-test/delete-exchange-post[snippets='http-re
 
 == 물건
 
+== 물건 생성
+
+operation::items-controller-test/add-item[snippets='request-headers,request-parts,request-part-itemSaveDTO-fields,http-response']
+
 === 물건 수정
 
 operation::items-controller-test/update-item[snippets='request-headers,request-parts,request-part-itemUpdateDto-fields,http-response,response-fields']
+
+=== 단일 물건 조회
+
+operation::items-controller-test/get-find-by-id[snippets='path-parameters,http-request,http-response,response-fields']
+
+=== 내 물건 목록 조회
+
+operation::items-controller-test/get-items[snippets='curl-request,request-headers,http-request,http-response,response-fields']
+
+=== 물건 삭제
+
+operation::items-controller-test/delete-item[snippets='request-headers,path-parameters,http-request,http-response']
 
 == 커뮤니티 게시글
 

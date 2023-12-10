@@ -165,7 +165,7 @@ class CommunityPostsControllerTest extends ControllerTest {
                         .file(file)
                         .part(communityPostCreateDto)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf()));
+                        );
 
 
         perform
@@ -213,7 +213,6 @@ class CommunityPostsControllerTest extends ControllerTest {
                 multipart(HttpMethod.PUT,BASE_URL+"/{communityPostId}", COMMUNITYPOST_ID)
                         .file(file)
                         .part(communityPostUpdateDto1)
-                        .with(csrf())
                         .header("Authorization", "Bearer yourAccessToken")
                         .requestAttr(RestDocumentationGenerator.ATTRIBUTE_NAME_URL_TEMPLATE, BASE_URL+"/{communityPostId}"));
 
@@ -265,7 +264,7 @@ class CommunityPostsControllerTest extends ControllerTest {
         ResultActions actions = mockMvc.perform(
                 delete(BASE_URL+"/{communityPostId}", COMMUNITYPOST_ID)
                         .header("Authorization", "Bearer yourAccessToken")
-                        .with(csrf()));
+                        );
         verify(communityPostsService, times(ONE_ACTION)).deletePost(Mockito.anyInt(),Mockito.any(User.class));
         //then
         actions
@@ -290,7 +289,7 @@ class CommunityPostsControllerTest extends ControllerTest {
 
         ResultActions result = mockMvc.perform(RestDocumentationRequestBuilders.put(BASE_URL + "/likes/{communityPostId}", COMMUNITYPOST_ID)
                 .header("Authorization", "Bearer yourAccessToken")
-                .with(csrf()));
+                );
         //then
 
         result.andDo(print())
@@ -323,7 +322,7 @@ class CommunityPostsControllerTest extends ControllerTest {
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.put(BASE_URL + "/likes/{communityPostId}", COMMUNITYPOST_ID)
                 .header("Authorization", "Bearer yourAccessToken")
-                .with(csrf()));
+                );
         //then
 
         result.andDo(print())

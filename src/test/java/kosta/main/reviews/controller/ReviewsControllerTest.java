@@ -72,7 +72,6 @@ class ReviewsControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer yourAccessToken")
                         .content(content)
-                        .with(csrf())
         );
 
         //then

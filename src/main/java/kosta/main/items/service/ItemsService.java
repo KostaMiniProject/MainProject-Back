@@ -196,6 +196,9 @@ public class ItemsService {
    */
   public void deleteItem(Integer itemId, Integer userId) {
     Item item = findItemByItemId(itemId);
+    //입찰중이면 삭제 불가
+    //물건 게시중이면 삭제 불가
+    
     // 사용자 ID 일치 여부 확인
     if (!item.getUser().getUserId().equals(userId)) {
       // 여기서 사용자 ID가 일치하지 않으면 오류를 발생

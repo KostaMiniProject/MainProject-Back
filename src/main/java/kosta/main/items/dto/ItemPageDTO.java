@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Getter
@@ -17,11 +18,11 @@ public class ItemPageDTO {
   private String title;
   private String description;
   private Item.ItemStatus itemStatus;
-  private String images; // 가장 첫번째 아이템 이미지 URL 1개만
+  private List<String> images; // 가장 첫번째 아이템 이미지 URL 1개만
   private LocalDateTime crateAt;
 
   public void updateImagePath(String imagePaths){
-    this.images = imagePaths;
+    this.images.add(imagePaths);
   }
 
   public static ItemPageDTO from (Item item){ //from : 엔티티를 DTO로 생성
@@ -30,7 +31,7 @@ public class ItemPageDTO {
         item.getTitle(),
         item.getDescription(),
         item.getItemStatus(),
-        item.getImages().get(0),
+        item.getImages(),
             item.getCreatedAt()
     );
   }

@@ -13,5 +13,5 @@ import java.util.List;
 public interface ItemsRepository extends JpaRepository<Item, Integer> {
   Page<Item> findByUser_UserId(Integer userId, Pageable pageable);
 
-  List<Item> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String titleKeyword, String descriptionKeyword);
+  Page<Item> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String titleKeyword, String descriptionKeyword);
 }

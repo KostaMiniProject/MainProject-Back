@@ -125,9 +125,9 @@ public class ItemsController {
   @GetMapping("/search")
   public ResponseEntity<?> searchItems(@RequestParam(value = "keyword") String keyword) {
     log.info("keword = {}", keyword);
-    List<Item> items = itemsService.searchItems(keyword);
-    log.info("items = {}", items.size());
-    return new ResponseEntity<>(HttpStatus.OK);
+    Page<ItemPageDTO> itemPageDTOS = itemsService.searchItems(keyword);
+    List<ItemPageDTO> list = itemPageDTOS.stream().toList();
+    return new ResponseEntity<>(new PageResponseDto(list,PageInfo.of(itemPageDTOS)),HttpStatus.OK);
   }
 
 }

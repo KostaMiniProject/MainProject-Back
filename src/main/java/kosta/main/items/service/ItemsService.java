@@ -14,6 +14,7 @@ import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -214,15 +215,12 @@ public class ItemsService {
    * @param keyword
    * @return
    */
-  public List<Item> searchItems(String keyword) {
-    List<Item> allItemList = itemsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+  public Page<ItemPageDTO> searchItems(String keyword) {
+    Page<Item> searchItems =
+            itemsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+    List<ItemPageDTO> list = searchItems.stream().map(ItemPageDTO::from).toList();
+    return new PageImpl<ItemPageDTO>(list,searchItems.getPageable(),searchItems.getTotalElements());
 
-    // 검색 결과 리스트 중 ItemStatus가 PUBLIC인 것만 필터링
-    List<Item> publicItemList = allItemList.stream()
-        .filter(item -> item.getItemStatus() == Item.ItemStatus.PUBLIC)
-        .collect(Collectors.toList());
-
-    return publicItemList;
   }
 }
 

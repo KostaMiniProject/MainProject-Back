@@ -61,15 +61,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String refreshToken = delegateRefreshToken(user);
 
 //        tokenService.saveTokenInfo(user.getUserId(), accessToken,refreshToken);
-        ResponseCookie cookie = ResponseCookie.from(AUTHORIZATION, accessToken)
-                .path("/")
-                .sameSite("None")
-                .httpOnly(false)
-                .secure(false)
-                .maxAge(60 * 60)
-                .build();
-
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.setHeader(AUTHORIZATION, BEARER + accessToken);
         response.setHeader(REFRESH, refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");

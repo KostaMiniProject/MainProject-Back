@@ -2,10 +2,7 @@ package kosta.main.chatrooms.service;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
-import kosta.main.chatrooms.dto.ChatListResponseDTO;
-import kosta.main.chatrooms.dto.ChatRoomResponseDTO;
-import kosta.main.chatrooms.dto.CreateChatRoomDTO;
-import kosta.main.chatrooms.dto.CreateChatRoomResponseDTO;
+import kosta.main.chatrooms.dto.*;
 import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.chatrooms.repository.ChatRoomsRepository;
 import kosta.main.chats.dto.ChatMessageDTO;
@@ -23,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -99,7 +97,7 @@ public class ChatRoomService {
 
       // Send system message to the remaining user
       String systemMessageContent = "User :" + user.getName() + " has left the chat room.";
-      sendMessageSystem(chatRoomId, systemMessageContent);
+//      sendMessageSystem(chatRoomId, systemMessageContent);
     }
   }
 
@@ -114,26 +112,36 @@ public class ChatRoomService {
   }
 
   // 특정 채팅방의 채팅 내역을 불러오는 기능
-  public List<ChatListResponseDTO> getChatList(Integer chatRoomId, User user){
+  public ChatRoomEnterResponseDTO getChatList(Integer chatRoomId, User user) {
     ChatRoom chatRoom = findEntityById(chatRoomsRepository, chatRoomId, "ChatRoom Not Found");
-    // 채팅에 참여한 유저가 맞는지 확인
-    if (!chatRoom.getSender().getUserId().equals(user.getUserId()) && !chatRoom.getReceiver().getUserId().equals(user.getUserId())) {
-      throw new RuntimeException("User not a member of the chat room");
-    }
+
+    // 상대방 정보 가져오기
+    User otherUser = chatRoom.getSender().getUserId().equals(user.getUserId()) ? chatRoom.getReceiver() : chatRoom.getSender();
 
     List<Chat> chats = chatsRepository.findByChatRoom(chatRoom);
-    List<ChatListResponseDTO> chatListResponse = new ArrayList<>();
+    List<ChatRoomEnterResponseDTO.ChatMessageResponseDTO> chatMessageResponseDTOList = new ArrayList<>();
 
     for (Chat chat : chats) {
-      // 채팅 내역을 불러올때 본인이 작성한 chat이 아닌건 모두 true 처리
       if (!chat.getUser().getUserId().equals(user.getUserId()) && !chat.isRead()) {
         chat.updateIsRead(true);
         chatsRepository.save(chat);
       }
-      chatListResponse.add(ChatListResponseDTO.from(chat));
+
+      chatMessageResponseDTOList.add(ChatRoomEnterResponseDTO.ChatMessageResponseDTO.builder()
+          .senderId(chat.getUser().getUserId())
+          .content(Optional.ofNullable(chat.getMessage()))
+          .imageUrl(Optional.ofNullable(chat.getChatImage()))
+          .createAt(chat.getCreatedAt().toString())
+          .isRead(chat.isRead())
+          .build());
     }
 
-    return chatListResponse;
+    return ChatRoomEnterResponseDTO.builder()
+        .userId(otherUser.getUserId())
+        .userName(otherUser.getName())
+        .userProfileImage(otherUser.getProfileImage())
+        .messages(chatMessageResponseDTOList)
+        .build();
   }
 
 
@@ -146,17 +154,17 @@ public class ChatRoomService {
   }
 
   // 시스템 메세지를 날리기 위한 로직
-  private void sendMessageSystem(Integer chatRoomId, String content) {
-    // 시스템 메시지 생성
-    ChatMessageDTO systemMessage = new ChatMessageDTO();
-    systemMessage.setContent(content);
-    systemMessage.setChatRoomId(chatRoomId);
-    systemMessage.setSenderId(null); // 시스템 메시지이므로 발신자 ID는 null
-
-    // 채팅방 구독자에게 시스템 메시지 전송
-    String destination = "/sub/chatroom/" + chatRoomId;
-    messagingTemplate.convertAndSend(destination, systemMessage);
-  }
+//  private void sendMessageSystem(Integer chatRoomId, String content) {
+//    // 시스템 메시지 생성
+//    ChatMessageDTO systemMessage = new ChatMessageDTO();
+//    systemMessage.setContent(content);
+//    systemMessage.setChatRoomId(chatRoomId);
+//    systemMessage.setSenderId(null); // 시스템 메시지이므로 발신자 ID는 null
+//
+//    // 채팅방 구독자에게 시스템 메시지 전송
+//    String destination = "/sub/chatroom/" + chatRoomId;
+//    messagingTemplate.convertAndSend(destination, systemMessage);
+//  }
 
 
 }

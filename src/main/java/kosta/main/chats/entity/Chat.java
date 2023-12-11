@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Entity
 @Table(name = "chats")
 @NoArgsConstructor
@@ -51,5 +53,6 @@ public class Chat extends Auditable {
     }
 
     public Boolean updateIsRead(Boolean isRead){return this.isRead = isRead;}
+    public void updateImageUrl(String chatImage){this.chatImage = chatImage;}
 
 }

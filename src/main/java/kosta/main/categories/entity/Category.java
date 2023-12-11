@@ -29,6 +29,10 @@ public class Category extends Auditable {
     @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.REMOVE},fetch = FetchType.LAZY)
     private List<Item> items;
 
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
     // 게터와 세터
     // 생략...
 }

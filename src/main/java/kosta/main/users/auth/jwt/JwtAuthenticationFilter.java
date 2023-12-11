@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kosta.main.global.dto.LoginResponse;
@@ -14,6 +15,7 @@ import kosta.main.users.entity.UserAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpCookie;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -60,7 +62,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 //        tokenService.saveTokenInfo(user.getUserId(), accessToken,refreshToken);
 
-        response.setHeader(AUTHORIZATION, BEARER + accessToken);
+        Cookie cookie = new Cookie(AUTHORIZATION, accessToken);
+        cookie.setSecure(false); //추후 수정
+        cookie.setHttpOnly(false); //추후 수정
+        cookie.setMaxAge(1200);
+        cookie.setPath("/");
+        response.addCookie(cookie);
         response.setHeader(REFRESH, refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");

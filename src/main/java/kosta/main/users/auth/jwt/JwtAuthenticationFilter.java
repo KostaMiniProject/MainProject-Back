@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public static final String REFRESH = "Refresh";
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
-    private final TokenService tokenService;
+//    private final TokenService tokenService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @SneakyThrows //Java에서 메서드 선언부에 Throws를 정의하지 않고도, 검사 된 예외를 Throw 할 수 있도록 하는 Lombok에서 제공하는 어노테이션임
@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = delegateAccessToken(user);
         String refreshToken = delegateRefreshToken(user);
 
-        tokenService.saveTokenInfo(user.getUserId(), accessToken,refreshToken);
+//        tokenService.saveTokenInfo(user.getUserId(), accessToken,refreshToken);
 
         response.setHeader(AUTHORIZATION, BEARER + accessToken);
         response.setHeader(REFRESH, refreshToken);

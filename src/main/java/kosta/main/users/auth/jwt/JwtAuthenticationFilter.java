@@ -63,8 +63,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //        tokenService.saveTokenInfo(user.getUserId(), accessToken,refreshToken);
 
         Cookie cookie = new Cookie(AUTHORIZATION, accessToken);
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
+        cookie.setSecure(false); //추후 수정
+        cookie.setHttpOnly(false); //추후 수정
         cookie.setMaxAge(1200);
         cookie.setPath("/");
         response.addCookie(cookie);

@@ -37,16 +37,16 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService userDetailsService;
-    private final TokenService tokenService;
+//    private final TokenService tokenService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    public SecurityConfig(TokenProvider tokenProvider,CustomUserDetailsService userDetailsService, TokenService tokenService) {
+    public SecurityConfig(TokenProvider tokenProvider,CustomUserDetailsService userDetailsService) {
         this.tokenProvider = tokenProvider;
         this.userDetailsService = userDetailsService;
-        this.tokenService = tokenService;
+//        this.tokenService = tokenService;
     }
 
     @Bean
@@ -117,7 +117,7 @@ public class SecurityConfig {
         @Override
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenProvider, authenticationManager,tokenService);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenProvider, authenticationManager);
             jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
             JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(tokenProvider,userDetailsService);
             builder.addFilter(jwtAuthenticationFilter)

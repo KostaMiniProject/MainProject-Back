@@ -1,6 +1,8 @@
 package kosta.main.chats.dto;
 
 import lombok.*;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
@@ -8,5 +10,9 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 public class ChatMessageResponseDTO{
-  private String content; // 메시지 내용
+  private Integer senderId;
+  private Optional<String> content;
+  private Optional<String> imageUrl;
+  private String createAt;
+  private Boolean isRead;
 }

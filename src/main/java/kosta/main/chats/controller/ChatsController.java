@@ -2,6 +2,7 @@ package kosta.main.chats.controller;
 
 import kosta.main.chatrooms.dto.ChatListResponseDTO;
 import kosta.main.chats.dto.ChatMessageDTO;
+import kosta.main.chats.dto.ChatMessageResponseDTO;
 import kosta.main.chats.service.ChatsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +31,9 @@ public class ChatsController {
 //  }
 
   @MessageMapping("/send")
-  public ChatListResponseDTO sendMessage(ChatMessageDTO chatMessage) {
-    ChatListResponseDTO response = chatsService.saveChat(chatMessage);
-    String destination = "/sub/chatroom/" + chatMessage.getChatRoomId();
+  public ChatMessageResponseDTO sendMessage(ChatMessageDTO chatMessage) {
+    ChatMessageResponseDTO response = chatsService.saveChat(chatMessage);
+    String destination = "/sub/chatroom/" + chatMessage.getRoomId();
     messagingTemplate.convertAndSend(destination, response);
     return response;
   }

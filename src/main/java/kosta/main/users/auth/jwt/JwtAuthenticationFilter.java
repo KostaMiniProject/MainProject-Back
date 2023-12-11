@@ -15,8 +15,8 @@ import kosta.main.users.entity.UserAdapter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpCookie;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -61,13 +61,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String refreshToken = delegateRefreshToken(user);
 
 //        tokenService.saveTokenInfo(user.getUserId(), accessToken,refreshToken);
+        ResponseCookie cookie = ResponseCookie.from(AUTHORIZATION, accessToken)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(false)
+                .secure(false)
+                .maxAge(60 * 60)
+                .build();
 
-        Cookie cookie = new Cookie("Set-Cookie", accessToken);
-        cookie.setSecure(false); //추후 수정
-        cookie.setHttpOnly(false); //추후 수정
-        cookie.setMaxAge(1200);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        response.addHeader("Set-Cookie", cookie.toString());
         response.setHeader(REFRESH, refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");

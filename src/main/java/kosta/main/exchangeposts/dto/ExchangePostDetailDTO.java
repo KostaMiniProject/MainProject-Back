@@ -30,6 +30,7 @@ public class ExchangePostDetailDTO {
   @Getter
   @Builder
   public static class ItemDetails {
+    private Integer itemId;
     private String title;
     private String description;
     private List<String> imageUrls;

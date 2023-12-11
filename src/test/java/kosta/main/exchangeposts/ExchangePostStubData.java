@@ -150,6 +150,7 @@ public class ExchangePostStubData {
                         .imageUrl(user.getProfileImage())
                         .rating(user.getRating()).build())
                 .item(ExchangePostDetailDTO.ItemDetails.builder()
+                        .itemId(item.getItemId())
                         .title(item.getTitle())
                         .description(item.getDescription())
                         .imageUrls(item.getImages()).build())

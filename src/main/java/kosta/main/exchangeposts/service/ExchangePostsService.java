@@ -119,6 +119,7 @@ public class ExchangePostsService {
 
     // 아이템 상세 정보 생성
     ExchangePostDetailDTO.ItemDetails itemDetails = ExchangePostDetailDTO.ItemDetails.builder()
+            .itemId(post.getItem().getItemId())
         .title(post.getItem().getTitle())
         .description(post.getItem().getDescription())
         .imageUrls(post.getItem().getImages())

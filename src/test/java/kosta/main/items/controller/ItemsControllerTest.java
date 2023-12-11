@@ -144,7 +144,7 @@ class ItemsControllerTest extends ControllerTest {
                                 fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("물건 제목"),
                                 fieldWithPath("data.[].description").type(JsonFieldType.STRING).description("물건에 대한 설명"),
                                 fieldWithPath("data.[].itemStatus").type(JsonFieldType.STRING).description("물건의 상태(PUBLIC, PRIVATE, DELETED)"),
-                                fieldWithPath("data.[].images").type(JsonFieldType.STRING).description("물건의 가장 첫번째 이미지"),
+                                fieldWithPath("data.[].images").type(JsonFieldType.ARRAY).description("물건의 가장 첫번째 이미지"),
                                 fieldWithPath("data.[].crateAt").type(JsonFieldType.NULL).description("물건 생성 시각"),
                                 fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description("페이지 정보를 감싸고 있는 배열"),
                                 fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description("현재 페이지 숫자"),

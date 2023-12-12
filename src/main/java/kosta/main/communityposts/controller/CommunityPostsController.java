@@ -69,7 +69,7 @@ public class CommunityPostsController {
     public ResponseEntity<?> deletePost(@PathVariable("communityPostId") Integer communityPostId,
                                         @LoginUser User user) {
         communityPostsService.deletePost(communityPostId, user);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /* 커뮤니티 좋아요 */

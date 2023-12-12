@@ -269,7 +269,7 @@ class CommunityPostsControllerTest extends ControllerTest {
         //then
         actions
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰")

@@ -112,6 +112,7 @@ class ItemsControllerTest extends ControllerTest {
                         requestPartFields("itemSaveDTO",
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("물건 제목"),
                                 fieldWithPath("description").type(JsonFieldType.STRING).description("물건 내용"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("물건의 카테고리 이름(내부 db와 정확히 일치해야 가져옵니다)"),
                                 fieldWithPath("imageUrl").type(JsonFieldType.ARRAY).description("물건의 이미지를 담는 배열(내부 로직용입니다 안적어도됨)").optional()
                         )
                 ));

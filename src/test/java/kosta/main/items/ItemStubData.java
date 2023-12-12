@@ -30,6 +30,7 @@ public class ItemStubData {
     public static final String ANOTHER_TITLE = "다른물건제목";
     public static final String ANOTHER_DESCRIPTION = "다른 내용";
     public static final Item.ItemStatus ITEM_STATUS = Item.ItemStatus.PUBLIC;
+    public static final String CATEGORY = "도서";
 
     public Item getNoBidItem(){
         UserStubData userStubData = new UserStubData();
@@ -93,6 +94,7 @@ public class ItemStubData {
         return ItemSaveDTO.builder()
                 .title(TITLE)
                 .description(DESCRIPTION)
+                .category(CATEGORY)
                 .imageUrl(images)
                 .build();
     }

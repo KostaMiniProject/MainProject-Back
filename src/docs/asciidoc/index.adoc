@@ -63,6 +63,10 @@ include::{snippets}/users-controller-test/withdrawal/http-response.adoc[]
 
 operation::exchange-posts-controller-test/get-all-exchange-posts[snippets='query-parameters,http-request,http-response,response-fields']
 
+=== 물물교환 게시글 검색 조회
+
+operation::exchange-posts-controller-test/search-exchange-post[curl-request,query-parameters,request-headers,http-request,http-response,response-fields]
+
 === 물물교환 게시글 상세 조회
 
 operation::exchange-posts-controller-test/get-exchange-post-by-id[snippets='request-headers,path-parameters,http-request,http-response,response-fields']
@@ -122,6 +126,7 @@ operation::bid-controller-test/undo-deny-bid[snippet='curl-request,request-heade
 === 입찰 거부 목록 조회하기
 
 operation::bid-controller-test/get-denied-bids-for-post[snippets='curl-request,path-parameters,http-request,http-response,response-fields']
+
 == 물건
 
 == 물건 생성

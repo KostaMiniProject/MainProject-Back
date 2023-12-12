@@ -357,7 +357,7 @@ class CommunityPostsControllerTest extends ControllerTest {
 
         // then
         mockMvc.perform(get(BASE_URL+"/search")
-                        .param("keyword","제목")
+                        .param("keyword","abcd")
                         .param("page","0"))
                 .andDo(print())
                 .andExpect(status().isOk())

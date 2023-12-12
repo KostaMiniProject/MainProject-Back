@@ -10,6 +10,7 @@ import kosta.main.chats.entity.Chat;
 import kosta.main.chats.repository.ChatsRepository;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
+import kosta.main.items.entity.Item;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
@@ -115,28 +116,30 @@ public class ChatRoomService {
   public ChatRoomEnterResponseDTO getChatList(Integer chatRoomId, User user) {
     ChatRoom chatRoom = findEntityById(chatRoomsRepository, chatRoomId, "ChatRoom Not Found");
 
-    // 상대방 정보 가져오기
     User otherUser = chatRoom.getSender().getUserId().equals(user.getUserId()) ? chatRoom.getReceiver() : chatRoom.getSender();
 
+    ExchangePost exchangePost = chatRoom.getExchangePost();
+    Item exchangePostItem = exchangePost.getItem();
+    String exchangePostImage = exchangePostItem.getImages().isEmpty() ? null : exchangePostItem.getImages().get(0);
+    String exchangePostCategory = exchangePostItem.getCategory() != null ? exchangePostItem.getCategory().getCategoryName() : null;
+
     List<Chat> chats = chatsRepository.findByChatRoom(chatRoom);
-    List<ChatRoomEnterResponseDTO.ChatMessageResponseDTO> chatMessageResponseDTOList = new ArrayList<>();
-
-    for (Chat chat : chats) {
-      if (!chat.getUser().getUserId().equals(user.getUserId()) && !chat.isRead()) {
-        chat.updateIsRead(true);
-        chatsRepository.save(chat);
-      }
-
-      chatMessageResponseDTOList.add(ChatRoomEnterResponseDTO.ChatMessageResponseDTO.builder()
-          .senderId(chat.getUser().getUserId())
-          .content(Optional.ofNullable(chat.getMessage()))
-          .imageUrl(Optional.ofNullable(chat.getChatImage()))
-          .createAt(chat.getCreatedAt().toString())
-          .isRead(chat.isRead())
-          .build());
-    }
+    List<ChatRoomEnterResponseDTO.ChatMessageResponseDTO> chatMessageResponseDTOList = chats.stream()
+        .map(chat -> ChatRoomEnterResponseDTO.ChatMessageResponseDTO.builder()
+            .senderId(chat.getUser().getUserId())
+            .content(Optional.ofNullable(chat.getMessage()))
+            .imageUrl(Optional.ofNullable(chat.getChatImage()))
+            .createAt(chat.getCreatedAt().toString())
+            .isRead(chat.isRead())
+            .build())
+        .collect(Collectors.toList());
 
     return ChatRoomEnterResponseDTO.builder()
+        .exchangePostId(exchangePost.getExchangePostId())
+        .exchangePostTittle(exchangePost.getTitle())
+        .exchangePostAddress(exchangePost.getAddress())
+        .exchangePostCategory(exchangePostCategory)
+        .exchangePostImage(exchangePostImage)
         .userId(otherUser.getUserId())
         .userName(otherUser.getName())
         .userProfileImage(otherUser.getProfileImage())

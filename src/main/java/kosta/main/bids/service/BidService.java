@@ -3,6 +3,8 @@ package kosta.main.bids.service;
 import kosta.main.bids.dto.*;
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
+import kosta.main.exchangehistories.dto.ExchangeHistoryCreateDTO;
+import kosta.main.exchangehistories.service.ExchangeHistoriesService;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
 import kosta.main.global.error.exception.BusinessException;
@@ -15,6 +17,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +33,7 @@ public class BidService {
     private final ExchangePostsRepository exchangePostsRepository;
     private final UsersRepository usersRepository;
     private final ItemsRepository itemsRepository;
+    private final ExchangeHistoriesService exchangeHistoriesService; // 추가
 
     // 공통 메서드: 특정 ID를 가진 엔티티를 찾고, 없으면 예외를 발생시키는 메서드
     private <T> T findEntityById(JpaRepository<T, Integer> repository, Integer id, String errorMessage) {
@@ -200,6 +205,16 @@ public class BidService {
         transferItemOwnership(List.of(exchangePost.getItem()), selectedBid.getUser()); // 게시글의 아이템 소유권 변경
         exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.COMPLETED);
         exchangePostsRepository.save(exchangePost);
+
+        // 거래 완료 후 교환 내역 생성
+        ExchangeHistoryCreateDTO exchangeHistoryCreateDTO = new ExchangeHistoryCreateDTO(
+            LocalDateTime.now(), // 현재 날짜 및 시간
+            exchangePostId,
+            selectedBidId
+        );
+        User user = usersRepository.findById(userId)
+            .orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
+        exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user);
     }
 
     // 거래 완료시 실제 물건의 소유주를 바꾸는 로직

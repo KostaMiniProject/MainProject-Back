@@ -42,6 +42,7 @@ public class ChatsService {
     chatsRepository.save(chat);
 
     return ChatMessageResponseDTO.builder()
+        .chatId(chat.getChatId())
         .senderId(sender.getUserId())
         .content(Optional.ofNullable(chat.getMessage()))
         .imageUrl(Optional.ofNullable(chat.getChatImage()))

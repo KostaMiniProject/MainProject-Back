@@ -51,7 +51,7 @@ public class ExchangeHistoriesService {
 
     // ExchangeHistory 객체 생성
     ExchangeHistory exchangeHistory = ExchangeHistory.builder()
-        .exchangeDate(exchangeHistoryCreateDTO.getExchangeDate())
+        //.exchangeDate(exchangeHistoryCreateDTO.getExchangeDate()) // createAt으로 대체함
         .user(postUser) // 게시글 작성자를 거래 내역의 유저로 설정
         .exchangePost(exchangePost)
         .item(postItem) // 게시글의 아이템을 거래 내역의 아이템으로 설정
@@ -91,7 +91,7 @@ public class ExchangeHistoriesService {
           .collect(Collectors.toList());
 
       return new ExchangeHistoriesResponseDTO(
-          history.getExchangeDate(),
+          history.getCreatedAt(),
           exchangePost.getUser().getName(),
           exchangePost.getUser().getAddress(),
           exchangePost.getUser().getProfileImage(),

@@ -14,6 +14,7 @@ import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kosta.main.global.error.exception.CommonErrorCode.ALREADY_BIDDING_ITEM;
-import static kosta.main.global.error.exception.CommonErrorCode.NOT_ITEM_OWNER;
+import static kosta.main.global.error.exception.CommonErrorCode.*;
 
 @Service
 @Transactional
@@ -214,16 +214,15 @@ public class ItemsService {
    * @param keyword
    * @return
    */
-  public List<Item> searchItems(String keyword) {
-    List<Item> allItemList = itemsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
-
-    // 검색 결과 리스트 중 ItemStatus가 PUBLIC인 것만 필터링
-    List<Item> publicItemList = allItemList.stream()
-        .filter(item -> item.getItemStatus() == Item.ItemStatus.PUBLIC)
-        .collect(Collectors.toList());
-
-    return publicItemList;
-  }
+  public Page<ItemPageDTO> searchItems(String keyword,User user,Pageable pageable) {
+    if(user == null) {
+      throw new BusinessException(USER_NOT_FOUND);
+    }
+    Page<Item> searchItemsByUser
+              = itemsRepository.findByTitleContainingAndItemStatusOrUserId(keyword, user.getUserId(), pageable);
+      List<ItemPageDTO> list = searchItemsByUser.map(ItemPageDTO::from).stream().toList();
+      return new PageImpl<ItemPageDTO>(list, searchItemsByUser.getPageable(), searchItemsByUser.getTotalElements());
+    }
 }
 
 

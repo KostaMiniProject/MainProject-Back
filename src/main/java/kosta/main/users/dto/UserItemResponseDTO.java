@@ -16,6 +16,7 @@ public class UserItemResponseDTO {
     private String address;
 
     private String phone;
+    private Double rating;
     private String profileImage;
 
     public static UserItemResponseDTO of(User user){
@@ -25,6 +26,7 @@ public class UserItemResponseDTO {
                 user.getName(),
                 user.getAddress(),
                 user.getPhone(),
+                user.getRating(),
                 user.getProfileImage()
         );
     }

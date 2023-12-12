@@ -87,7 +87,6 @@ class ExchangePostsControllerTest extends ControllerTest {
         //given
         ExchangePostDTO exchangePostDTO = exchangePostStubData.getExchangePostDTO();
         String content = objectMapper.writeValueAsString(exchangePostDTO);
-
         given(exchangePostsService.createExchangePost(
                 Mockito.any(User.class),
                 Mockito.any(ExchangePostDTO.class)))

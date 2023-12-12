@@ -27,6 +27,7 @@ public class ChatRoomEnterResponseDTO {
   @NoArgsConstructor
   @Builder
   public static class ChatMessageResponseDTO {
+    private Integer chatId;
     private Integer senderId; // 보낸 사람의 ID 본인 ID 일지도, 타인일수 도 있음
     private Optional<String> content;
     private Optional<String> imageUrl;

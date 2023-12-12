@@ -126,6 +126,7 @@ public class ChatRoomService {
     List<Chat> chats = chatsRepository.findByChatRoom(chatRoom);
     List<ChatRoomEnterResponseDTO.ChatMessageResponseDTO> chatMessageResponseDTOList = chats.stream()
         .map(chat -> ChatRoomEnterResponseDTO.ChatMessageResponseDTO.builder()
+            .chatId(chat.getChatId())
             .senderId(chat.getUser().getUserId())
             .content(Optional.ofNullable(chat.getMessage()))
             .imageUrl(Optional.ofNullable(chat.getChatImage()))

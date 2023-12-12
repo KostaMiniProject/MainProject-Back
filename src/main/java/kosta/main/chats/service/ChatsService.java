@@ -42,13 +42,24 @@ public class ChatsService {
     chatsRepository.save(chat);
 
     return ChatMessageResponseDTO.builder()
+        .chatId(chat.getChatId())
         .senderId(sender.getUserId())
         .content(Optional.ofNullable(chat.getMessage()))
         .imageUrl(Optional.ofNullable(chat.getChatImage()))
-        .createAt(chat.getCreatedAt().toString())
+        .createAt(chat.getCreatedAt())
         .isRead(chat.isRead())
         .build();
   }
+
+  public Integer markAsRead(Integer chatId) {
+    Chat chat = chatsRepository.findById(chatId)
+        .orElseThrow(() -> new EntityNotFoundException("Chat not found with id: " + chatId));
+      chat.updateIsRead(true);
+      chatsRepository.save(chat);
+      return chatId;
+  }
+
+
 
 
 }

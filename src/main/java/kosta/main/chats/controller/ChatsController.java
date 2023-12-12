@@ -15,21 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatsController {
   private final ChatsService chatsService;
   private final SimpMessageSendingOperations messagingTemplate;
-//  @MessageMapping("/send")
-//  public ChatMessageResponseDTO sendMessage(ChatMessageDTO chatMessage) {
-//    // 채팅 메시지 저장 및 처리
-//    Chat chat = chatsService.saveChat(chatMessage);
-//    // ChatMessageResponseDTO 생성
-//    ChatMessageResponseDTO responseDTO = ChatMessageResponseDTO.builder()
-//        .content(chat.getMessage())
-//        .build();
-//
-//    // destination을 ChatRoom에 해당하는 구독자로만 지정한다.
-//    String destination = "/sub/chatroom/" + chatMessage.getChatRoomId();
-//    messagingTemplate.convertAndSend(destination, responseDTO);
-//    return responseDTO;
-//  }
 
+  
+  // 클라이언트가 메세지를 발행하면 서버에서 적절한 채팅방으로만 메시지를 전달한다
   @MessageMapping("/send")
   public ChatMessageResponseDTO sendMessage(ChatMessageDTO chatMessage) {
     ChatMessageResponseDTO response = chatsService.saveChat(chatMessage);
@@ -38,6 +26,12 @@ public class ChatsController {
     return response;
   }
 
-
+  // 클라이언트가 WebSocket에 연결된 상태에서 chatId를 제공하면 해당 chatId를 읽음 처리하는 기능
+  // 단 본인이 보낸 채팅은 읽음처리 해선 안된다.
+  @MessageMapping("/read")
+  public Integer markMessageAsRead(Integer chatId) {
+    chatsService.markAsRead(chatId);
+    return chatId;
+  }
 
 }

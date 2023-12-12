@@ -14,7 +14,7 @@ public class ItemBidDetailsDTO {
         private String title;             // 아이템 제목
         private String description;       // 아이템 설명
         private List<String> imageUrls;   // 아이템 이미지 URL 목록
-    private LocalDateTime createdAt;
+        private LocalDateTime createdAt;
 
     public static ItemBidDetailsDTO of(Item item){
         return ItemBidDetailsDTO.builder()

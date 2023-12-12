@@ -185,37 +185,48 @@ public class BidService {
     public void completeExchange(Integer exchangePostId, Integer selectedBidId, Integer userId) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
 
+        // 거래 완료 권한 확인
         if (!exchangePost.getUser().getUserId().equals(userId)) {
             throw new BusinessException(NOT_EXCHANGE_POST_OWNER);
         }
 
+        // 입찰 정보 가져오기
+        Bid selectedBid = bidRepository.findById(selectedBidId)
+            .orElseThrow(() -> new BusinessException(CommonErrorCode.BID_NOT_FOUND));
+
+
+        // 입찰 정보 및 게시글 정보를 가져와 교환 내역 생성
+        ExchangeHistoryCreateDTO exchangeHistoryCreateDTO = new ExchangeHistoryCreateDTO(
+            LocalDateTime.now(), exchangePostId, selectedBidId
+        );
+        User user = usersRepository.findById(userId)
+            .orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
+        exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user);
+
+
+        // 선택된 입찰 아이템 소유권 변경
+        transferItemOwnership(selectedBid.getItems(), exchangePost.getUser());
+
+        // 게시글의 아이템 소유권 변경
+        transferItemOwnership(List.of(exchangePost.getItem()), selectedBid.getUser());
+
+        // 게시글 상태 업데이트
+        exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.COMPLETED);
+        exchangePostsRepository.save(exchangePost);
+
+        // 모든 입찰의 상태 업데이트
         List<Bid> bids = bidRepository.findByExchangePost(exchangePost);
         for (Bid bid : bids) {
             if (bid.getBidId().equals(selectedBidId)) {
                 bid.updateStatus(Bid.BidStatus.SELECTED);
-                transferItemOwnership(bid.getItems(), exchangePost.getUser()); // 선택된 입찰의 아이템 소유권 변경
             } else {
                 bid.updateStatus(Bid.BidStatus.DENIED);
             }
             updateItemsBidingStatus(bid.getItems(), Item.IsBiding.NOT_BIDING, null);
             bidRepository.save(bid);
         }
-        Bid selectedBid = bidRepository.findById(selectedBidId)
-                .orElseThrow(() -> new BusinessException(CommonErrorCode.BID_NOT_FOUND));
-        transferItemOwnership(List.of(exchangePost.getItem()), selectedBid.getUser()); // 게시글의 아이템 소유권 변경
-        exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.COMPLETED);
-        exchangePostsRepository.save(exchangePost);
-
-        // 거래 완료 후 교환 내역 생성
-        ExchangeHistoryCreateDTO exchangeHistoryCreateDTO = new ExchangeHistoryCreateDTO(
-            LocalDateTime.now(), // 현재 날짜 및 시간
-            exchangePostId,
-            selectedBidId
-        );
-        User user = usersRepository.findById(userId)
-            .orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
-        exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user);
     }
+
 
     // 거래 완료시 실제 물건의 소유주를 바꾸는 로직
     private void transferItemOwnership(List<Item> items, User newOwner) {

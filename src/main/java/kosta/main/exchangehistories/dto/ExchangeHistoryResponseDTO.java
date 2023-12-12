@@ -15,10 +15,10 @@ public class ExchangeHistoryResponseDTO {
     private Item item;
     private User user;
     private ExchangePost exchangePost;
-    private LocalDateTime exchangeDate;
+    private LocalDateTime createdAt;
 
     public static ExchangeHistoryResponseDTO of(ExchangeHistory exchangeHistory){
-        return new ExchangeHistoryResponseDTO(exchangeHistory.getItem(), exchangeHistory.getUser(), exchangeHistory.getExchangePost(), exchangeHistory.getExchangeDate());
+        return new ExchangeHistoryResponseDTO(exchangeHistory.getItem(), exchangeHistory.getExchangeInitiator(), exchangeHistory.getExchangePost(), exchangeHistory.getCreatedAt());
     }
 
 }

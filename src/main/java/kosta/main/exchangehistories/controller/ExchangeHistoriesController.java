@@ -31,7 +31,7 @@ public class ExchangeHistoriesController {
   @GetMapping
   public ResponseEntity<List<ExchangeHistoriesResponseDTO>> getExchangeHistories(
       @LoginUser User user,
-      @PageableDefault(sort = "exchangeDate", direction = Sort.Direction.DESC) Pageable pageable) {
+      @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     return ResponseEntity.ok(exchangeHistoriesService.getExchangeHistories(user, pageable));
   }
 

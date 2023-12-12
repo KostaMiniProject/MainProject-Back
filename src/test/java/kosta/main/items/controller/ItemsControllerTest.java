@@ -296,7 +296,7 @@ class ItemsControllerTest extends ControllerTest {
         //when
         given(itemsService.getItems(Mockito.anyInt(), Mockito.any(Pageable.class))).willReturn(itemPageDTOs);
         ResultActions perform = mockMvc.perform(get(BASE_URL)
-                .param("keyword","물건제목")
+                .param("keyword","abcd")
                         .param("page","0")
                 .header("Authorization", "Bearer yourAccessToken")
         );

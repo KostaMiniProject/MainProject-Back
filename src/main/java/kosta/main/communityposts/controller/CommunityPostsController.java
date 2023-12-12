@@ -85,8 +85,8 @@ public class CommunityPostsController {
     public ResponseEntity<?> search(@RequestParam String keyword,
                                                          @PageableDefault(page = 0, size = 10) Pageable pageable,
                                                          @LoginUser User user) {
-        Page<CommunityPostDTO> search = communityPostsService.search(keyword, pageable, user);
-        List<CommunityPostDTO> list = search.stream().toList();
+        Page<CommunityPostListDTO> search = communityPostsService.search(keyword, pageable, user);
+        List<CommunityPostListDTO> list = search.stream().toList();
         return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(search)), HttpStatus.OK);
     }
 }

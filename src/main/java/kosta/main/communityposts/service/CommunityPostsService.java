@@ -146,19 +146,19 @@ public class CommunityPostsService {
     }
 
     /* 커뮤니티 게시글 검색 */
-    public Page<CommunityPostDTO> search(String keyword,Pageable pageable,User user) {
+    public Page<CommunityPostListDTO> search(String keyword,Pageable pageable,User user) {
         if(user != null) {
             Page<CommunityPost> allTitleContaining =
                     communityPostsRepository.findAllTitleContainingByUser(keyword, user.getUserId(), pageable);
 
-            List<CommunityPostDTO> list = allTitleContaining.map(CommunityPostDTO::new).stream().toList();
-            return new PageImpl<CommunityPostDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
+            List<CommunityPostListDTO> list = allTitleContaining.map(CommunityPostListDTO::from).stream().toList();
+            return new PageImpl<CommunityPostListDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
         } else {
 
             Page<CommunityPost> allTitleContaining =
                     communityPostsRepository.findAllTitleContaining(keyword, pageable);
-            List<CommunityPostDTO> list = allTitleContaining.map(CommunityPostDTO::new).stream().toList();
-            return new PageImpl<CommunityPostDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
+            List<CommunityPostListDTO> list = allTitleContaining.map(CommunityPostListDTO::from).stream().toList();
+            return new PageImpl<CommunityPostListDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
         }
     }
 }

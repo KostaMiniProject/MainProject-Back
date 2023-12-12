@@ -102,6 +102,10 @@ operation::items-controller-test/get-items[snippets='curl-request,request-header
 
 operation::items-controller-test/delete-item[snippets='request-headers,path-parameters,http-request,http-response']
 
+=== 물건 검색
+
+operation::items-controller-test/search-items[snippets='curl-request,request-headers,http-request,http-response,response-fields']
+
 == 커뮤니티 게시글
 
 
@@ -112,6 +116,10 @@ operation::community-posts-controller-test/find-posts[snippets='http-request,htt
 === 커뮤니티 게시글 상세조회
 
 operation::community-posts-controller-test/find-post[snippets='http-request,http-response,response-fields']
+
+=== 커뮤니티 게시글 검색
+
+operation::community-posts-controller-test/search[snippets='http-request,http-response,response-fields']
 
 === 커뮤니티 게시글 생성
 

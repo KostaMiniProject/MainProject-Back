@@ -19,6 +19,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @Setter
 public class ChatRoomResponseDTO {
+  private Integer chatRoomId;
   private String participantName;
   private String lastMessageTimeDifference;
   private String lastMessageContent;
@@ -27,6 +28,8 @@ public class ChatRoomResponseDTO {
 
   public static ChatRoomResponseDTO of(ChatRoom chatRoom, User currentUser) {
     ChatRoomResponseDTO dto = new ChatRoomResponseDTO();
+
+    dto.setChatRoomId(chatRoom.getChatRoomId());
 
     // 참여 대상 식별을 위해 Optional 사용
     User participant = Optional.ofNullable(chatRoom.getSender())

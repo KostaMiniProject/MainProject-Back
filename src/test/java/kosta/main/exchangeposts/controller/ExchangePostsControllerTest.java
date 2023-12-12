@@ -35,8 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -134,12 +133,16 @@ class ExchangePostsControllerTest extends ControllerTest {
 
         // then
         this.mockMvc.perform(get(BASIC_URL)
+                        .param("page","0")
                         .header("Authorization", "Bearer yourAccessToken"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰").optional()
+                        ),
+                        queryParameters(
+                                parameterWithName("page").description("현재 페이지를 표시하는 파라미터")
                         ),
                         responseFields(
                                 fieldWithPath("data").type(JsonFieldType.ARRAY).description(DATA),

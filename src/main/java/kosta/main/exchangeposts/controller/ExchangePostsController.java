@@ -34,6 +34,15 @@ public class ExchangePostsController {
     return new ResponseEntity(new PageResponseDto<>(list,PageInfo.of(allExchangePosts)), HttpStatus.OK);
   }
 
+  @GetMapping("/search")
+  public ResponseEntity<ExchangePostDetailDTO> searchExchangePost(@RequestParam(value = "keyword") String keyword,
+                                                                  @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    Page<ExchangePostListDTO> searchExchangePosts = exchangePostsService.searchAllExchangePosts(keyword, pageable);
+
+    List<ExchangePostListDTO> list = searchExchangePosts.stream().toList();
+    return new ResponseEntity(new PageResponseDto<>(list,PageInfo.of(searchExchangePosts)), HttpStatus.OK);
+  }
+
   @GetMapping("/{exchangePostId}")
   public ResponseEntity<ExchangePostDetailDTO> getExchangePostById(@PathVariable("exchangePostId") Integer exchangePostId, @LoginUser User user) {
     return ResponseEntity.ok(exchangePostsService.findExchangePostById(exchangePostId,user));

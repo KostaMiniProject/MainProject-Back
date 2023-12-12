@@ -27,8 +27,4 @@ public interface ItemsRepository extends JpaRepository<Item, Integer> {
   Page<Item> findByTitleContainingAndItemStatusOrUserId(@Param("searchTerm") String searchTerm, @Param("userId") Integer userId, Pageable pageable);
 
 
-  @Query("SELECT i FROM Item i WHERE LOWER(i.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) AND i.itemStatus = 0 " +
-          "ORDER BY i.itemId DESC")
-  Page<Item> findByTitleContainingAndItemStatusPublic(@Param("searchTerm") String searchTerm, Pageable pageable);
-
 }

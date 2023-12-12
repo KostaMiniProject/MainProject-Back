@@ -80,6 +80,13 @@ operation::exchange-posts-controller-test/update-exchange-post[snippets='curl-re
 
 operation::exchange-posts-controller-test/delete-exchange-post[snippets='http-request,http-response']
 
+
+== 입찰
+
+== 입찰하기
+
+operation::bid-controller-test/create-bid[snippets='request-headers,http-request,http-response']
+
 == 물건
 
 == 물건 생성

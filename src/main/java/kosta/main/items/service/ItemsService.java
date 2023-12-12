@@ -24,8 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kosta.main.global.error.exception.CommonErrorCode.ALREADY_BIDDING_ITEM;
-import static kosta.main.global.error.exception.CommonErrorCode.NOT_ITEM_OWNER;
+import static kosta.main.global.error.exception.CommonErrorCode.*;
 
 @Service
 @Transactional
@@ -216,19 +215,14 @@ public class ItemsService {
    * @return
    */
   public Page<ItemPageDTO> searchItems(String keyword,User user,Pageable pageable) {
-
-    if(user != null) {
-      Page<Item> searchItemsByUser
+    if(user == null) {
+      throw new BusinessException(USER_NOT_FOUND);
+    }
+    Page<Item> searchItemsByUser
               = itemsRepository.findByTitleContainingAndItemStatusOrUserId(keyword, user.getUserId(), pageable);
       List<ItemPageDTO> list = searchItemsByUser.map(ItemPageDTO::from).stream().toList();
       return new PageImpl<ItemPageDTO>(list, searchItemsByUser.getPageable(), searchItemsByUser.getTotalElements());
-    } else {
-      Page<Item> searchItems =
-            itemsRepository.findByTitleContainingAndItemStatusPublic(keyword,pageable);
-      List<ItemPageDTO> list = searchItems.stream().map(ItemPageDTO::from).toList();
-      return new PageImpl<>(list, searchItems.getPageable(), searchItems.getTotalElements());
     }
-  }
 }
 
 

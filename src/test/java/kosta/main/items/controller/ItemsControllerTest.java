@@ -190,6 +190,7 @@ class ItemsControllerTest extends ControllerTest {
                                 fieldWithPath("user.name").type(JsonFieldType.STRING).description("유저 이름"),
                                 fieldWithPath("user.address").type(JsonFieldType.STRING).description("유저 주소"),
                                 fieldWithPath("user.phone").type(JsonFieldType.STRING).description("유저 전화번호"),
+                                fieldWithPath("user.rating").type(JsonFieldType.NUMBER).description("유저 평점"),
                                 fieldWithPath("user.profileImage").type(JsonFieldType.STRING).description("유저 프로필 이미지")
                         )
                 ));

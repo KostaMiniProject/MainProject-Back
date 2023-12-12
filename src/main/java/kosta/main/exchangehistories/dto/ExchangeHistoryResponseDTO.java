@@ -8,18 +8,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class ExchangeHistoryResponseDto {
+public class ExchangeHistoryResponseDTO {
     private Item item;
     private User user;
     private ExchangePost exchangePost;
     private LocalDateTime exchangeDate;
 
-    public static ExchangeHistoryResponseDto of(ExchangeHistory exchangeHistory){
-        return new ExchangeHistoryResponseDto(exchangeHistory.getItem(), exchangeHistory.getUser(), exchangeHistory.getExchangePost(), exchangeHistory.getExchangeDate());
+    public static ExchangeHistoryResponseDTO of(ExchangeHistory exchangeHistory){
+        return new ExchangeHistoryResponseDTO(exchangeHistory.getItem(), exchangeHistory.getUser(), exchangeHistory.getExchangePost(), exchangeHistory.getExchangeDate());
     }
 
 }

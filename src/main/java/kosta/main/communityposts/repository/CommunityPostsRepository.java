@@ -22,5 +22,5 @@ public interface CommunityPostsRepository extends JpaRepository<CommunityPost,In
 
     @Query("SELECT cp FROM CommunityPost cp WHERE LOWER(cp.title) LIKE LOWER(CONCAT('%', :keyword, '%')) AND cp.communityPostStatus = 0 " +
             "ORDER BY cp.communityPostId DESC")
-    Page<CommunityPost> findAllTitleContaining(@Param("searchTerm") String keyword, Pageable pageable);
+    Page<CommunityPost> findAllTitleContaining(@Param("keyword") String keyword, Pageable pageable);
 }

@@ -215,12 +215,19 @@ public class ItemsService {
    * @param keyword
    * @return
    */
-  public Page<ItemPageDTO> searchItems(String keyword) {
-    Page<Item> searchItems =
-            itemsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
-    List<ItemPageDTO> list = searchItems.stream().map(ItemPageDTO::from).toList();
-    return new PageImpl<ItemPageDTO>(list,searchItems.getPageable(),searchItems.getTotalElements());
+  public Page<ItemPageDTO> searchItems(String keyword,User user,Pageable pageable) {
 
+    if(user != null) {
+      Page<Item> searchItemsByUser
+              = itemsRepository.findByTitleContainingAndItemStatusOrUserId(keyword, user.getUserId(), pageable);
+      List<ItemPageDTO> list = searchItemsByUser.map(ItemPageDTO::from).stream().toList();
+      return new PageImpl<ItemPageDTO>(list, searchItemsByUser.getPageable(), searchItemsByUser.getTotalElements());
+    } else {
+      Page<Item> searchItems =
+            itemsRepository.findByTitleContainingAndItemStatusPublic(keyword,pageable);
+      List<ItemPageDTO> list = searchItems.stream().map(ItemPageDTO::from).toList();
+      return new PageImpl<>(list, searchItems.getPageable(), searchItems.getTotalElements());
+    }
   }
 }
 

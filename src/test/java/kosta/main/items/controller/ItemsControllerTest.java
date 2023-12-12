@@ -286,7 +286,7 @@ class ItemsControllerTest extends ControllerTest {
         //given
 
         Page<ItemPageDTO> itemPageDTOs = itemStubData.getItemPageDTOs();
-        given(itemsService.searchItems(Mockito.anyString())).willReturn(itemPageDTOs);
+        given(itemsService.searchItems(Mockito.anyString(),Mockito.any(User.class),Mockito.any(Pageable.class))).willReturn(itemPageDTOs);
         //when
         given(itemsService.getItems(Mockito.anyInt(), Mockito.any(Pageable.class))).willReturn(itemPageDTOs);
         ResultActions perform = mockMvc.perform(get(BASE_URL).param("keyword","물건제목")

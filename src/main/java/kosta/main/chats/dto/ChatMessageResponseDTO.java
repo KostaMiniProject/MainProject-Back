@@ -14,6 +14,6 @@ public class ChatMessageResponseDTO{
   private Integer senderId;
   private Optional<String> content;
   private Optional<String> imageUrl;
-  private LocalDateTime createAt; // 언제 보냈는지
+  private String createAt; // 데이터형식 다시 변경
   private Boolean isRead;
 }

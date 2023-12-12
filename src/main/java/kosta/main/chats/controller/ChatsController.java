@@ -1,6 +1,8 @@
 package kosta.main.chats.controller;
 
 import kosta.main.chatrooms.dto.ChatListResponseDTO;
+import kosta.main.chats.dto.ChatIdDTO;
+import kosta.main.chats.dto.ChatIdResponseDTO;
 import kosta.main.chats.dto.ChatMessageDTO;
 import kosta.main.chats.dto.ChatMessageResponseDTO;
 import kosta.main.chats.service.ChatsService;
@@ -29,9 +31,11 @@ public class ChatsController {
   // 클라이언트가 WebSocket에 연결된 상태에서 chatId를 제공하면 해당 chatId를 읽음 처리하는 기능
   // 단 본인이 보낸 채팅은 읽음처리 해선 안된다.
   @MessageMapping("/read")
-  public Integer markMessageAsRead(Integer chatId) {
-    chatsService.markAsRead(chatId);
-    return chatId;
+  public ChatIdResponseDTO markMessageAsRead(ChatIdDTO chatIdDTO) {
+    ChatIdResponseDTO responseDTO = chatsService.markAsRead(chatIdDTO);
+    String destination = "/sub/chatroom/" + responseDTO.getChatRoomId();
+    messagingTemplate.convertAndSend(destination, responseDTO);
+    return responseDTO;
   }
 
 }

@@ -21,7 +21,7 @@ public class BidController {
     // 입찰을 수행하는 기능
     @PostMapping("/{exchangePostId}/bids") // 23.11.30 동작확인
     public ResponseEntity<Integer> createBid(@LoginUser User user, @PathVariable("exchangePostId") Integer exchangePostId, @RequestBody BidsDTO bidDTO) {
-        return ResponseEntity.ok(bidService.createBid(user, exchangePostId, bidDTO));
+        return new ResponseEntity<>(bidService.createBid(user, exchangePostId, bidDTO),HttpStatus.CREATED);
     }
 
     // 한 교환게시글에 있는 입찰 목록을 모두 불러오는 기능

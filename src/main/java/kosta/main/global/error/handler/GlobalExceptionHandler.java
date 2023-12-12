@@ -53,6 +53,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBaseResponse);
     }
 
+    @ExceptionHandler(BusinessException.class)
+    protected ResponseEntity<ErrorBaseResponse> handleBusinessException(BusinessException e) {
+        log.error(">>> handle: handleBusinessException ", e);
+        final ErrorBaseResponse errorBaseResponse = ErrorBaseResponse.of(e.getCommonErrorCode());
+        return ResponseEntity.status(e.getCommonErrorCode().getHttpStatus()).body(errorBaseResponse);
+    }
+
     @ExceptionHandler(RestApiException.class)
     public ResponseEntity<ErrorBaseResponse> handleRestApiException(final RestApiException e) {
         log.warn(e.getMessage(), e);

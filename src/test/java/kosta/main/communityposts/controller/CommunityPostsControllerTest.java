@@ -93,10 +93,14 @@ class CommunityPostsControllerTest extends ControllerTest {
         when(communityPostsService.findPosts(Mockito.any(Pageable.class))).thenReturn(communityPostListDTOPage);
 
         // then
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL)
+                        .param("page","0"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
+                        queryParameters(
+                                parameterWithName("page").description("현재 페이지를 표시하는 파라미터")
+                        ),
                         responseFields(
                                 fieldWithPath("data").type(JsonFieldType.ARRAY).description("커뮤니티게시글을 감싸고 있는 배열"),
                                 fieldWithPath("data.[].communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
@@ -352,10 +356,16 @@ class CommunityPostsControllerTest extends ControllerTest {
         when(communityPostsService.search(Mockito.anyString(),Mockito.any(Pageable.class),Mockito.any(User.class))).thenReturn(communityPostListDTOPage);
 
         // then
-        mockMvc.perform(get(BASE_URL+"/search").param("keyword","제목"))
+        mockMvc.perform(get(BASE_URL+"/search")
+                        .param("keyword","제목")
+                        .param("page","0"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
+                        queryParameters(
+                                parameterWithName("keyword").description("검색 키워드를 입력하는 파라미터"),
+                                parameterWithName("page").description("현재 페이지를 표시하는 파라미터")
+                        ),
                         responseFields(
                                 fieldWithPath("data").type(JsonFieldType.ARRAY).description("커뮤니티게시글을 감싸고 있는 배열"),
                                 fieldWithPath("data.[].communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),

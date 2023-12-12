@@ -127,6 +127,7 @@ class ItemsControllerTest extends ControllerTest {
         // when
         given(itemsService.getItems(Mockito.anyInt(), Mockito.any(Pageable.class))).willReturn(itemPageDTOs);
         ResultActions perform = mockMvc.perform(get(BASE_URL)
+                .param("page","0")
                 .header("Authorization", "Bearer yourAccessToken")
         );
         // then
@@ -137,6 +138,9 @@ class ItemsControllerTest extends ControllerTest {
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        queryParameters(
+                                parameterWithName("page").description("현재 페이지를 표시하는 파라미터")
                         ),
                         responseFields(
                                 fieldWithPath("data").type(JsonFieldType.ARRAY).description("물건 목록 정보를 감싸고 있는 배열"),
@@ -290,7 +294,9 @@ class ItemsControllerTest extends ControllerTest {
         given(itemsService.searchItems(Mockito.anyString(),Mockito.any(User.class),Mockito.any(Pageable.class))).willReturn(itemPageDTOs);
         //when
         given(itemsService.getItems(Mockito.anyInt(), Mockito.any(Pageable.class))).willReturn(itemPageDTOs);
-        ResultActions perform = mockMvc.perform(get(BASE_URL).param("keyword","물건제목")
+        ResultActions perform = mockMvc.perform(get(BASE_URL)
+                .param("keyword","물건제목")
+                        .param("page","0")
                 .header("Authorization", "Bearer yourAccessToken")
         );
         // then
@@ -300,6 +306,10 @@ class ItemsControllerTest extends ControllerTest {
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        queryParameters(
+                                parameterWithName("keyword").description("검색 키워드를 입력하는 파라미터"),
+                                parameterWithName("page").description("현재 페이지를 표시하는 파라미터")
                         ),
                         responseFields(
                                 fieldWithPath("data").type(JsonFieldType.ARRAY).description("물건 목록 정보를 감싸고 있는 배열"),

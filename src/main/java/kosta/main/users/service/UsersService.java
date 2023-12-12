@@ -3,7 +3,7 @@ package kosta.main.users.service;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
 import kosta.main.dibs.dto.DibResponseDto;
-import kosta.main.exchangehistories.dto.ExchangeHistoryResponseDto;
+import kosta.main.exchangehistories.dto.ExchangeHistoryResponseDTO;
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.reports.dto.CreateReportDTO;
@@ -102,9 +102,9 @@ public class UsersService {
         blockedUsersRepository.save(blockedUser);
     }
 
-    public List<ExchangeHistoryResponseDto> findMyExchangeHistory(User user) {
+    public List<ExchangeHistoryResponseDTO> findMyExchangeHistory(User user) {
         return user.getExchangeHistories()
-                .stream().map(ExchangeHistoryResponseDto::of).toList();
+                .stream().map(ExchangeHistoryResponseDTO::of).toList();
     }
 
     public List<DibResponseDto> findMyDibs(User user) {

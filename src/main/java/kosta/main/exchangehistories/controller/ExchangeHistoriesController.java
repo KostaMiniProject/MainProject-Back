@@ -1,10 +1,19 @@
 package kosta.main.exchangehistories.controller;
 
-import kosta.main.exchangehistories.dto.ExchangeHistoriesResponseDto;
+import kosta.main.exchangehistories.dto.ExchangeHistoryCreateDTO;
+import kosta.main.exchangehistories.dto.ExchangeHistoriesResponseDTO;
 import kosta.main.exchangehistories.service.ExchangeHistoriesService;
+import kosta.main.users.entity.LoginUser;
+import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users/histories")
@@ -12,24 +21,19 @@ import org.springframework.web.bind.annotation.*;
 public class ExchangeHistoriesController {
 
   private final ExchangeHistoriesService exchangeHistoriesService;
-  // 교환 내역 생성
-//  @PostMapping
-//  public ResponseEntity<?> createExchangeHistory(@RequestBody ExchangeHistoryCreateDto createDto) {
-//    exchangeHistoriesService.createExchangeHistory(createDto);
-//    return ResponseEntity.ok().build();
-//  }
-//
-//  // 교환 내역 조회
-//  @GetMapping("/{id}")
-//  public ResponseEntity<ExchangeHistoriesResponseDto> getExchangeHistory(@PathVariable Integer id) {
-//    ExchangeHistoriesResponseDto responseDto = exchangeHistoriesService.getExchangeHistory(id);
-//    return ResponseEntity.ok(responseDto);
-//  }
-//
-//  // 교환 내역 삭제
-//  @DeleteMapping("/{id}")
-//  public ResponseEntity<?> deleteExchangeHistory(@PathVariable Integer id) {
-//    exchangeHistoriesService.deleteExchangeHistory(id);
-//    return ResponseEntity.ok().build();
-//  }
+
+  // 교환 내역 생성 = 거래완료후에 실행될 로직 (굳이 컨트롤러에 없어도 될거 같긴합니다.)
+  public ResponseEntity<?> createExchangeHistory(@RequestBody ExchangeHistoryCreateDTO exchangeHistoryCreateDTO, @LoginUser User user) {
+    return new ResponseEntity<>(exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user), HttpStatus.CREATED);
+  }
+
+  // 교환 내역 조회
+  @GetMapping
+  public ResponseEntity<List<ExchangeHistoriesResponseDTO>> getExchangeHistories(
+      @LoginUser User user,
+      @PageableDefault(sort = "exchangeDate", direction = Sort.Direction.DESC) Pageable pageable) {
+    return ResponseEntity.ok(exchangeHistoriesService.getExchangeHistories(user, pageable));
+  }
+
+
 }

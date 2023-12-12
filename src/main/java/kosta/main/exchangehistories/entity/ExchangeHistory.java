@@ -6,6 +6,7 @@ import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 public class ExchangeHistory extends Auditable {
 
     @Id

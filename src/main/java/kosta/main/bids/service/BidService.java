@@ -194,16 +194,15 @@ public class BidService {
         Bid selectedBid = bidRepository.findById(selectedBidId)
             .orElseThrow(() -> new BusinessException(CommonErrorCode.BID_NOT_FOUND));
 
-        // 거래 완료 후 교환 내역 생성
+
+        // 입찰 정보 및 게시글 정보를 가져와 교환 내역 생성
         ExchangeHistoryCreateDTO exchangeHistoryCreateDTO = new ExchangeHistoryCreateDTO(
-            LocalDateTime.now(),
-            exchangePostId,
-            selectedBidId
+            LocalDateTime.now(), exchangePostId, selectedBidId
         );
-        // 여기서는 교환 내역에 필요한 정보를 미리 저장하고, 그 후에 아이템 소유권을 변경합니다.
         User user = usersRepository.findById(userId)
             .orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
         exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user);
+
 
         // 선택된 입찰 아이템 소유권 변경
         transferItemOwnership(selectedBid.getItems(), exchangePost.getUser());

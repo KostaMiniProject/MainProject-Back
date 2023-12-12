@@ -7,12 +7,15 @@ import kosta.main.communityposts.repository.CommunityPostsRepository;
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.exception.ErrorCode;
 import kosta.main.global.s3upload.service.ImageService;
+import kosta.main.items.dto.ItemPageDTO;
+import kosta.main.items.entity.Item;
 import kosta.main.likes.dto.LikeDTO;
 import kosta.main.likes.entity.Like;
 import kosta.main.likes.repository.LikesRepository;
 import kosta.main.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -143,10 +146,19 @@ public class CommunityPostsService {
     }
 
     /* 커뮤니티 게시글 검색 */
-    public List<CommunityPostDTO> search(String keyword) {
-        List<CommunityPost> posts = communityPostsRepository.findAllTitleContaining("%" + keyword + "%");
-        return posts.stream()
-                .map(CommunityPostDTO::new) // CommunityPost 객체를 CommunityPostDTO로 변환합니다.
-                .collect(Collectors.toList());
+    public Page<CommunityPostListDTO> search(String keyword,Pageable pageable,User user) {
+        if(user != null) {
+            Page<CommunityPost> allTitleContaining =
+                    communityPostsRepository.findAllTitleContainingByUser(keyword, user.getUserId(), pageable);
+
+            List<CommunityPostListDTO> list = allTitleContaining.map(CommunityPostListDTO::from).stream().toList();
+            return new PageImpl<CommunityPostListDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
+        } else {
+
+            Page<CommunityPost> allTitleContaining =
+                    communityPostsRepository.findAllTitleContaining(keyword, pageable);
+            List<CommunityPostListDTO> list = allTitleContaining.map(CommunityPostListDTO::from).stream().toList();
+            return new PageImpl<CommunityPostListDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
+        }
     }
 }

@@ -35,7 +35,7 @@ public class CommunityPostsController {
         Page<CommunityPostListDTO> posts = communityPostsService.findPosts(pageable);
         List<CommunityPostListDTO> list = posts.stream().toList();
 
-        return new ResponseEntity<>(new PageResponseDto(list, PageInfo.of(posts)), HttpStatus.OK);
+        return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(posts)), HttpStatus.OK);
     }
 
     /* 커뮤니티 게시글 상세 조회 */
@@ -82,9 +82,12 @@ public class CommunityPostsController {
 
     /* 커뮤니티 게시글 검색 */
     @GetMapping("/search")
-    public ResponseEntity<List<CommunityPostDTO>> search(@RequestParam String keyword) {
-        List<CommunityPostDTO> searchList = communityPostsService.search(keyword);
-        return ResponseEntity.ok(searchList);
+    public ResponseEntity<?> search(@RequestParam String keyword,
+                                                         @PageableDefault(page = 0, size = 10) Pageable pageable,
+                                                         @LoginUser User user) {
+        Page<CommunityPostListDTO> search = communityPostsService.search(keyword, pageable, user);
+        List<CommunityPostListDTO> list = search.stream().toList();
+        return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(search)), HttpStatus.OK);
     }
 }
 

@@ -339,4 +339,38 @@ class CommunityPostsControllerTest extends ControllerTest {
                         )
                 ));
     }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("게시글 목록 검색 성공 테스트")
+    void search() throws Exception {
+        // given
+
+        Page<CommunityPostListDTO> communityPostListDTOPage = communityPostStubData.getCommunityPostListDTOPage();
+
+        // when
+        when(communityPostsService.search(Mockito.anyString(),Mockito.any(Pageable.class),Mockito.any(User.class))).thenReturn(communityPostListDTOPage);
+
+        // then
+        mockMvc.perform(get(BASE_URL+"/search").param("keyword","제목"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        responseFields(
+                                fieldWithPath("data").type(JsonFieldType.ARRAY).description("커뮤니티게시글을 감싸고 있는 배열"),
+                                fieldWithPath("data.[].communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
+                                fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
+                                fieldWithPath("data.[].content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
+                                fieldWithPath("data.[].views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
+                                fieldWithPath("data.[].communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
+                                fieldWithPath("data.[].likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수"),
+                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description("페이지 정보를 감싸고 있는 배열"),
+                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description("현재 페이지 숫자"),
+                                fieldWithPath("pageInfo.size").type(JsonFieldType.NUMBER).description("페이지 크기(한 번에 몇개의 정보를 가져올지"),
+                                fieldWithPath("pageInfo.totalElements").type(JsonFieldType.NUMBER).description("전체 데이터 개수"),
+                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 숫자")
+                        )
+                ));
+    }
+
 }

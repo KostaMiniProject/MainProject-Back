@@ -61,7 +61,9 @@ public class ItemsController {
   @GetMapping
   public ResponseEntity<?> getItems(@LoginUser User user,
                                     @PageableDefault(page = 0, size = 10, sort = "itemId", direction = Sort.Direction.DESC) Pageable pageable) {
-    Page<ItemPageDTO> items = itemsService.getItems(user.getUserId(), pageable);
+    Integer userId = 0;
+    if(user != null) userId = user.getUserId();
+    Page<ItemPageDTO> items = itemsService.getItems(userId, pageable);
     List<ItemPageDTO> list = items.stream().toList();
     return new ResponseEntity<>(new PageResponseDto(list, PageInfo.of(items)), HttpStatus.OK);
   }
@@ -123,11 +125,13 @@ public class ItemsController {
    * @return
    */
   @GetMapping("/search")
-  public ResponseEntity<?> searchItems(@RequestParam(value = "keyword") String keyword) {
+  public ResponseEntity<?> searchItems(@RequestParam(value = "keyword") String keyword,
+                                       @LoginUser User user,
+                                       @PageableDefault(page = 0, size = 10) Pageable pageable) {
     log.info("keword = {}", keyword);
-    List<Item> items = itemsService.searchItems(keyword);
-    log.info("items = {}", items.size());
-    return new ResponseEntity<>(HttpStatus.OK);
+    Page<ItemPageDTO> itemPageDTOS = itemsService.searchItems(keyword,user,pageable);
+    List<ItemPageDTO> list = itemPageDTOS.stream().toList();
+    return new ResponseEntity<>(new PageResponseDto(list,PageInfo.of(itemPageDTOS)),HttpStatus.OK);
   }
 
 }

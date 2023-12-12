@@ -18,7 +18,7 @@ public class ExchangeHistoryResponseDTO {
     private LocalDateTime createdAt;
 
     public static ExchangeHistoryResponseDTO of(ExchangeHistory exchangeHistory){
-        return new ExchangeHistoryResponseDTO(exchangeHistory.getItem(), exchangeHistory.getUser(), exchangeHistory.getExchangePost(), exchangeHistory.getCreatedAt());
+        return new ExchangeHistoryResponseDTO(exchangeHistory.getItem(), exchangeHistory.getExchangeInitiator(), exchangeHistory.getExchangePost(), exchangeHistory.getCreatedAt());
     }
 
 }

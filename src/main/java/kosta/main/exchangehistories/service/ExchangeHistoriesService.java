@@ -39,7 +39,6 @@ public class ExchangeHistoriesService {
   }
 
   // 교환 내역 생성 = 거래완료 후의 로직
-  // 교환 내역 생성 로직
   @Transactional
   public ExchangeHistoryCreateResponseDTO createExchangeHistory(ExchangeHistoryCreateDTO exchangeHistoryCreateDTO, User user) {
     // 교환 게시글 정보 가져오기
@@ -50,6 +49,8 @@ public class ExchangeHistoriesService {
 
     // 게시글 작성자 정보
     User postUser = exchangePost.getUser();
+    // 입찰자 정보
+    User bidUser = selectedBid.getUser();
     // 게시글의 아이템 정보
     Item postItem = exchangePost.getItem();
 
@@ -58,7 +59,8 @@ public class ExchangeHistoriesService {
 
     // ExchangeHistory 객체 생성 및 저장
     ExchangeHistory exchangeHistory = ExchangeHistory.builder()
-        .user(postUser)
+        .exchangeInitiator(postUser)
+        .exchangePartner(bidUser)
         .exchangePost(exchangePost)
         .item(postItem)
         .exchangedItems(exchangedItems) // 추가된 필드
@@ -75,14 +77,14 @@ public class ExchangeHistoriesService {
     exchangedItems.add(new ItemHistoryDTO(
         postItem.getTitle(),
         postItem.getDescription(),
-        postItem.getImages()
+        postItem.getImages().get(0)
     ));
     // 입찰 아이템 정보 추가
     for (Item item : selectedBid.getItems()) {
       exchangedItems.add(new ItemHistoryDTO(
           item.getTitle(),
           item.getDescription(),
-          item.getImages()
+          item.getImages().get(0)
       ));
     }
     return exchangedItems;
@@ -90,7 +92,7 @@ public class ExchangeHistoriesService {
 
   @Transactional(readOnly = true)
   public List<ExchangeHistoriesResponseDTO> getExchangeHistories(User user, Pageable pageable) {
-    List<ExchangeHistory> histories = exchangeHistoriesRepository.findByUser_UserId(user.getUserId(), pageable);
+    List<ExchangeHistory> histories = exchangeHistoriesRepository.findByExchangeInitiator_UserIdOrExchangePartner_UserId(user.getUserId(), user.getUserId(), pageable);
 
     return histories.stream().map(history -> {
       ExchangePost exchangePost = history.getExchangePost();
@@ -113,7 +115,7 @@ public class ExchangeHistoriesService {
           .map(item -> new ExchangeHistoriesResponseDTO.ItemHistoryDTO(
               item.getTitle(),
               item.getDescription(),
-              item.getImageUrl().isEmpty() ? null : Collections.singletonList(item.getImageUrl().get(0))
+              item.getImageUrl().isEmpty() ? null : Collections.singletonList(item.getImageUrl())
           ))
           .collect(Collectors.toList());
 

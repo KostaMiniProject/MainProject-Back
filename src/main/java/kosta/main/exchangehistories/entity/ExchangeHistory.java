@@ -30,9 +30,14 @@ public class ExchangeHistory extends Auditable {
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
+
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "exchange_initiator_id")
+    private User exchangeInitiator;  // 교환을 시작한 사용자
+
+    @ManyToOne
+    @JoinColumn(name = "exchange_partner_id")
+    private User exchangePartner;  // 교환에 응한 사용자
 
     @ManyToOne
     @JoinColumn(name = "exchange_post_id")

@@ -64,10 +64,10 @@ public class UsersController {
     return new ResponseEntity(HttpStatus.CREATED);
   }
 
-  @GetMapping("/users/exchange-history")
-  public ResponseEntity<?> getExchangeHistories(@LoginUser User user) {
-    return new ResponseEntity(usersService.findMyExchangeHistory(user), HttpStatus.OK);
-  }
+//  @GetMapping("/users/exchange-history")
+//  public ResponseEntity<?> getExchangeHistories(@LoginUser User user) {
+//    return new ResponseEntity(usersService.findMyExchangeHistory(user), HttpStatus.OK);
+//  }
 
   @GetMapping("/users/dibs")
   public ResponseEntity<?> getDibs(@LoginUser User user) {

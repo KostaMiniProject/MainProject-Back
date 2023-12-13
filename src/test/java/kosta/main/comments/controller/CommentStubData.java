@@ -1,9 +1,6 @@
 package kosta.main.comments.controller;
 
-import kosta.main.comments.dto.CommentCreateDTO;
-import kosta.main.comments.dto.CommentDTO;
-import kosta.main.comments.dto.CommentListDTO;
-import kosta.main.comments.dto.CommentUpdateDTO;
+import kosta.main.comments.dto.*;
 import kosta.main.comments.entity.Comment;
 import kosta.main.communityposts.CommunityPostStubData;
 import kosta.main.communityposts.entity.CommunityPost;
@@ -13,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static kosta.main.comments.dto.CommentListDTO.convertCommentToDto;
 
 public class CommentStubData {
 
@@ -73,21 +69,22 @@ public class CommentStubData {
         return new CommentCreateDTO(PARENT_COMMENT_CONTENT, PARENT_COMMENT_ID);
     }
 
-    public List<CommentListDTO> getCommentListDTO() {
+    public List<CommentParentDTO> getCommentListDTO() {
 
-        return convertNestedStructure(getParentAndChildComment());
+        return convert(getParentAndChildComment());
     }
 
-     List<CommentListDTO> convertNestedStructure(List<Comment> comments) {
-        List<CommentListDTO> result = new ArrayList<>();
-        Map<Integer, CommentListDTO> map = new HashMap<>();
-        comments.forEach(c -> {
-            CommentListDTO dto = convertCommentToDto(c);
-            map.put(dto.getCommentId(), dto);
-            if(c.getParent() != null) map.get(c.getParent().getCommentId()).getChildren().add(dto);
-            else result.add(dto);
-        });
-        return result;
+    private List<CommentParentDTO> convert(List<Comment> comments) {
+        Map<Integer,CommentParentDTO> result = new HashMap<>();
+        for (Comment comment : comments) {
+            if(comment.getParent() == null) {
+                result.put(comment.getCommentId(),CommentParentDTO.from(comment));
+            }
+            else {
+                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment));
+            }
+        }
+        return new ArrayList<>(result.values());
     }
 
     public CommentUpdateDTO getCommentUpdateDTO() {

@@ -29,6 +29,10 @@ public class UsersController {
   public ResponseEntity<?> findMyProfile(@LoginUser User user) {
     return ResponseEntity.ok(usersService.findMyProfile(user));
   }
+  @GetMapping("/users/{name}")
+  public ResponseEntity<?> findProfileByName(@RequestParam("name") String name) {
+    return ResponseEntity.ok(usersService.findProfileByName(name));
+  }
 
   @PostMapping("/signup")
   public ResponseEntity<?> signup(@Valid @RequestBody UserCreateDTO userCreateDto) {

@@ -13,6 +13,7 @@ import java.util.List;
 
 public interface ItemsRepository extends JpaRepository<Item, Integer> {
   Page<Item> findByUser_UserId(Integer userId, Pageable pageable);
+  Page<Item> findByUser_UserIdAndIsBiding(Integer userId, Item.IsBiding isBiding, Pageable pageable);
 
 //  @Query("SELECT i FROM Item i " +
 //          "WHERE (LOWER(i.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) AND i.itemStatus = 'PUBLIC') " +

@@ -159,6 +159,47 @@ class ItemsControllerTest extends ControllerTest {
                         )
                 ));
     }
+    @Test
+    @WithMockCustomUser
+    @DisplayName("물건 입찰 가능 물건 조회 성공 테스트")
+    void getMyCanBidItems() throws Exception {
+
+        // given
+        Page<ItemPageDTO> itemPageDTOs = itemStubData.getItemPageDTOs();
+        // when
+        given(itemsService.getCanBidItems(Mockito.anyInt(), Mockito.any(Pageable.class))).willReturn(itemPageDTOs);
+        ResultActions perform = mockMvc.perform(get(BASE_URL+"/bid")
+                .param("page","0")
+                .header("Authorization", "Bearer yourAccessToken")
+        );
+        // then
+
+        perform
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        queryParameters(
+                                parameterWithName("page").description("현재 페이지를 표시하는 파라미터")
+                        ),
+                        responseFields(
+                                fieldWithPath("data").type(JsonFieldType.ARRAY).description("물건 목록 정보를 감싸고 있는 배열"),
+                                fieldWithPath("data.[].itemId").type(JsonFieldType.NUMBER).description("물건 ID"),
+                                fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("물건 제목"),
+                                fieldWithPath("data.[].description").type(JsonFieldType.STRING).description("물건에 대한 설명"),
+                                fieldWithPath("data.[].itemStatus").type(JsonFieldType.STRING).description("물건의 상태(PUBLIC, PRIVATE, DELETED)"),
+                                fieldWithPath("data.[].images").type(JsonFieldType.ARRAY).description("물건의 가장 첫번째 이미지"),
+                                fieldWithPath("data.[].crateAt").type(JsonFieldType.NULL).description("물건 생성 시각"),
+                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description("페이지 정보를 감싸고 있는 배열"),
+                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description("현재 페이지 숫자"),
+                                fieldWithPath("pageInfo.size").type(JsonFieldType.NUMBER).description("페이지 크기(한 번에 몇개의 정보를 가져올지"),
+                                fieldWithPath("pageInfo.totalElements").type(JsonFieldType.NUMBER).description("전체 데이터 개수"),
+                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 숫자")
+                        )
+                ));
+    }
 
     @Test
     @WithMockCustomUser

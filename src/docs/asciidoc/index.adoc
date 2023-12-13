@@ -84,6 +84,11 @@ operation::exchange-posts-controller-test/update-exchange-post[snippets='curl-re
 
 operation::exchange-posts-controller-test/delete-exchange-post[snippets='http-request,http-response']
 
+== 물물교환 내역
+
+=== 물물교환 내역 조회하기
+
+operation::exchange-histories-controller-test/get-exchange-histories[snippets='curl-request,request-headers,query-parameters,http-request,http-response,response-fields']
 
 == 입찰
 

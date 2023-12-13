@@ -41,6 +41,13 @@ public class UsersService {
         return UsersResponseDTO.of(user);
     }
 
+    @Transactional(readOnly = true)
+    public UsersResponseDTO findProfileByName(String name){
+        UsersResponseDTO usersResponseDTO = usersRepository.findUserByUserName(name)
+                .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+        return usersResponseDTO;
+    }
+
     @Transactional
     public UserCreateResponseDTO createUser(UserCreateDTO userCreateDTO) {
         if(!Objects.equals(userCreateDTO.getPassword(), userCreateDTO.getCheckPassword()))

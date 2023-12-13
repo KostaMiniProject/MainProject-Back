@@ -8,4 +8,5 @@ public interface UsersRepositoryCustom {
 
     Optional<UsersResponseDTO> findUserByUserId(Integer userId);
 
+    Optional<UsersResponseDTO> findUserByUserName(String name);
 }

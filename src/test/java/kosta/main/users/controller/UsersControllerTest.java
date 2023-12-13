@@ -99,9 +99,41 @@ class UsersControllerTest extends ControllerTest {
                                 fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호"),
                                 fieldWithPath("profileImage").type(JsonFieldType.STRING).description("유저의 프로필 이미지"),
                                 fieldWithPath("userStatus").type(JsonFieldType.STRING).description("유저의 상태(ACTIVATE, BANNED ,DELETED)")
-                                )
-                ))
-                .andReturn();
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("유저 프로필 조회")
+    void findProfileByName() throws Exception {
+        User user = userStubData.getUser();
+        //given
+        given(usersService.findProfileByName(Mockito.anyString())).willReturn(userStubData.getUsersResponseDto());
+
+        //when
+        ResultActions action = mockMvc.perform(
+                get(BASIC_URL+"/profile").param("name","paramName")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        //then
+        action
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        queryParameters(
+                                parameterWithName("name").description("유저 프로필조회용 이름")
+                        ),
+                        responseFields(
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
+                                fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호"),
+                                fieldWithPath("profileImage").type(JsonFieldType.STRING).description("유저의 프로필 이미지"),
+                                fieldWithPath("userStatus").type(JsonFieldType.STRING).description("유저의 상태(ACTIVATE, BANNED ,DELETED)")
+                        )
+                ));
     }
 
     @Test

@@ -20,6 +20,15 @@ include::{snippets}/users-controller-test/find-my-profile/http-response.adoc[]
 
 include::{snippets}/users-controller-test/find-my-profile/response-fields.adoc[]
 
+=== 프로필 이름 조회
+
+include::{snippets}/users-controller-test/find-profile-by-name/query-parameters.adoc[]
+
+include::{snippets}/users-controller-test/find-profile-by-name/http-request.adoc[]
+
+include::{snippets}/users-controller-test/find-profile-by-name/http-response.adoc[]
+
+include::{snippets}/users-controller-test/find-profile-by-name/response-fields.adoc[]
 
 === 회원 가입
 

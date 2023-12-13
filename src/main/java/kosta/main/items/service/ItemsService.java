@@ -97,6 +97,10 @@ public class ItemsService {
     Page<Item> byUserUserId = itemsRepository.findByUser_UserId(userId, pageable);
     return byUserUserId.map(ItemPageDTO::from);
   }
+  public Page<ItemPageDTO> getCanBidItems(Integer userId, Pageable pageable) {
+    Page<Item> byUserUserId = itemsRepository.findByUser_UserIdAndIsBiding(userId, Item.IsBiding.NOT_BIDING ,pageable);
+    return byUserUserId.map(ItemPageDTO::from);
+  }
 
 
   /**

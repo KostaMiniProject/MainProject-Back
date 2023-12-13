@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.*;
-
 @Service
 @AllArgsConstructor
 public class ExchangePostsService {
@@ -27,7 +26,9 @@ public class ExchangePostsService {
   private final ExchangePostsRepository exchangePostRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
-  
+
+  private final KakaoAPI kakaoAPI;
+
   // 공통메서드 : 게시글 삭제시 item들의 상태를 변경해주는 기능
   private void updateItemsBidingStatus(List<Item> items, Item.IsBiding status, Bid bid) {
     for (Item item : items) {
@@ -241,5 +242,11 @@ public class ExchangePostsService {
     // 게시글을 Soft Delete로 처리
     exchangePostRepository.delete(existingExchangePost);
   }
+
+  // 카카오 API 테스트
+  public String getLocation() {
+    return kakaoAPI.getLocation();
+  }
+
 
 }

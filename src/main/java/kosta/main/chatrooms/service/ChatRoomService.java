@@ -142,17 +142,7 @@ public class ChatRoomService {
         chat.updateIsRead(true); // 본인이 보낸 메시지가 아닌 경우 읽음 처리
         chatsRepository.save(chat); // 변경된 상태 저장
       }
-
-      chatMessageResponseDTOList.add(ChatRoomEnterResponseDTO.ChatMessageResponseDTO.builder()
-          .chatId(chat.getChatId())
-          .senderId(chat.getUser().getUserId())
-          .content(Optional.ofNullable(chat.getMessage()))
-          .imageUrl(Optional.ofNullable(chat.getChatImage()))
-          .createAt(chat.getCreatedAt().toString())
-          .isRead(chat.isRead())
-          .build());
     }
-
     return ChatRoomEnterResponseDTO.builder()
         .exchangePostId(exchangePost.getExchangePostId())
         .exchangePostTittle(exchangePost.getTitle())

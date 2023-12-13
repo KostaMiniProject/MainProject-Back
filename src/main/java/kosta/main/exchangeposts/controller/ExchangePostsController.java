@@ -58,5 +58,11 @@ public class ExchangePostsController {
     return new ResponseEntity(HttpStatus.NO_CONTENT);
   }
 
+  //카카오 API 호출 테스트
+  @GetMapping("/test")
+  public String getLocation(){
+    return exchangePostsService.getLocation();
+  }
+
 
 }

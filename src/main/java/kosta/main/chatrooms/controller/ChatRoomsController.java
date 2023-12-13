@@ -46,7 +46,7 @@ public class ChatRoomsController {
   @GetMapping("/{chatRoomId}")
   public ResponseEntity<ChatRoomEnterResponseDTO> getChatList(@PathVariable("chatRoomId") Integer chatRoomId,
                                                               @LoginUser User user,
-                                                              @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+                                                              @PageableDefault(page = 0, size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     ChatRoomEnterResponseDTO chatList = chatRoomService.getChatList(chatRoomId, user, pageable);
     return new ResponseEntity<>(chatList, HttpStatus.OK);
   }

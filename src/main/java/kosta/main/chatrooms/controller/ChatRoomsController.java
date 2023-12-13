@@ -42,7 +42,7 @@ public class ChatRoomsController {
     return new ResponseEntity<>(chatRooms, HttpStatus.OK);
   }
 
-  // 특정 채팅방의 채팅 내역을 불러오는 기능(Pageable 적용 Size의 2배만큼만 출력됨)
+  // 특정 채팅방의 채팅 내역을 불러오는 기능(Pageable 적용 Size의 2배만큼만 출력됨 )
   @GetMapping("/{chatRoomId}")
   public ResponseEntity<ChatRoomEnterResponseDTO> getChatList(@PathVariable("chatRoomId") Integer chatRoomId,
                                                               @LoginUser User user,

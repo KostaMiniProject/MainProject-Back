@@ -29,8 +29,8 @@ public class UsersController {
   public ResponseEntity<?> findMyProfile(@LoginUser User user) {
     return ResponseEntity.ok(usersService.findMyProfile(user));
   }
-  @GetMapping("/users/{name}")
-  public ResponseEntity<?> findProfileByName(@RequestParam("name") String name) {
+  @GetMapping("/users/profile")
+  public ResponseEntity<?> findProfileByName(@RequestParam(value = "name") String name) {
     return ResponseEntity.ok(usersService.findProfileByName(name));
   }
 

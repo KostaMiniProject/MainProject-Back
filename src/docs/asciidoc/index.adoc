@@ -159,6 +159,11 @@ operation::items-controller-test/get-find-by-id[snippets='path-parameters,http-r
 
 operation::items-controller-test/get-items[snippets='curl-request,query-parameters,request-headers,http-request,http-response,response-fields']
 
+=== 입찰 가능한 물건 조회
+
+operation::items-controller-test/get-my-can-bid-items[snippets='curl-request,query-parameters,request-headers,http-request,http-response,response-fields']
+
+
 === 물건 삭제
 
 operation::items-controller-test/delete-item[snippets='request-headers,path-parameters,http-request,http-response']

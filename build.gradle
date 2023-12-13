@@ -109,6 +109,7 @@ task copyPrivate(type: Copy) {
 	copy {
 		from './MainProject-Back-Data'
 		include "*.yml"
+		include "*.properties"
 		into 'src/main/resources'
 	}
 }

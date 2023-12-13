@@ -116,7 +116,6 @@ class UsersControllerTest extends ControllerTest {
                 get(BASIC_URL+"/profile").param("name","paramName")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer yourAccessToken")
         );
         //then
         action

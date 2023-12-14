@@ -1,7 +1,6 @@
 package kosta.main.email.controller;
 
 import jakarta.validation.Valid;
-import kosta.main.email.dto.EmailCheckDto;
 import kosta.main.email.dto.EmailRequestDto;
 import kosta.main.email.service.EmailSendService;
 import lombok.RequiredArgsConstructor;

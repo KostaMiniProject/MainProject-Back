@@ -64,7 +64,6 @@ public class ChatRoom extends Auditable {
     public void updateBid(Bid bid) {
         this.bid = bid;
     }
-
     public static ChatRoom of(ExchangePost exchangePost, Bid bid, User sender, User receiver) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.updateExchangePost(exchangePost);

@@ -47,6 +47,12 @@ public class ExchangePost extends Auditable {
     @Column(length = 255)
     private String address;
 
+    @Column(length = 255)
+    private String longitude; // X 좌표값
+
+    @Column(length = 255)
+    private String latitude; // Y 좌표값
+
     @Column(columnDefinition = "TEXT")
     private String content;
 

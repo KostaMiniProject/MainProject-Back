@@ -2,6 +2,8 @@ package kosta.main.exchangeposts.service;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
+import kosta.main.exchangehistories.entity.ExchangeHistory;
+import kosta.main.exchangehistories.repository.ExchangeHistoriesRepository;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
@@ -24,6 +26,7 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 public class ExchangePostsService {
 
   private final ExchangePostsRepository exchangePostRepository;
+  private final ExchangeHistoriesRepository exchangeHistoriesRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
   private final KakaoAPI kakaoAPI;
@@ -127,6 +130,9 @@ public class ExchangePostsService {
   public ExchangePostDetailDTO findExchangePostById(Integer exchangePostId, User currentUser) {
     ExchangePost post = exchangePostRepository.findById(exchangePostId)
         .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
+    if(post.getExchangePostStatus().equals(ExchangePost.ExchangePostStatus.COMPLETED)){
+      return findCompletedExchangePostByPost(post);
+    }
 
     // 교환 게시글 작성자와 현재 로그인한 사용자가 같은지 확인 (로그인하지 않은 경우 고려)
     boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
@@ -171,12 +177,21 @@ public class ExchangePostsService {
         .build();
   }
 
+  private ExchangePostDetailDTO findCompletedExchangePostByPost(ExchangePost post) {
+    ExchangeHistory exchangeHistory
+            = exchangeHistoriesRepository.findExchangeHistoryByExchangePost_ExchangePostId(post.getExchangePostId());
+  }
+
 
   private String convertItemListToString(List<Item> items) {
     // 아이템 리스트를 문자열로 변환하는 로직 구현
-    return items.stream()
-        .map(Item::getTitle)
-        .collect(Collectors.joining(", "));
+    if(!items.isEmpty()) {
+      return items.stream()
+              .map(Item::getTitle)
+              .collect(Collectors.joining(", "));
+    } else{
+      return "nothing";
+    }
   }
 
   @Transactional

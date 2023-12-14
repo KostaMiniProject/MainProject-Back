@@ -2,6 +2,7 @@ package kosta.main.users.controller;
 
 import jakarta.validation.Valid;
 import kosta.main.users.dto.UserCreateDTO;
+import kosta.main.users.dto.UserFindIdDTO;
 import kosta.main.users.dto.UserUpdateDTO;
 import kosta.main.reports.dto.CreateReportDTO;
 import kosta.main.users.entity.LoginUser;
@@ -85,5 +86,11 @@ public class UsersController {
 //        return new ResponseEntity(HttpStatus.CREATED);
 //    }
 
+
+  @PostMapping("/find-id")
+  public ResponseEntity<?> findId(@RequestBody UserFindIdDTO userFindIdDTO) {
+    usersService.findIdByNamePhone(userFindIdDTO);
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
 
 }

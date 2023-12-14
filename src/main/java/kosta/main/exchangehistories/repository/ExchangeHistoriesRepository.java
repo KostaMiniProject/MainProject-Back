@@ -12,5 +12,6 @@ import java.util.List;
 @Repository
 public interface ExchangeHistoriesRepository extends JpaRepository<ExchangeHistory, Integer> {
   Page<ExchangeHistory> findByExchangeInitiator_UserIdOrExchangePartner_UserId(Integer initiatorUserId, Integer partnerUserId, Pageable pageable);
+  ExchangeHistory findExchangeHistoryByExchangePost_ExchangePostId(Integer postId);
 }
 

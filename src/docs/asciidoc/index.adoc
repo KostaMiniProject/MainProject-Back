@@ -91,7 +91,7 @@ operation::exchange-posts-controller-test/update-exchange-post[snippets='curl-re
 
 === 물물교환 게시글 삭제
 
-operation::exchange-posts-controller-test/delete-exchange-post[snippets='http-request,http-response']
+operation::exchange-posts-controller-test/delete-exchange-post[snippets='http-request,path-parameters,request-headers,http-response']
 
 == 물물교환 내역
 

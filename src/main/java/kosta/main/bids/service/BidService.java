@@ -204,6 +204,7 @@ public class BidService {
         exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user);
 
 
+
         // 선택된 입찰 아이템 소유권 변경
         transferItemOwnership(selectedBid.getItems(), exchangePost.getUser());
 
@@ -214,14 +215,16 @@ public class BidService {
         exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.COMPLETED);
         exchangePostsRepository.save(exchangePost);
 
+        //
         // 모든 입찰의 상태 업데이트
-        List<Bid> bids = bidRepository.findByExchangePost(exchangePost);
+        List<Bid> bids = exchangePost.getBids();
         for (Bid bid : bids) {
             if (bid.getBidId().equals(selectedBidId)) {
                 bid.updateStatus(Bid.BidStatus.SELECTED);
             } else {
                 bid.updateStatus(Bid.BidStatus.DENIED);
             }
+            bid.exchangeFinishedItems(bid.getItems());// 연관 관계가 끊어질 아이템들을 finishedItems에 저장
             updateItemsBidingStatus(bid.getItems(), Item.IsBiding.NOT_BIDING, null);
             bidRepository.save(bid);
         }

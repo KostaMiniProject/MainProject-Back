@@ -41,7 +41,7 @@ public class ExchangePostDetailDTO {
   public static class BidDetails {
     private Integer bidId;
     private String name;
-    private String imageUrl; // 사용자 프로필 이미지
+    private String imageUrl; // 물건 리스트의 첫번째 이미지
     private String items; // 입찰에 사용된 아이템 목록을 문자열로 표현
   }
 }

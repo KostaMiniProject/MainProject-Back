@@ -153,7 +153,7 @@ public class ExchangePostsService {
         .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
             .bidId(bid.getBidId())
             .name(bid.getUser().getName())
-            .imageUrl(bid.getUser().getProfileImage())
+            .imageUrl(bid.getItems().get(0).getImages().get(0))
             .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
             .build())
         .collect(Collectors.toList());
@@ -170,6 +170,7 @@ public class ExchangePostsService {
         .bidList(bidDetailsList)
         .build();
   }
+
 
   private String convertItemListToString(List<Item> items) {
     // 아이템 리스트를 문자열로 변환하는 로직 구현

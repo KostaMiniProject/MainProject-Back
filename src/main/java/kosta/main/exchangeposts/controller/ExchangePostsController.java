@@ -60,8 +60,8 @@ public class ExchangePostsController {
 
   //카카오 API 호출 테스트
   @GetMapping("/test")
-  public String getLocation(){
-    return exchangePostsService.getLocation();
+  public String getLocation(@RequestBody ExchangePostDTO exchangePostDTO){
+    return exchangePostsService.getLocation(exchangePostDTO.getAddress());
   }
 
 

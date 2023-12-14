@@ -77,6 +77,11 @@ dependencies {
     // 메일전송 관련
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework:spring-context-support'
+
+    // https://mvnrepository.com/artifact/org.json/json
+    // 서버에서 Json 객체의 내용을 참조하고 활용하는 의존성
+    implementation group: 'org.json', name: 'json', version: '20231013'
+
 }
 
 //restDocs

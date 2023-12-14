@@ -68,8 +68,8 @@ public class ExchangePost extends Auditable {
         this.user = user;
         this.item = item;
         this.title = dto.getTitle() != null ? dto.getTitle() : this.title;
-        this.preferItems = dto.getPreferItems() != null ? dto.getPreferItems() : this.preferItems;
-        this.address = dto.getAddress() != null ? dto.getAddress() : this.address;
+        this.preferItems = dto.getPreferItems() != null ? String.valueOf(dto.getPreferItems()) : this.preferItems;
+        this.address = dto.getAddress() != null ? String.valueOf(dto.getAddress()) : this.address;
         this.content = dto.getContent() != null ? dto.getContent() : this.content;
         this.exchangePostStatus = dto.getExchangePostStatus() != null ? dto.getExchangePostStatus() : this.exchangePostStatus;
     }

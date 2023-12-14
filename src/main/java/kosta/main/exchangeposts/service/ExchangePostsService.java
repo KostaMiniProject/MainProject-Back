@@ -66,24 +66,15 @@ public class ExchangePostsService {
     item.updateIsBiding(Item.IsBiding.BIDING);
     itemsRepository.save(item);
 
-    // 주소를 바탕으로 좌표 조회
-    String locationResponse = getLocation(exchangePostDTO.getAddress());
-    String longitude = "0.0", latitude = "0.0";
-    if (locationResponse != null) {
-      JSONObject locationJson = new JSONObject(locationResponse);
-      longitude = locationJson.getString("x"); // x 좌표 추출
-      latitude = locationJson.getString("y"); // y 좌표 추출
-    }
-
     // ExchangePost 엔티티 생성
     ExchangePost exchangePost = ExchangePost.builder()
             .user(user)
             .item(item)
             .title(exchangePostDTO.getTitle())
-            .preferItems(exchangePostDTO.getPreferItems())
-            .address(exchangePostDTO.getAddress())
-            .longitude(longitude)
-            .latitude(latitude)
+            .preferItems(exchangePostDTO.getPreferItems().orElse(null))
+            .address(exchangePostDTO.getAddress().orElse(null))
+            .longitude(exchangePostDTO.getLongitude().orElse(null))
+            .latitude(exchangePostDTO.getLatitude().orElse(null))
             .content(exchangePostDTO.getContent())
             .build();
     ExchangePost savedExchangePost = exchangePostRepository.save(exchangePost);

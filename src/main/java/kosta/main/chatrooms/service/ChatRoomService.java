@@ -57,8 +57,11 @@ public class ChatRoomService {
       Bid bid = findEntityById(bidRepository, createChatRoomDTO.getBidId(), "Bid not found");
       User receiver = findEntityById(usersRepository, bid.getUser().getUserId(), "Receiver not found");
       ExchangePost exchangePost = findEntityById(exchangePostsRepository, bid.getExchangePost().getExchangePostId(), "ExchangePost not found");
+      if(!sender.getUserId().equals(exchangePost.getUser().getUserId())){
+        new RuntimeException("교환 게시글의 작성자만 채팅방을 개설할 수 있습니다!");
+      }
 
-      ChatRoom chatRoom = ChatRoom.of(exchangePost, bid, sender, receiver);
+        ChatRoom chatRoom = ChatRoom.of(exchangePost, bid, sender, receiver);
 
       // 초기 시스템 메시지 생성
       Chat initialChat = Chat.builder()
@@ -117,9 +120,8 @@ public class ChatRoomService {
 
 
   // 채팅방 목록 조회
-  public List<ChatRoomResponseDTO> getChatRooms(Integer userId) {
-    User currentUser = usersRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-    List<ChatRoom> chatRooms = chatRoomsRepository.findBySenderUserIdOrReceiverUserId(userId, userId);
+  public List<ChatRoomResponseDTO> getChatRooms(User currentUser) {
+    List<ChatRoom> chatRooms = chatRoomsRepository.findBySenderUserIdOrReceiverUserId(currentUser.getUserId(), currentUser.getUserId());
 
     // 채팅방을 마지막 메시지 시간에 따라 내림차순으로 정렬
     return chatRooms.stream()

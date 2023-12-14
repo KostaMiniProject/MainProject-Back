@@ -124,8 +124,7 @@ public class UsersService {
         boolean userName = userFindIdDTO.getName().equals(userInfo.getName());
         boolean userPhone = userFindIdDTO.getPhone().equals(userInfo.getPhone());
         if(userName && userPhone) {
-            // 아이디 출력
-            return "Email : " + userInfo.getEmail();
+            return userInfo.getEmail();
         }
         return "입력값과 등록된 정보가 일치하지않습니다.";
     }

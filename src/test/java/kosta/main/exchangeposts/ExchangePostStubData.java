@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class ExchangePostStubData {
 
@@ -89,10 +90,10 @@ public class ExchangePostStubData {
     public ExchangePostDTO getExchangePostDTO() {
         return ExchangePostDTO.builder()
                 .title(TITLE)
-                .preferItems(PREFER_ITEMS)
-                .address(ADDRESS)
-                .latitude(LATITUDE)
-                .longitude(LONGITUDE)
+                .preferItems(Optional.of(PREFER_ITEMS))
+                .address(Optional.of(ADDRESS))
+                .latitude(Optional.of(LATITUDE))
+                .longitude(Optional.of(LONGITUDE))
                 .content(CONTENT)
                 .itemId(ITEM_ID)
                 .build();

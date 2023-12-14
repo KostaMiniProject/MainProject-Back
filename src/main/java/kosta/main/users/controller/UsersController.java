@@ -91,9 +91,12 @@ public class UsersController {
 
   @PostMapping("/find-id")
   public ResponseEntity<?> findId(@RequestBody UserFindIdDTO userFindIdDTO) {
-    String findEmail = usersService.findIdByNamePhone(userFindIdDTO);
-    UserEmailDTO userEmailDTO = UserEmailDTO.builder().email(findEmail).build();
-    return new ResponseEntity<>(userEmailDTO, HttpStatus.OK);
+    String result = usersService.findIdByNamePhone(userFindIdDTO);
+    if (result != null) {
+      UserEmailDTO userEmailDTO = UserEmailDTO.builder().email(result).build();
+      return new ResponseEntity<>(userEmailDTO, HttpStatus.OK);
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
 }

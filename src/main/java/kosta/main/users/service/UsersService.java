@@ -126,6 +126,6 @@ public class UsersService {
         if(userName && userPhone) {
             return userInfo.getEmail();
         }
-        return "입력값과 등록된 정보가 일치하지않습니다.";
+        return null;
     }
 }

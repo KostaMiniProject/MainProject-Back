@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -104,7 +106,7 @@ public class ExchangePostsService {
               .preferItem(post.getPreferItems())
               .address(post.getAddress())
               .exchangePostStatus(post.getExchangePostStatus().toString())
-              .createdAt(post.getCreatedAt())
+              .createdAt(post.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)))
               .imgUrl(imgUrl)
               .bidCount(bidCount)
               .build();
@@ -127,7 +129,7 @@ public class ExchangePostsService {
               .preferItem(post.getPreferItems())
               .address(post.getAddress())
               .exchangePostStatus(post.getExchangePostStatus().toString())
-              .createdAt(post.getCreatedAt())
+              .createdAt(post.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)))
               .imgUrl(imgUrl)
               .bidCount(bidCount)
               .build();

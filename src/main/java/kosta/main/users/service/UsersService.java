@@ -116,4 +116,16 @@ public class UsersService {
     public List<DibResponseDto> findMyDibs(User user) {
         return user.getDibs().stream().map(DibResponseDto::of).toList();
     }
+
+    public String findIdByNamePhone(UserFindIdDTO userFindIdDTO) {
+        UsersResponseDTO userInfo = usersRepository.findUserByUserName(userFindIdDTO.getName())
+            .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+
+        boolean userName = userFindIdDTO.getName().equals(userInfo.getName());
+        boolean userPhone = userFindIdDTO.getPhone().equals(userInfo.getPhone());
+        if(userName && userPhone) {
+            return userInfo.getEmail();
+        }
+        return null;
+    }
 }

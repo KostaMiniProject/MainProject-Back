@@ -31,4 +31,17 @@ public class ExchangePostListDTO { // 교환 게시글 전체 목록을 전송�
             imageUrl,
             bidCount);
   }
+
+  //테스트 용도
+  public static ExchangePostListDTO testOf(ExchangePost exchangePost,String imageUrl,Integer bidCount){
+    return new ExchangePostListDTO(
+            exchangePost.getExchangePostId(),
+            exchangePost.getTitle(),
+            exchangePost.getPreferItems(),
+            exchangePost.getAddress(),
+            exchangePost.getExchangePostStatus().toString(),
+            LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
+            imageUrl,
+            bidCount);
+  }
 }

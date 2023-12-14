@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -130,9 +131,7 @@ public class ExchangePostsService {
   public ExchangePostDetailDTO findExchangePostById(Integer exchangePostId, User currentUser) {
     ExchangePost post = exchangePostRepository.findById(exchangePostId)
         .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
-    if(post.getExchangePostStatus().equals(ExchangePost.ExchangePostStatus.COMPLETED)){
-      return findCompletedExchangePostByPost(post);
-    }
+
 
     // 교환 게시글 작성자와 현재 로그인한 사용자가 같은지 확인 (로그인하지 않은 경우 고려)
     boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
@@ -154,16 +153,20 @@ public class ExchangePostsService {
         .imageUrls(post.getItem().getImages())
         .build();
 
-    // 입찰 목록 생성
-    List<ExchangePostDetailDTO.BidDetails> bidDetailsList = post.getBids().stream()
-        .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
-            .bidId(bid.getBidId())
-            .name(bid.getUser().getName())
-            .imageUrl(bid.getItems().get(0).getImages().get(0))
-            .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
-            .build())
-        .collect(Collectors.toList());
-
+    List<ExchangePostDetailDTO.BidDetails> bidDetailsList = new ArrayList<>();
+    if(post.getExchangePostStatus().equals(ExchangePost.ExchangePostStatus.COMPLETED)){
+      bidDetailsList = findCompletedBidDetailsListByPost(post);
+    } else {
+      // 입찰 목록 생성
+      bidDetailsList = post.getBids().stream()
+              .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
+                      .bidId(bid.getBidId())
+                      .name(bid.getUser().getName())
+                      .imageUrl(bid.getItems().get(0).getImages().get(0))
+                      .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
+                      .build())
+              .collect(Collectors.toList());
+    }
     // ExchangePostDetailDTO 구성
     return ExchangePostDetailDTO.builder()
         .postOwner(isOwner)
@@ -177,9 +180,15 @@ public class ExchangePostsService {
         .build();
   }
 
-  private ExchangePostDetailDTO findCompletedExchangePostByPost(ExchangePost post) {
-    ExchangeHistory exchangeHistory
-            = exchangeHistoriesRepository.findExchangeHistoryByExchangePost_ExchangePostId(post.getExchangePostId());
+  private List<ExchangePostDetailDTO.BidDetails> findCompletedBidDetailsListByPost(ExchangePost post) {
+    return post.getBids().stream()
+            .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
+                    .bidId(bid.getBidId())
+                    .name(bid.getUser().getName())
+                    .imageUrl(bid.getExchangeFinishedItems().get(0).getImages().get(0))
+                    .items(convertItemListToString(bid.getExchangeFinishedItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
+                    .build())
+            .collect(Collectors.toList());
   }
 
 

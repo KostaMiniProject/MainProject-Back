@@ -19,7 +19,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,7 +112,7 @@ public class ExchangePostsService {
               .preferItem(post.getPreferItems())
               .address(post.getAddress())
               .exchangePostStatus(post.getExchangePostStatus().toString())
-              .createdAt(post.getCreatedAt())
+              .createdAt(post.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)))
               .imgUrl(imgUrl)
               .bidCount(bidCount)
               .build();
@@ -119,7 +123,7 @@ public class ExchangePostsService {
     Page<ExchangePost> all = exchangePostRepository.searchExchangePost(keyword,pageable);
     return all
         .map(post -> {
-          // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
+          // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용 )
           String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
 
           // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
@@ -131,7 +135,7 @@ public class ExchangePostsService {
               .preferItem(post.getPreferItems())
               .address(post.getAddress())
               .exchangePostStatus(post.getExchangePostStatus().toString())
-              .createdAt(post.getCreatedAt())
+              .createdAt(post.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)))
               .imgUrl(imgUrl)
               .bidCount(bidCount)
               .build();

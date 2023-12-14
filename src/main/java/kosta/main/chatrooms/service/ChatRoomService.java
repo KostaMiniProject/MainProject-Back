@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -119,8 +120,11 @@ public class ChatRoomService {
   public List<ChatRoomResponseDTO> getChatRooms(Integer userId) {
     User currentUser = usersRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
     List<ChatRoom> chatRooms = chatRoomsRepository.findBySenderUserIdOrReceiverUserId(userId, userId);
+
+    // 채팅방을 마지막 메시지 시간에 따라 내림차순으로 정렬
     return chatRooms.stream()
         .map(chatRoom -> ChatRoomResponseDTO.of(chatRoom, currentUser))
+        .sorted(Comparator.comparing(ChatRoomResponseDTO::getLastMessageTimeDifference).reversed())
         .collect(Collectors.toList());
   }
 

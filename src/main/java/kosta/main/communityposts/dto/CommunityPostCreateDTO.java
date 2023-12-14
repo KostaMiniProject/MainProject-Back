@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class CommunityPostCreateDTO {
     private String title;
     private String content;
-
 }

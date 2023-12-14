@@ -47,15 +47,14 @@ public class ChatRoomService {
   public CreateChatRoomResponseDTO createChatRoom(CreateChatRoomDTO createChatRoomDTO, User sender) {
     // bidId로 채팅방 존재 여부 확인
     Optional<ChatRoom> existingChatRoom = chatRoomsRepository.findByBid_BidId(createChatRoomDTO.getBidId());
-
     if (existingChatRoom.isPresent()) {
       // 이미 존재하는 채팅방의 정보를 반환
       return CreateChatRoomResponseDTO.from(existingChatRoom.get());
     } else {
       // 새 채팅방 생성
-      User receiver = findEntityById(usersRepository, createChatRoomDTO.getReceiverId(), "Receiver not found");
-      ExchangePost exchangePost = findEntityById(exchangePostsRepository, createChatRoomDTO.getExchangePostId(), "ExchangePost not found");
       Bid bid = findEntityById(bidRepository, createChatRoomDTO.getBidId(), "Bid not found");
+      User receiver = findEntityById(usersRepository, bid.getUser().getUserId(), "Receiver not found");
+      ExchangePost exchangePost = findEntityById(exchangePostsRepository, bid.getExchangePost().getExchangePostId(), "ExchangePost not found");
 
       ChatRoom chatRoom = ChatRoom.of(exchangePost, bid, sender, receiver);
       chatRoomsRepository.save(chatRoom);

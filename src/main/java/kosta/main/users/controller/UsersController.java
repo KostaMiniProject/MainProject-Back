@@ -2,6 +2,7 @@ package kosta.main.users.controller;
 
 import jakarta.validation.Valid;
 import kosta.main.users.dto.UserCreateDTO;
+import kosta.main.users.dto.UserEmailDTO;
 import kosta.main.users.dto.UserFindIdDTO;
 import kosta.main.users.dto.UserUpdateDTO;
 import kosta.main.reports.dto.CreateReportDTO;
@@ -30,6 +31,7 @@ public class UsersController {
   public ResponseEntity<?> findMyProfile(@LoginUser User user) {
     return ResponseEntity.ok(usersService.findMyProfile(user));
   }
+
   @GetMapping("/users/profile")
   public ResponseEntity<?> findProfileByName(@RequestParam(value = "name") String name) {
     return ResponseEntity.ok(usersService.findProfileByName(name));
@@ -89,8 +91,9 @@ public class UsersController {
 
   @PostMapping("/find-id")
   public ResponseEntity<?> findId(@RequestBody UserFindIdDTO userFindIdDTO) {
-    usersService.findIdByNamePhone(userFindIdDTO);
-    return new ResponseEntity<>(HttpStatus.OK);
+    String findEmail = usersService.findIdByNamePhone(userFindIdDTO);
+    UserEmailDTO userEmailDTO = UserEmailDTO.builder().email(findEmail).build();
+    return new ResponseEntity<>(userEmailDTO, HttpStatus.OK);
   }
 
 }

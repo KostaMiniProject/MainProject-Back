@@ -15,7 +15,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Random;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -50,14 +50,19 @@ public class EmailSendService {
    * 임의의 6자리 양수 생성
    * @return
    */
-  public Integer makeRandomNumber() {
-    Random r = new Random();
-    String randomNumber = "";
-    for (int i = 0; i < 6; i++) {
-      randomNumber += Integer.toString(r.nextInt(10));
-    }
+  public String makeRandomValue() {
+//    # 임의의 6자리 양수
+//    Random r = new Random();
+//    String randomNumber = "";
+//    for (int i = 0; i < 6; i++) {
+//      randomNumber += Integer.toString(r.nextInt(10));
+//    }
+//    return randomNumber;
 
-    return Integer.parseInt(randomNumber);
+//    # UUID 앞 6자리만
+    String randomUUID = UUID.randomUUID().toString().substring(0, 6);
+
+    return randomUUID;
   }
 
 
@@ -69,7 +74,7 @@ public class EmailSendService {
    */
   public String joinEmail(String email) {
     //    1. 임의의 6자리 수 생성
-    Integer authNumber = makeRandomNumber();
+    String authNumber = makeRandomValue();
 
     //    2. 이메일과 임의의 수를 Email 테이블의 저장
     Emails newEmailCheck = Emails.builder()
@@ -89,7 +94,7 @@ public class EmailSendService {
             "<br>" +
             "인증번호를 제대로 입력해주세요!!!";
     mailSend(setFrom, toMail, title, content);
-    return Integer.toString(authNumber);
+    return authNumber;
   }
 
 

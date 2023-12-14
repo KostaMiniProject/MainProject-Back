@@ -18,5 +18,5 @@ public class Emails extends Auditable {
   private String email;
 
   @Column(length = 6)
-  private Integer authNum;
+  private String authNum;
 }

@@ -60,9 +60,13 @@ public class User extends Auditable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BlockedUser> blockedUsers = new ArrayList<>(); // 클래스 이름을 단수형으로 변경
 
-    @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ExchangeHistory> exchangeHistories = new ArrayList<>();
+
+    // 교환 내역에 대한 관계를 두 개의 별도 필드로 정의
+    @OneToMany(mappedBy = "exchangeInitiator")
+    private List<ExchangeHistory> initiatedExchanges;
+
+    @OneToMany(mappedBy = "exchangePartner")
+    private List<ExchangeHistory> participatedExchanges;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -5,23 +5,21 @@ import kosta.main.bids.repository.BidRepository;
 import kosta.main.chatrooms.dto.*;
 import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.chatrooms.repository.ChatRoomsRepository;
-import kosta.main.chats.dto.ChatMessageDTO;
 import kosta.main.chats.entity.Chat;
 import kosta.main.chats.repository.ChatsRepository;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
 import kosta.main.items.entity.Item;
-import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -113,7 +111,7 @@ public class ChatRoomService {
   }
 
   // 특정 채팅방의 채팅 내역을 불러오는 기능
-  public ChatRoomEnterResponseDTO getChatList(Integer chatRoomId, User user) {
+  public ChatRoomEnterResponseDTO getChatList(Integer chatRoomId, User user, Pageable pageable) {
     ChatRoom chatRoom = findEntityById(chatRoomsRepository, chatRoomId, "ChatRoom Not Found");
 
     User otherUser = chatRoom.getSender().getUserId().equals(user.getUserId()) ? chatRoom.getReceiver() : chatRoom.getSender();
@@ -123,18 +121,24 @@ public class ChatRoomService {
     String exchangePostImage = exchangePostItem.getImages().isEmpty() ? null : exchangePostItem.getImages().get(0);
     String exchangePostCategory = exchangePostItem.getCategory() != null ? exchangePostItem.getCategory().getCategoryName() : null;
 
-    List<Chat> chats = chatsRepository.findByChatRoom(chatRoom);
+    Page<Chat> chats = chatsRepository.findByChatRoom(chatRoom, pageable);
     List<ChatRoomEnterResponseDTO.ChatMessageResponseDTO> chatMessageResponseDTOList = chats.stream()
         .map(chat -> ChatRoomEnterResponseDTO.ChatMessageResponseDTO.builder()
             .chatId(chat.getChatId())
             .senderId(chat.getUser().getUserId())
             .content(Optional.ofNullable(chat.getMessage()))
             .imageUrl(Optional.ofNullable(chat.getChatImage()))
-            .createAt(chat.getCreatedAt().toString())
+            .createAt(chat.getCreatedAt().toString()) // 여기서 날짜 형식을 조정할 수 있습니다.
             .isRead(chat.isRead())
             .build())
         .collect(Collectors.toList());
 
+    for (Chat chat : chats) {
+      if (!chat.getUser().getUserId().equals(user.getUserId()) && !chat.isRead()) {
+        chat.updateIsRead(true); // 본인이 보낸 메시지가 아닌 경우 읽음 처리
+        chatsRepository.save(chat); // 변경된 상태 저장
+      }
+    }
     return ChatRoomEnterResponseDTO.builder()
         .exchangePostId(exchangePost.getExchangePostId())
         .exchangePostTittle(exchangePost.getTitle())
@@ -147,6 +151,7 @@ public class ChatRoomService {
         .messages(chatMessageResponseDTOList)
         .build();
   }
+
 
 
   // 채팅방 입장 알림

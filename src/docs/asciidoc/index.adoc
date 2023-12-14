@@ -20,6 +20,15 @@ include::{snippets}/users-controller-test/find-my-profile/http-response.adoc[]
 
 include::{snippets}/users-controller-test/find-my-profile/response-fields.adoc[]
 
+=== 프로필 이름 조회
+
+include::{snippets}/users-controller-test/find-profile-by-name/query-parameters.adoc[]
+
+include::{snippets}/users-controller-test/find-profile-by-name/http-request.adoc[]
+
+include::{snippets}/users-controller-test/find-profile-by-name/http-response.adoc[]
+
+include::{snippets}/users-controller-test/find-profile-by-name/response-fields.adoc[]
 
 === 회원 가입
 
@@ -61,7 +70,11 @@ include::{snippets}/users-controller-test/withdrawal/http-response.adoc[]
 
 === 물물교환 게시글 목록 조회
 
-operation::exchange-posts-controller-test/get-all-exchange-posts[snippets='http-request,http-response,response-fields']
+operation::exchange-posts-controller-test/get-all-exchange-posts[snippets='query-parameters,http-request,http-response,response-fields']
+
+=== 물물교환 게시글 검색 조회
+
+operation::exchange-posts-controller-test/search-exchange-post[curl-request,query-parameters,request-headers,http-request,http-response,response-fields]
 
 === 물물교환 게시글 상세 조회
 
@@ -80,12 +93,53 @@ operation::exchange-posts-controller-test/update-exchange-post[snippets='curl-re
 
 operation::exchange-posts-controller-test/delete-exchange-post[snippets='http-request,http-response']
 
+== 물물교환 내역
+
+=== 물물교환 내역 조회하기
+
+operation::exchange-histories-controller-test/get-exchange-histories[snippets='curl-request,request-headers,query-parameters,http-request,http-response,response-fields']
 
 == 입찰
 
-== 입찰하기
+=== 입찰하기
 
-operation::bid-controller-test/create-bid[snippets='request-headers,http-request,http-response']
+operation::bid-controller-test/create-bid[snippets='request-headers,path-parameters,http-request,http-response']
+
+=== 입찰 수정하기
+
+operation::bid-controller-test/update-bid[snippets='curl-request,path-parameters,http-request,request-fields,http-response,response-fields']
+
+=== 입찰 상세조회하기
+
+operation::bid-controller-test/get-bid-by-id[snippets='curl-request,path-parameters,request-headers,http-request,http-response,response-fields']
+
+=== 입찰 목록 조회하기
+
+operation::bid-controller-test/get-all-bids-for-post[snippets='curl-request,path-parameters,http-request,request-fields,http-response,response-fields']
+
+=== 입찰 삭제하기
+
+operation::bid-controller-test/delete-bid[snippet='curl-request,request-headers,path-parameters,http-response']
+
+=== 교환 완료하기
+
+operation::bid-controller-test/complete-exchange[snippet='curl-request,request-headers,path-parameters,http-response']
+
+=== 교환 예약하기
+
+operation::bid-controller-test/reserve-exchange[snippet='curl-request,request-headers,path-parameters,http-response']
+
+=== 입찰 거부하기
+
+operation::bid-controller-test/deny-bid[snippet='curl-request,request-headers,path-parameters,http-response']
+
+=== 입찰 거부 취소하기
+
+operation::bid-controller-test/undo-deny-bid[snippet='curl-request,request-headers,path-parameters,http-response']
+
+=== 입찰 거부 목록 조회하기
+
+operation::bid-controller-test/get-denied-bids-for-post[snippets='curl-request,path-parameters,http-request,http-response,response-fields']
 
 == 물건
 
@@ -103,7 +157,12 @@ operation::items-controller-test/get-find-by-id[snippets='path-parameters,http-r
 
 === 내 물건 목록 조회
 
-operation::items-controller-test/get-items[snippets='curl-request,request-headers,http-request,http-response,response-fields']
+operation::items-controller-test/get-items[snippets='curl-request,query-parameters,request-headers,http-request,http-response,response-fields']
+
+=== 입찰 가능한 물건 조회
+
+operation::items-controller-test/get-my-can-bid-items[snippets='curl-request,query-parameters,request-headers,http-request,http-response,response-fields']
+
 
 === 물건 삭제
 
@@ -111,14 +170,14 @@ operation::items-controller-test/delete-item[snippets='request-headers,path-para
 
 === 물건 검색
 
-operation::items-controller-test/search-items[snippets='curl-request,request-headers,http-request,http-response,response-fields']
+operation::items-controller-test/search-items[snippets='curl-request,query-parameters,request-headers,http-request,http-response,response-fields']
 
 == 커뮤니티 게시글
 
 
 === 커뮤니티 게시글 목록 조회
 
-operation::community-posts-controller-test/find-posts[snippets='http-request,http-response,response-fields']
+operation::community-posts-controller-test/find-posts[snippets='query-parameters,http-request,http-response,response-fields']
 
 === 커뮤니티 게시글 상세조회
 
@@ -126,7 +185,7 @@ operation::community-posts-controller-test/find-post[snippets='http-request,http
 
 === 커뮤니티 게시글 검색
 
-operation::community-posts-controller-test/search[snippets='http-request,http-response,response-fields']
+operation::community-posts-controller-test/search[snippets='query-parameters,http-request,http-response,response-fields']
 
 === 커뮤니티 게시글 생성
 

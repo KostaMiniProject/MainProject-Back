@@ -35,8 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -134,12 +133,58 @@ class ExchangePostsControllerTest extends ControllerTest {
 
         // then
         this.mockMvc.perform(get(BASIC_URL)
+                        .param("page","0")
                         .header("Authorization", "Bearer yourAccessToken"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰").optional()
+                        ),
+                        queryParameters(
+                                parameterWithName("page").description("현재 페이지를 표시하는 파라미터")
+                        ),
+                        responseFields(
+                                fieldWithPath("data").type(JsonFieldType.ARRAY).description(DATA),
+                                fieldWithPath("data.[].exchangePostId").type(JsonFieldType.NUMBER).description(DESC_EXCHANGE_POST_ID),
+                                fieldWithPath("data.[].title").type(JsonFieldType.STRING).description(DESC_EXCHANGE_POST_TITLE),
+                                fieldWithPath("data.[].preferItem").type(JsonFieldType.STRING).description(DESC_PREFER_ITEM),
+                                fieldWithPath("data.[].address").type(JsonFieldType.STRING).description(DESC_ADDRESS),
+                                fieldWithPath("data.[].exchangePostStatus").type(JsonFieldType.STRING).description(DESC_EXCHANGE_POST_STATUS),
+                                fieldWithPath("data.[].createdAt").type(JsonFieldType.NULL).description(DESC_CREATED_AT),
+                                fieldWithPath("data.[].imgUrl").type(JsonFieldType.STRING).description(DESC_IMAGE_URL),
+                                fieldWithPath("data.[].bidCount").type(JsonFieldType.NUMBER).description(DESC_BID_COUNT),
+                                fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description(DESC_PAGE_INFO),
+                                fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description(DESC_PAGE_SIZE),
+                                fieldWithPath("pageInfo.size").type(JsonFieldType.NUMBER).description(DESC_SIZE),
+                                fieldWithPath("pageInfo.totalElements").type(JsonFieldType.NUMBER).description(DESC_TOTAL_ELEMENTS),
+                                fieldWithPath("pageInfo.totalPages").type(JsonFieldType.NUMBER).description(DESC_TOTAL_PAGES)
+                        )
+                ));
+    }
+    @Test
+    @WithMockCustomUser
+    @DisplayName("교환 게시글 목록 검색 조회 성공 테스트")
+    void searchExchangePost() throws Exception {
+        // given
+        Page<ExchangePostListDTO> exchangePostListDTOPage = exchangePostStubData.getExchangePostListDTOPage();
+        // when
+        when(exchangePostsService.searchAllExchangePosts(Mockito.anyString(),Mockito.any(Pageable.class))).thenReturn(exchangePostListDTOPage);
+
+        // then
+        this.mockMvc.perform(get(BASIC_URL+"/search")
+                        .param("page","0")
+                        .param("keyword","abcd")
+                        .header("Authorization", "Bearer yourAccessToken"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰").optional()
+                        ),
+                        queryParameters(
+                                parameterWithName("keyword").description("검색 키워드를 입력하는 파라미터"),
+                                parameterWithName("page").description("현재 페이지를 표시하는 파라미터")
                         ),
                         responseFields(
                                 fieldWithPath("data").type(JsonFieldType.ARRAY).description(DATA),

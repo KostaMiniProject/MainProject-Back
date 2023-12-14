@@ -55,7 +55,6 @@ public class CommunityPostsService {
     @Transactional(readOnly = true)
     public CommunityPostDetailDTO findPost(User currentUser, Integer communityPostId){
         CommunityPost post = findCommunityPostByCommunityPostId(communityPostId);
-
         boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
 
         /* 비공개글 일 경우 작성자외 접근 에러 처리 */

@@ -33,4 +33,19 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
                 .fetchOne();
         return Optional.of(result);
     }
+    @Override
+    public Optional<UsersResponseDTO> findUserByUserName(String name){
+        UsersResponseDTO result = queryFactory.select(Projections.constructor(UsersResponseDTO.class,
+                        user.email,
+                        user.name,
+                        user.address,
+                        user.phone,
+                        user.profileImage,
+                        user.userStatus
+                ))
+                .from(user)
+                .where(user.name.eq(name))
+                .fetchOne();
+        return Optional.of(result);
+    }
 }

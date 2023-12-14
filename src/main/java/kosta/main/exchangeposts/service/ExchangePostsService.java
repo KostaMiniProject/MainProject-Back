@@ -2,6 +2,8 @@ package kosta.main.exchangeposts.service;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
+import kosta.main.exchangehistories.entity.ExchangeHistory;
+import kosta.main.exchangehistories.repository.ExchangeHistoriesRepository;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,7 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 public class ExchangePostsService {
 
   private final ExchangePostsRepository exchangePostRepository;
+  private final ExchangeHistoriesRepository exchangeHistoriesRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
   private final KakaoAPI kakaoAPI;
@@ -141,6 +145,7 @@ public class ExchangePostsService {
     ExchangePost post = exchangePostRepository.findById(exchangePostId)
         .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
 
+
     // 교환 게시글 작성자와 현재 로그인한 사용자가 같은지 확인 (로그인하지 않은 경우 고려)
     boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
 
@@ -161,16 +166,20 @@ public class ExchangePostsService {
         .imageUrls(post.getItem().getImages())
         .build();
 
-    // 입찰 목록 생성
-    List<ExchangePostDetailDTO.BidDetails> bidDetailsList = post.getBids().stream()
-        .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
-            .bidId(bid.getBidId())
-            .name(bid.getUser().getName())
-            .imageUrl(bid.getItems().get(0).getImages().get(0))
-            .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
-            .build())
-        .collect(Collectors.toList());
-
+    List<ExchangePostDetailDTO.BidDetails> bidDetailsList = new ArrayList<>();
+    if(post.getExchangePostStatus().equals(ExchangePost.ExchangePostStatus.COMPLETED)){
+      bidDetailsList = findCompletedBidDetailsListByPost(post);
+    } else {
+      // 입찰 목록 생성
+      bidDetailsList = post.getBids().stream()
+              .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
+                      .bidId(bid.getBidId())
+                      .name(bid.getUser().getName())
+                      .imageUrl(bid.getItems().get(0).getImages().get(0))
+                      .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
+                      .build())
+              .collect(Collectors.toList());
+    }
     // ExchangePostDetailDTO 구성
     return ExchangePostDetailDTO.builder()
         .postOwner(isOwner)
@@ -184,12 +193,27 @@ public class ExchangePostsService {
         .build();
   }
 
+  private List<ExchangePostDetailDTO.BidDetails> findCompletedBidDetailsListByPost(ExchangePost post) {
+    return post.getBids().stream()
+            .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
+                    .bidId(bid.getBidId())
+                    .name(bid.getUser().getName())
+                    .imageUrl(bid.getExchangeFinishedItems().get(0).getImages().get(0))
+                    .items(convertItemListToString(bid.getExchangeFinishedItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
+                    .build())
+            .collect(Collectors.toList());
+  }
+
 
   private String convertItemListToString(List<Item> items) {
     // 아이템 리스트를 문자열로 변환하는 로직 구현
-    return items.stream()
-        .map(Item::getTitle)
-        .collect(Collectors.joining(", "));
+    if(!items.isEmpty()) {
+      return items.stream()
+              .map(Item::getTitle)
+              .collect(Collectors.joining(", "));
+    } else{
+      return "nothing";
+    }
   }
 
   @Transactional

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -40,8 +41,12 @@ public class Bid extends Auditable {
     @Column(length = 10, nullable = false)
     private BidStatus status = BidStatus.BIDDING;
 
+    @Builder.Default
     @OneToMany(mappedBy = "bid", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "bid", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    private List<Item> exchangeFinishedItems = new ArrayList<>();
 
     public void updateStatus(BidStatus status) {
         this.status = status;
@@ -49,6 +54,9 @@ public class Bid extends Auditable {
 
     public void updateItems(List<Item> items) {
         this.items = items;
+    }
+    public void exchangeFinishedItems(List<Item> items) {
+        this.exchangeFinishedItems = items;
     }
 
     public enum BidStatus {

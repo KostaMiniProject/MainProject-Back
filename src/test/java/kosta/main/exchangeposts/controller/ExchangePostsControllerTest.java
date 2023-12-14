@@ -305,13 +305,21 @@ class ExchangePostsControllerTest extends ControllerTest {
         doNothing().when(exchangePostsService).deleteExchangePost(Mockito.anyInt(),Mockito.any(User.class));
         //when
         ResultActions result = mockMvc.perform(
-                delete(BASIC_URL+"/{exchangePostId}",EXCHANGE_POST_ID)
+                RestDocumentationRequestBuilders.delete(BASIC_URL+"/{exchangePostId}",EXCHANGE_POST_ID)
         );
 
         //then
         verify(exchangePostsService,times(ONE_ACTION)).deleteExchangePost(Mockito.anyInt(),Mockito.any(User.class));
 
         result.andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰").optional()
+                        ),
+                        pathParameters(
+                                parameterWithName("exchangePostId").description("교환 게시글 ID")
+                        )
+                ));
     }
 }

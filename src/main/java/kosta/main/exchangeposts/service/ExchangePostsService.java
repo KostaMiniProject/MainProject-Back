@@ -26,7 +26,6 @@ public class ExchangePostsService {
   private final ExchangePostsRepository exchangePostRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
-
   private final KakaoAPI kakaoAPI;
 
   // 공통메서드 : 게시글 삭제시 item들의 상태를 변경해주는 기능

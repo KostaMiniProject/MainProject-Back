@@ -42,14 +42,23 @@ public class ChatRoomsController {
     return new ResponseEntity<>(chatRooms, HttpStatus.OK);
   }
 
-  // 특정 채팅방의 채팅 내역을 불러오는 기능(Pageable 적용 Size의 2배만큼만 출력됨 )
   @GetMapping("/{chatRoomId}")
-  public ResponseEntity<ChatRoomEnterResponseDTO> getChatList(@PathVariable("chatRoomId") Integer chatRoomId,
-                                                              @LoginUser User user,
-                                                              @PageableDefault(page = 0, size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+  public ResponseEntity<?> getChatList(@PathVariable("chatRoomId") Integer chatRoomId,
+                                       @LoginUser User user,
+                                       @PageableDefault(page = 0, size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
     ChatRoomEnterResponseDTO chatList = chatRoomService.getChatList(chatRoomId, user, pageable);
-    return new ResponseEntity<>(chatList, HttpStatus.OK);
+
+    // Page 객체가 더 이상 내용이 없을 경우, 즉 데이터가 없는 경우 처리
+    if (!chatList.getMessages().isEmpty()) {
+      // 메시지가 있으면 정상적으로 응답
+      return ResponseEntity.ok(chatList);
+    } else {
+      // 메시지가 없으면 더 이상 페이지가 없다는 상태(204 No Content)를 반환
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No more pages available");
+    }
   }
+
   // 채팅방 입장 알림
   @PostMapping("/{chatRoomId}/notify-entry")
   public ResponseEntity<Void> notifyChatRoomEntry(@PathVariable Integer chatRoomId, @LoginUser User user) {

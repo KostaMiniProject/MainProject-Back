@@ -21,7 +21,7 @@ import java.util.Optional;
 public class ChatRoomResponseDTO {
   private Integer chatRoomId;
   private String participantName;
-  private String lastMessageTimeDifference;
+  private LocalDateTime lastMessageTimeDifference;
   private String lastMessageContent;
   private String participantProfileImg;
   private String exchangePostAddress;
@@ -48,7 +48,7 @@ public class ChatRoomResponseDTO {
 
     if (lastChat != null) {
       dto.setLastMessageContent(lastChat.getMessage());
-      dto.setLastMessageTimeDifference(calculateTimeDifference(lastChat.getCreatedAt()));
+      dto.setLastMessageTimeDifference(lastChat.getCreatedAt()); // 마지막 메시지 시간 저장
     }
 
     // 거래 게시글 주소
@@ -57,6 +57,10 @@ public class ChatRoomResponseDTO {
     }
 
     return dto;
+  }
+
+  public String getLastMessageTimeDifference() {
+    return calculateTimeDifference(this.lastMessageTimeDifference);
   }
   public static String calculateTimeDifference(LocalDateTime messageTime) {
     LocalDateTime now = LocalDateTime.now();

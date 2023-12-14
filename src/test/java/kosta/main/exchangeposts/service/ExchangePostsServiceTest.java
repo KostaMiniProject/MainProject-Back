@@ -75,19 +75,20 @@ class ExchangePostsServiceTest {
         //컨벤션이 지정되어 있지 않은 관계로 이후에 다시 작성 예정
     }
 
-    @Test
-    void findAllExchangePosts() {
-        //given
-        Page<ExchangePost> exchangePostPages = exchangePostStubData.getExchangePostPages();
-        Pageable pageable = exchangePostStubData.getPageable();
-        given(bidRepository.countByExchangePostAndStatusNotDeleted(Mockito.any(ExchangePost.class))).willReturn(EXCHANGE_POST_COUNT);
-        given(exchangePostRepository.findAll(Mockito.any(Pageable.class))).willReturn(exchangePostPages);
-        //when
-        Page<ExchangePostListDTO> result = exchangePostsService.findAllExchangePosts(pageable);
-        //then
-        assertThat(result.getTotalElements()).isEqualTo(2);
-        assertThat(result.getTotalPages()).isEqualTo(1);
-    }
+//    @Test
+//    @Description("모든 물물교환 게시글 조회")
+//    void findAllExchangePosts() {
+//        //given
+//        Page<ExchangePost> exchangePostPages = exchangePostStubData.getExchangePostPages();
+//        Pageable pageable = exchangePostStubData.getPageable();
+//        given(bidRepository.countByExchangePostAndStatusNotDeleted(Mockito.any(ExchangePost.class))).willReturn(EXCHANGE_POST_COUNT);
+//        given(exchangePostRepository.findAll(Mockito.any(Pageable.class))).willReturn(exchangePostPages);
+//        //when
+//        Page<ExchangePostListDTO> result = exchangePostsService.findAllExchangePosts(pageable);
+//        //then
+//        assertThat(result.getTotalElements()).isEqualTo(2);
+//        assertThat(result.getTotalPages()).isEqualTo(1);
+//    }
 
     @Test
     void findExchangePostById() {

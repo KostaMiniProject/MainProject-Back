@@ -30,6 +30,8 @@ public class ExchangePostStubData {
     public static final String ANOTHER_ADDRESS = "다른 주소";
     public static final String ANOTHER_CONTENT = "다른 내용";
     public static final String ANOTHER_TITLE = "다른제목";
+    public static final String LATITUDE = "Y좌표";
+    public static final String LONGITUDE = "X좌표";
 
     public ExchangePost getExchangePostNoBid(){
         UserStubData userStubData = new UserStubData();
@@ -39,6 +41,8 @@ public class ExchangePostStubData {
                 .title(TITLE)
                 .user(userStubData.getUser())
                 .item(itemStubData.getNoBidItem())
+                .latitude(LATITUDE)
+                .longitude(LONGITUDE)
                 .preferItems(PREFER_ITEMS)
                 .address(ADDRESS)
                 .content(CONTENT)
@@ -57,6 +61,8 @@ public class ExchangePostStubData {
                 .title(TITLE)
                 .user(userStubData.getUser())
                 .item(itemStubData.getBidItem())
+                .latitude(LATITUDE)
+                .longitude(LONGITUDE)
                 .preferItems(PREFER_ITEMS)
                 .address(ADDRESS)
                 .content(CONTENT)
@@ -72,6 +78,8 @@ public class ExchangePostStubData {
                 .user(userStubData.getUser())
                 .title(ANOTHER_TITLE)
                 .item(itemStubData.getNoBidItem())
+                .latitude(LATITUDE)
+                .longitude(LONGITUDE)
                 .preferItems(ANOTHER_PREFERRED_ITEM)
                 .address(ANOTHER_ADDRESS)
                 .content(ANOTHER_CONTENT)
@@ -83,14 +91,16 @@ public class ExchangePostStubData {
                 .title(TITLE)
                 .preferItems(PREFER_ITEMS)
                 .address(ADDRESS)
+                .latitude(LATITUDE)
+                .longitude(LONGITUDE)
                 .content(CONTENT)
                 .itemId(ITEM_ID)
                 .build();
     }
     public List<ExchangePostListDTO> getExchangePostListDTO(){
         List<ExchangePostListDTO> exchangePostListDTOS = new ArrayList<ExchangePostListDTO>();
-        exchangePostListDTOS.add(ExchangePostListDTO.of(getExchangePostNoBid(), "대표이미지1", 1));
-        exchangePostListDTOS.add(ExchangePostListDTO.of(getAnotherExchangePostNoBid(), "대표이미지2", 2));
+        exchangePostListDTOS.add(ExchangePostListDTO.testOf(getExchangePostNoBid(), "대표이미지1", 1));
+        exchangePostListDTOS.add(ExchangePostListDTO.testOf(getAnotherExchangePostNoBid(), "대표이미지2", 2));
         return exchangePostListDTOS;
     }
 

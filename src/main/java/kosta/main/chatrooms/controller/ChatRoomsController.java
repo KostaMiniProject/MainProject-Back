@@ -38,7 +38,7 @@ public class ChatRoomsController {
   // 채팅방 목록 조회
   @GetMapping
   public ResponseEntity<List<ChatRoomResponseDTO>> getChatRooms(@LoginUser User user) {
-    List<ChatRoomResponseDTO> chatRooms = chatRoomService.getChatRooms(user.getUserId());
+    List<ChatRoomResponseDTO> chatRooms = chatRoomService.getChatRooms(user);
     return new ResponseEntity<>(chatRooms, HttpStatus.OK);
   }
 

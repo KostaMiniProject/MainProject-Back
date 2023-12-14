@@ -104,13 +104,8 @@ public class BidService {
     @Transactional(readOnly = true)
     public BidDetailResponseDTO findBidById(Integer bidId, User currentUser) {
         Bid bid = findEntityById(bidRepository, bidId, "Bid not found");
-        ExchangePost exchangePost = bid.getExchangePost(); // Bid 객체에서 ExchangePost를 가져옴
-        boolean isOwner = currentUser != null && exchangePost.getUser().getUserId().equals(currentUser.getUserId());
-        // 입찰자 정보 저장
-        User bidder = bid.getUser();
-
+        boolean isOwner = currentUser != null && bid.getUser().getUserId().equals(currentUser.getUserId());
         return BidDetailResponseDTO.of(bid, isOwner);
-
     }
 
     // 입찰 서비스 클래스 내 updateBid 메서드

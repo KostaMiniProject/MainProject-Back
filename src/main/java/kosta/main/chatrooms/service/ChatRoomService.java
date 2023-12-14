@@ -20,6 +20,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,7 +58,21 @@ public class ChatRoomService {
       ExchangePost exchangePost = findEntityById(exchangePostsRepository, bid.getExchangePost().getExchangePostId(), "ExchangePost not found");
 
       ChatRoom chatRoom = ChatRoom.of(exchangePost, bid, sender, receiver);
+
+      // 초기 시스템 메시지 생성
+      Chat initialChat = Chat.builder()
+          .chatRoom(chatRoom)
+          .message(sender.getName() + "님이 " + receiver.getName() + "과의 방을 생성 하셨습니다.")
+          .user(sender) // 시스템 메시지이므로 사용자는 null
+          .isRead(false)
+          .build();
+
+      // 채팅방 저장
       chatRoomsRepository.save(chatRoom);
+
+      // 초기 메시지 저장
+      chatsRepository.save(initialChat);
+
       return CreateChatRoomResponseDTO.from(chatRoom);
     }
   }

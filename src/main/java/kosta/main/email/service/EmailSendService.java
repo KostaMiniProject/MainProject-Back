@@ -49,11 +49,11 @@ public class EmailSendService {
     String toMail = email;
     String title = "회원 가입 인증 이메일 입니다.";
     String content =
-        "가치잇솝에 방문해주셔서 감사합니다." +
+        "가치잇솝 방문을 환영합니다 :)" +
             "<br><br>" +
             "인증 번호는 <strong>" + authNumber + "</strong> 입니다." +
             "<br>" +
-            "인증번호를 제대로 입력해주세요"; //이메일 내용 삽입
+            "인증번호를 제대로 입력해주세요!!!"; // 이메일 내용 삽입
     mailSend(setFrom, toMail, title, content);
     return Integer.toString(authNumber);
   }
@@ -76,8 +76,6 @@ public class EmailSendService {
       // 이메일 서버에 연결할 수 없거나, 잘못된 이메일 주소를 사용하거나, 인증 오류가 발생하는 등 오류
       e.printStackTrace();
     }
-
-
   }
 
 }

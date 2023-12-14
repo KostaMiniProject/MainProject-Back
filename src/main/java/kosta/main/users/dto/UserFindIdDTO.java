@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class UserFindIdDTO {
-//  private Integer userId;
   private String name;
   private String phone;
 }

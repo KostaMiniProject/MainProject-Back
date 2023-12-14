@@ -34,12 +34,14 @@ public enum CommonErrorCode implements ErrorCode {
      * 404 Not Found
      */
 
-    BID_NOT_FOUND(HttpStatus.NOT_FOUND, "입찰을 찾을 수 없습니다"),
+    BID_NOT_FOUND(HttpStatus.NOT_FOUND, "입찰을 찾을 수 없습니다."),
+    SELECTED_BID_NOT_FOUND(HttpStatus.NOT_FOUND, "거래 선택된 입찰을 찾을 수 없습니다."),
     EXCHANGE_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "교환 게시글을 찾을 수 없습니다."),
     COMMUNITY_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "커뮤니티 게시글을 찾을 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "물건을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
 
     /**
      * 405 Method Not Allowed

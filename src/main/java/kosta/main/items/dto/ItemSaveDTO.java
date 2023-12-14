@@ -23,6 +23,9 @@ public class ItemSaveDTO {
 //  @Size(max = 100, min = 1)
   private String description;
 
+  //카테고리
+  private String category;
+
   private List<String> imageUrl;
 
   public void updateImageUrl(List<String> imageUrl){

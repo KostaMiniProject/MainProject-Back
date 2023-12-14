@@ -1,6 +1,8 @@
 package kosta.main.items.service;
 
 import jakarta.validation.Valid;
+import kosta.main.categories.entity.Category;
+import kosta.main.categories.repository.CategoriesRepository;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.global.error.exception.BusinessException;
@@ -33,6 +35,7 @@ public class ItemsService {
 
   private final ItemsRepository itemsRepository;
   private final ImageService imageService;
+  private final CategoriesRepository categoriesRepository;
 
 
   /**
@@ -45,6 +48,7 @@ public class ItemsService {
   public void addItem(User user,
                       ItemSaveDTO itemSaveDTO,
                       List<MultipartFile> files) {
+
 //    # sudo 코드
 //    1. Controller에서 ItemSaveDTO값을 받아온다.
 //    2. 추가할 내용을 담는 용도로 Item 객체(newItem)를 생성한다.
@@ -65,11 +69,13 @@ public class ItemsService {
 //            .orElseThrow(() -> new RuntimeException("Category not found"));
 
     List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
-
+    String categoryName = itemSaveDTO.getCategory();
+    Category category = categoriesRepository.findByCategoryName(categoryName)
+            .orElseThrow(() -> new BusinessException(CATEGORY_NOT_FOUND));
     // Item 객체 생성
     Item newItem = Item.builder()
         .user(user)
-        //.category(category)
+        .category(category)
         .title(itemSaveDTO.getTitle())
         .description(itemSaveDTO.getDescription())
         .images(imagePaths)
@@ -89,6 +95,10 @@ public class ItemsService {
 //  @Transactional(readOnly = true)
   public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
     Page<Item> byUserUserId = itemsRepository.findByUser_UserId(userId, pageable);
+    return byUserUserId.map(ItemPageDTO::from);
+  }
+  public Page<ItemPageDTO> getCanBidItems(Integer userId, Pageable pageable) {
+    Page<Item> byUserUserId = itemsRepository.findByUser_UserIdAndIsBiding(userId, Item.IsBiding.NOT_BIDING ,pageable);
     return byUserUserId.map(ItemPageDTO::from);
   }
 

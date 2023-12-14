@@ -1,9 +1,6 @@
 package kosta.main.comments.service;
 
-import kosta.main.comments.dto.CommentCreateDTO;
-import kosta.main.comments.dto.CommentDTO;
-import kosta.main.comments.dto.CommentListDTO;
-import kosta.main.comments.dto.CommentUpdateDTO;
+import kosta.main.comments.dto.*;
 import kosta.main.comments.entity.Comment;
 import kosta.main.comments.repository.CommentsRepository;
 import kosta.main.communityposts.entity.CommunityPost;
@@ -16,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static kosta.main.comments.dto.CommentListDTO.convertCommentToDto;
 import static kosta.main.global.error.exception.CommonErrorCode.*;
 
 @Service
@@ -31,23 +28,23 @@ public class CommentsService {
 
     // 댓글 조회(대댓글 할때는 사용자 아이디 필요)
     @Transactional(readOnly = true)
-    public List<CommentListDTO> findCommentsByPostId(Integer communityPostId) {
-        CommunityPost communityPost = communityPostsService.findCommunityPostByCommunityPostId(communityPostId);
-        List<Comment> comments = commentsRepository.findComments(communityPost.getCommunityPostId());
-        return convertNestedStructure(comments);
+    public List<CommentParentDTO>findCommentsByPostId(Integer communityPostId) {
+        communityPostsService.findCommunityPostByCommunityPostId(communityPostId); // 커뮤니티 게시글이 존재하는지 확인
+        List<Comment> comments = commentsRepository.findComments(communityPostId);
+        return convert(comments);
     }
 
-    private List<CommentListDTO> convertNestedStructure(List<Comment> comments) {
-        List<CommentListDTO> result = new ArrayList<>();
-        Map<Integer, CommentListDTO> map = new HashMap<>();
-        comments.forEach(c -> {
-            CommentListDTO dto = convertCommentToDto(c);
-            map.put(dto.getCommentId(), dto);
-            log.info("dto num : {}, getChildren : {}", dto.getCommentId(), dto.getChildren().toString());
-            if(c.getParent() != null) map.get(c.getParent().getCommentId()).getChildren().add(dto);
-            else result.add(dto);
-        });
-        return result;
+    private List<CommentParentDTO> convert(List<Comment> comments) {
+        Map<Integer,CommentParentDTO> result = new HashMap<>();
+        for (Comment comment : comments) {
+            if(comment.getParent() == null) {
+                result.put(comment.getCommentId(),CommentParentDTO.from(comment));
+            }
+            else {
+                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment));
+            }
+        }
+        return new ArrayList<>(result.values());
     }
 
     // 댓글 작성(대댓글 할때는 parentId 사용)

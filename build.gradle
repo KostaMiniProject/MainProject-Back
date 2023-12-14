@@ -109,11 +109,13 @@ build {
 
 //RestDocs 종료
 task copyPrivate(type: Copy) {
-    copy {
-        from './MainProject-Back-Data'
-        include "*.yml"
-        into 'src/main/resources'
-    }
+
+	copy {
+		from './MainProject-Back-Data'
+		include "*.yml"
+		include "*.properties"
+		into 'src/main/resources'
+	}
 }
 
 def querydslDir = "$buildDir/generated/querydsl"

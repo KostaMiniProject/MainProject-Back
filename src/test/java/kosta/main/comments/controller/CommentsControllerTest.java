@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kosta.main.ControllerTest;
 import kosta.main.comments.dto.CommentCreateDTO;
 import kosta.main.comments.dto.CommentDTO;
-import kosta.main.comments.dto.CommentListDTO;
+import kosta.main.comments.dto.CommentParentDTO;
 import kosta.main.comments.dto.CommentUpdateDTO;
 import kosta.main.comments.service.CommentsService;
 import kosta.main.global.annotation.WithMockCustomUser;
@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 
 
 import java.util.List;
@@ -70,7 +69,7 @@ class CommentsControllerTest extends ControllerTest {
     @DisplayName("커뮤니티 게시글의 댓글을 전부 가져오기 성공 테스트")
     void findComments() throws Exception {
         //given
-        List<CommentListDTO> commentListDTO = commentStubData.getCommentListDTO();
+        List<CommentParentDTO> commentListDTO = commentStubData.getCommentListDTO();
         given(commentsService.findCommentsByPostId(Mockito.anyInt())).willReturn(commentListDTO);
         //when & then
         mockMvc.perform(get(BASIC_URL + "/{communityPostId}/comments", COMMUNITY_POST_ID)
@@ -88,8 +87,7 @@ class CommentsControllerTest extends ControllerTest {
                                 fieldWithPath("[].children").type(JsonFieldType.ARRAY).description("자식 댓글을 담고있는 배열"),
                                 fieldWithPath("[].children.[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("[].children.[].content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("[].children.[].userId").type(JsonFieldType.NUMBER).description("유저 ID"),
-                                fieldWithPath("[].children.[].children").type(JsonFieldType.ARRAY).description("자식 댓글을 담고 있는 배열")
+                                fieldWithPath("[].children.[].userId").type(JsonFieldType.NUMBER).description("유저 ID")
                         )
 
                 ));

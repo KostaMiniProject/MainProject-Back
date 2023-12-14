@@ -1,5 +1,7 @@
 package kosta.main.exchangehistories.dto;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,5 +17,7 @@ import java.util.List;
 public class ItemHistoryDTO {
   private String title;
   private String description;
-  private List<String> imageUrl;
+
+  @Column(length = 1000)  // 길이를 1000으로 설정
+  private String imageUrl;
 }

@@ -194,16 +194,15 @@ public class BidService {
         Bid selectedBid = bidRepository.findById(selectedBidId)
             .orElseThrow(() -> new BusinessException(CommonErrorCode.BID_NOT_FOUND));
 
-        // 거래 완료 후 교환 내역 생성
+
+        // 입찰 정보 및 게시글 정보를 가져와 교환 내역 생성
         ExchangeHistoryCreateDTO exchangeHistoryCreateDTO = new ExchangeHistoryCreateDTO(
-            LocalDateTime.now(),
-            exchangePostId,
-            selectedBidId
+            LocalDateTime.now(), exchangePostId, selectedBidId
         );
-        // 여기서는 교환 내역에 필요한 정보를 미리 저장하고, 그 후에 아이템 소유권을 변경합니다.
         User user = usersRepository.findById(userId)
             .orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
         exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user);
+
 
         // 선택된 입찰 아이템 소유권 변경
         transferItemOwnership(selectedBid.getItems(), exchangePost.getUser());
@@ -240,19 +239,24 @@ public class BidService {
 
     // 특정 게시글에 대한 모든 입찰 조회 (DELETED 상태 제외)
     @Transactional(readOnly = true)
-    public List<BidListResponseDTO> findAllBidsForPost(Integer exchangePostId, Integer currentUserId) {
+    public List<BidListResponseDTO> findAllBidsForPost(Integer exchangePostId, User user) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
         Integer postOwnerId = exchangePost.getUser().getUserId();
+        Integer currentUserId;
+        if(user != null) currentUserId = user.getUserId();
+        else {
+            currentUserId = 0;
+        }
 
         return bidRepository.findByExchangePost(exchangePost).stream()
-                .filter(bid -> bid.getStatus() != Bid.BidStatus.DELETED)
+//                .filter(bid -> bid.getStatus() != Bid.BidStatus.DELETED)//엔티티 애너테이션 조건으로 변경될 예정
                 .map(bid -> {
                     List<BidListResponseDTO.ItemDetails> itemDetails = bid.getItems().stream()
                             .map(item -> BidListResponseDTO.ItemDetails.builder()
                                     .title(item.getTitle())
                                     .description(item.getDescription())
                                     .imgUrl(!item.getImages().isEmpty() ? item.getImages().get(0) : null)
-                                    .created_at(item.getCreatedAt())
+                                    .createdAt(item.getCreatedAt())
                                     .build())
                             .collect(Collectors.toList());
 

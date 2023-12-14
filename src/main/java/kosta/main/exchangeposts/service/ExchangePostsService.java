@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.*;
-
 @Service
 @AllArgsConstructor
 public class ExchangePostsService {
@@ -27,7 +26,8 @@ public class ExchangePostsService {
   private final ExchangePostsRepository exchangePostRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
-  
+  private final KakaoAPI kakaoAPI;
+
   // 공통메서드 : 게시글 삭제시 item들의 상태를 변경해주는 기능
   private void updateItemsBidingStatus(List<Item> items, Item.IsBiding status, Bid bid) {
     for (Item item : items) {
@@ -97,6 +97,29 @@ public class ExchangePostsService {
               .build();
         });
   }
+  @Transactional(readOnly = true)
+  public Page<ExchangePostListDTO> searchAllExchangePosts(String keyword,Pageable pageable) {
+    Page<ExchangePost> all = exchangePostRepository.searchExchangePost(keyword,pageable);
+    return all
+        .map(post -> {
+          // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
+          String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
+
+          // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
+          Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
+
+          return ExchangePostListDTO.builder()
+              .exchangePostId(post.getExchangePostId())
+              .title(post.getTitle())
+              .preferItem(post.getPreferItems())
+              .address(post.getAddress())
+              .exchangePostStatus(post.getExchangePostStatus().toString())
+              .createdAt(post.getCreatedAt())
+              .imgUrl(imgUrl)
+              .bidCount(bidCount)
+              .build();
+        });
+  }
 
 
 
@@ -130,7 +153,7 @@ public class ExchangePostsService {
         .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
             .bidId(bid.getBidId())
             .name(bid.getUser().getName())
-            .imageUrl(bid.getUser().getProfileImage())
+            .imageUrl(bid.getItems().get(0).getImages().get(0))
             .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
             .build())
         .collect(Collectors.toList());
@@ -147,6 +170,7 @@ public class ExchangePostsService {
         .bidList(bidDetailsList)
         .build();
   }
+
 
   private String convertItemListToString(List<Item> items) {
     // 아이템 리스트를 문자열로 변환하는 로직 구현
@@ -218,5 +242,11 @@ public class ExchangePostsService {
     // 게시글을 Soft Delete로 처리
     exchangePostRepository.delete(existingExchangePost);
   }
+
+  // 카카오 API 테스트
+  public String getLocation() {
+    return kakaoAPI.getLocation();
+  }
+
 
 }

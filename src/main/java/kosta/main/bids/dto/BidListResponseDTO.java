@@ -1,5 +1,6 @@
 package kosta.main.bids.dto;
 
+import kosta.main.items.entity.Item;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -21,6 +22,14 @@ public class BidListResponseDTO {
         private String title; // 아이템 제목
         private String description; // 아이템 설명
         private String imgUrl; // 아이템의 첫 번째 이미지 URL
-        private LocalDateTime created_at; //아이템 생성 시간
+        private LocalDateTime createdAt; //아이템 생성 시간
+
+        public static ItemDetails from(Item item){
+            return new ItemDetails(item.getTitle(),
+                    item.getDescription(),
+                    item.getImages().get(0),
+                    item.getCreatedAt()
+            );
+        }
     }
 }

@@ -1,5 +1,7 @@
 package kosta.main.exchangeposts.service;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +17,10 @@ public class KakaoAPI {
   @Value("${kakao_apikey}")
   private String kakao_apikey; // 카카오 API 키를 Spring의 @Value 어노테이션을 사용해 주입받음.
 
-  public String getLocation() {
+  public String getLocation(String address) {
     try {
       // 맥도날드라는 단어를 UTF-8 형식으로 인코딩.
-      String query = URLEncoder.encode("맥도날드", "UTF-8");
-
+      String query = URLEncoder.encode(address, "UTF-8");
       // 카카오 API의 URL 구성. 검색 쿼리(query)와 반경(radius) 파라미터를 포함.
       String apiURL = "https://dapi.kakao.com/v2/local/search/keyword.JSON?" +
           "query=" + query
@@ -52,9 +53,25 @@ public class KakaoAPI {
       }
       br.close(); // BufferedReader 닫기.
 
-      return response.toString(); // 변환된 문자열을 반환.
+      // JSON 응답 파싱
+      JSONObject jsonResponse = new JSONObject(response.toString());
+      JSONArray documents = jsonResponse.getJSONArray("documents");
+      if (documents.length() > 0) {
+        JSONObject firstResult = documents.getJSONObject(0);
+        String x = firstResult.getString("x"); // x 좌표 추출
+        String y = firstResult.getString("y"); // y 좌표 추출
+
+        // 좌표를 JSON 객체로 반환
+        JSONObject coordinates = new JSONObject();
+        coordinates.put("x", x);
+        coordinates.put("y", y);
+        return coordinates.toString();
+      }
+      return "No results found";
+
     } catch (Exception e) {
-      System.out.println(e); // 예외 발생 시 출력.
+      System.out.println(address);
+      System.out.println("예외발생 " + e);
     }
     return ""; // 예외 발생 시 빈 문자열 반환.
   }

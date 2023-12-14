@@ -12,6 +12,8 @@ import kosta.main.items.entity.Item;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -60,6 +62,15 @@ public class ExchangePostsService {
     item.updateIsBiding(Item.IsBiding.BIDING);
     itemsRepository.save(item);
 
+    // 주소를 바탕으로 좌표 조회
+    String locationResponse = getLocation(exchangePostDTO.getAddress());
+    String longitude = "0.0", latitude = "0.0";
+    if (locationResponse != null) {
+      JSONObject locationJson = new JSONObject(locationResponse);
+      longitude = locationJson.getString("x"); // x 좌표 추출
+      latitude = locationJson.getString("y"); // y 좌표 추출
+    }
+
     // ExchangePost 엔티티 생성
     ExchangePost exchangePost = ExchangePost.builder()
             .user(user)
@@ -67,6 +78,8 @@ public class ExchangePostsService {
             .title(exchangePostDTO.getTitle())
             .preferItems(exchangePostDTO.getPreferItems())
             .address(exchangePostDTO.getAddress())
+            .longitude(longitude)
+            .latitude(latitude)
             .content(exchangePostDTO.getContent())
             .build();
     ExchangePost savedExchangePost = exchangePostRepository.save(exchangePost);
@@ -268,8 +281,8 @@ public class ExchangePostsService {
   }
 
   // 카카오 API 테스트
-  public String getLocation() {
-    return kakaoAPI.getLocation();
+  public String getLocation(String address) {
+    return kakaoAPI.getLocation(address);
   }
 
 

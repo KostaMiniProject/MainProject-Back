@@ -1,6 +1,7 @@
 package kosta.main.comments.dto;
 
 import kosta.main.comments.entity.Comment;
+import kosta.main.users.dto.UserCommentResponseDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,10 +14,10 @@ public class CommentChildDTO {
 
     private String content;
 
-    private Integer userId;
+    private UserCommentResponseDTO profile;
 
     public static CommentChildDTO from(Comment comment){
         String replyContent = "@" + comment.getUser().getName()+ " " + comment.getContent();
-        return new CommentChildDTO(comment.getCommentId(), replyContent, comment.getUser().getUserId());
+        return new CommentChildDTO(comment.getCommentId(), replyContent,UserCommentResponseDTO.from(comment.getUser()));
     }
 }

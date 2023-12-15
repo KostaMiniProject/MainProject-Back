@@ -83,11 +83,17 @@ class CommentsControllerTest extends ControllerTest {
                         responseFields(
                                 fieldWithPath("[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("[].content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("[].userId").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("[].profile").type(JsonFieldType.OBJECT).description("유저 정보를 담고있는 객체"),
+                                fieldWithPath("[].profile.userId").type(JsonFieldType.NUMBER).description("유저 Id"),
+                                fieldWithPath("[].profile.name").type(JsonFieldType.STRING).description("유저이름"),
+                                fieldWithPath("[].profile.imageUrl").type(JsonFieldType.STRING).description("유저 프로필 사진"),
                                 fieldWithPath("[].children").type(JsonFieldType.ARRAY).description("자식 댓글을 담고있는 배열"),
                                 fieldWithPath("[].children.[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("[].children.[].content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("[].children.[].userId").type(JsonFieldType.NUMBER).description("유저 ID")
+                                fieldWithPath("[].children.[].profile").type(JsonFieldType.OBJECT).description("유저 정보를 담고있는 객체"),
+                                fieldWithPath("[].children.[].profile.userId").type(JsonFieldType.NUMBER).description("유저 Id"),
+                                fieldWithPath("[].children.[].profile.name").type(JsonFieldType.STRING).description("유저이름"),
+                                fieldWithPath("[].children.[].profile.imageUrl").type(JsonFieldType.STRING).description("유저 프로필 사진")
                         )
 
                 ));

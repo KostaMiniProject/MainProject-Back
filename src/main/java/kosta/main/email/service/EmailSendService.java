@@ -5,6 +5,8 @@ import kosta.main.email.entity.Emails;
 import kosta.main.email.repository.EmailsRepository;
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.error.exception.CommonErrorCode;
+import kosta.main.users.entity.User;
+import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,12 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import static kosta.main.global.error.exception.CommonErrorCode.EMAIL_NOT_FOUND;
+
 @Service
 @Transactional
 @AllArgsConstructor
 public class EmailSendService {
 
   private final EmailsRepository emailsRepository;
+
+  private final UsersRepository usersRepository;
 
   @Autowired
   private JavaMailSender javaMailSender;
@@ -50,7 +56,7 @@ public class EmailSendService {
    * 임의의 6자리 양수 생성
    * @return
    */
-  public String makeRandomValue() {
+  public String makeRandomValue(String type) {
 //    # 임의의 6자리 양수
 //    Random r = new Random();
 //    String randomNumber = "";
@@ -59,8 +65,10 @@ public class EmailSendService {
 //    }
 //    return randomNumber;
 
-//    # UUID 앞 6자리만
-    String randomUUID = UUID.randomUUID().toString().substring(0, 6);
+//    # 이메일 인증 : UUID 앞 6자리만
+//    # 비밀번호 찾기 : UUID 앞 10자리만
+    String randomUUID = type == "email" ? UUID.randomUUID().toString().substring(0, 6)
+        : UUID.randomUUID().toString().substring(0, 10);
 
     return randomUUID;
   }
@@ -72,9 +80,9 @@ public class EmailSendService {
    * @param email
    * @return
    */
-  public String joinEmail(String email) {
+  public String sendEmailAuthNumber(String email) {
     //    1. 임의의 6자리 수 생성
-    String authNumber = makeRandomValue();
+    String authNumber = makeRandomValue("email");
 
     //    2. 이메일과 임의의 수를 Email 테이블의 저장
     Emails newEmailCheck = Emails.builder()
@@ -96,6 +104,38 @@ public class EmailSendService {
     mailSend(setFrom, toMail, title, content);
     return authNumber;
   }
+
+
+
+//  비밀번호 찾기 템플릿
+public String sendEmailNewPassword(String email) {
+  //    1. 임의의 10자리 수 생성
+  String authNumber = makeRandomValue("pw");
+
+  //    2. 이메일을 통해 해당 유저 확인
+  User userInfo = usersRepository.findUserByEmail(email)
+      .orElseThrow(() -> new BusinessException(EMAIL_NOT_FOUND));
+
+  //  3. 임시 비번으로 db 업데이트
+  User newUserPassword = userInfo.builder()
+      .password(authNumber)
+      .build();
+
+  usersRepository.save(newUserPassword);
+
+  //    4. 입력된 메일에 인증 번호 전송
+  String setFrom = "itsopshop2023@gmail.com";
+  String toMail = email;
+  String title = "임시 비밀번호 관련 이메일 입니다.";
+  String content =
+      "가치잇솝 방문을 환영합니다 :)" +
+          "<br><br>" +
+          "임시 비밀번호는 <strong>" + authNumber + "</strong> 입니다." +
+          "<br>" +
+          "로그인 후 비밀번호를 수정해주세요!!!";
+  mailSend(setFrom, toMail, title, content);
+  return authNumber;
+}
 
 
 

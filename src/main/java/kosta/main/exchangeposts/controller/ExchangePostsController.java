@@ -63,6 +63,10 @@ public class ExchangePostsController {
   public String getLocation(@RequestBody ExchangePostDTO exchangePostDTO){
     return exchangePostsService.getLocation(exchangePostDTO.getAddress().orElse(null));
   }
+  @GetMapping("/map")
+  public  List<ExchangePostListForMapDTO> getExchangePostForMap(){
+    return exchangePostsService.getExchangePostForMap();
+  }
 
 
 }

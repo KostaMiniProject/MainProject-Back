@@ -123,21 +123,8 @@ public class EmailSendService {
         .orElseThrow(() -> new BusinessException(EMAIL_NOT_FOUND));
 
     //  3. 임시 비번으로 db 업데이트
-    User newUserPassword = User.builder()
-        .userId(userInfo.getUserId())
-        .email(userInfo.getEmail())
-        .password(authNumber)
-        .name(userInfo.getName())
-        .address(userInfo.getAddress())
-        .phone(userInfo.getPhone())
-        .profileImage(userInfo.getProfileImage())
-        .userStatus(userInfo.getUserStatus())
-        .roles(userInfo.getRoles())
-        .rating(userInfo.getRating())
-        .build();
-
-    usersRepository.save(newUserPassword);
-
+    String encodePassword = passwordEncoder.encode(authNumber);
+    userInfo.updatePassword(encodePassword);
     //    4. 입력된 메일에 인증 번호 전송
     String setFrom = "itsopshop2023@gmail.com";
     String toMail = email;

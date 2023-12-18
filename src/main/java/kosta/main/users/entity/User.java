@@ -83,6 +83,10 @@ public class User extends Auditable {
         return this;
     }
 
+    public void updatePassword(String password){
+        this.password = password;
+    }
+
     private boolean nullCheck(UserStatus userStatus) {
         return userStatus == null;
     }
@@ -111,5 +115,4 @@ public class User extends Auditable {
     public void addBlockedUser(BlockedUser blockedUser){
         this.blockedUsers.add(blockedUser);
     }
-
 }

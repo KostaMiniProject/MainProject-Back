@@ -92,8 +92,8 @@ public class ExchangePostStubData {
                 .title(TITLE)
                 .preferItems(Optional.of(PREFER_ITEMS))
                 .address(Optional.of(ADDRESS))
-                .latitude(Optional.of(LATITUDE))
-                .longitude(Optional.of(LONGITUDE))
+                .Ma(Optional.of(LATITUDE))
+                .La(Optional.of(LONGITUDE))
                 .content(CONTENT)
                 .itemId(ITEM_ID)
                 .build();

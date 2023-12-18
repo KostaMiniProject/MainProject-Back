@@ -2,7 +2,6 @@ package kosta.main.exchangeposts.service;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
-import kosta.main.exchangehistories.entity.ExchangeHistory;
 import kosta.main.exchangehistories.repository.ExchangeHistoriesRepository;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
@@ -12,8 +11,6 @@ import kosta.main.items.entity.Item;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.*;
@@ -73,8 +71,8 @@ public class ExchangePostsService {
             .title(exchangePostDTO.getTitle())
             .preferItems(exchangePostDTO.getPreferItems().orElse(null))
             .address(exchangePostDTO.getAddress().orElse(null))
-            .longitude(exchangePostDTO.getLongitude().orElse(null))
-            .latitude(exchangePostDTO.getLatitude().orElse(null))
+            .longitude(exchangePostDTO.getLa().orElse(null))
+            .latitude(exchangePostDTO.getMa().orElse(null))
             .content(exchangePostDTO.getContent())
             .build();
     ExchangePost savedExchangePost = exchangePostRepository.save(exchangePost);
@@ -108,6 +106,25 @@ public class ExchangePostsService {
               .bidCount(bidCount)
               .build();
         });
+  }
+
+  // 지도에 불러올 교환 게시글의 리스트 출력
+  @Transactional(readOnly = true)
+  public List<ExchangePostListForMapDTO> getExchangePostForMap() {
+    List<ExchangePost> exchangePosts = exchangePostRepository.findAll();
+
+    return exchangePosts.stream().map(exchangePost -> {
+      String imgUrl = exchangePost.getItem().getImages().isEmpty() ? null : exchangePost.getItem().getImages().get(0);
+      return ExchangePostListForMapDTO.builder()
+          .exchangePostId(exchangePost.getExchangePostId())
+          .title(exchangePost.getTitle())
+          .longitude(Optional.ofNullable(exchangePost.getLongitude()))
+          .latitude(Optional.ofNullable(exchangePost.getLatitude()))
+          .exchangePostStatus(exchangePost.getExchangePostStatus().toString())
+          .createdAt(exchangePost.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
+          .imgUrl(imgUrl)
+          .build();
+    }).collect(Collectors.toList());
   }
   @Transactional(readOnly = true)
   public Page<ExchangePostListDTO> searchAllExchangePosts(String keyword,Pageable pageable) {
@@ -279,6 +296,7 @@ public class ExchangePostsService {
   public String getLocation(String address) {
     return kakaoAPI.getLocation(address);
   }
+
 
 
 }

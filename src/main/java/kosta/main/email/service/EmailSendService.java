@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.mail.MessagingException;
@@ -27,16 +28,16 @@ import static kosta.main.global.error.exception.CommonErrorCode.EMAIL_NOT_FOUND;
 public class EmailSendService {
 
   private final EmailsRepository emailsRepository;
-
   private final UsersRepository usersRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Autowired
   private JavaMailSender javaMailSender;
 
 
-
   /**
    * 이메일 인증
+   *
    * @param emailCheckDto
    * @return
    */
@@ -51,9 +52,9 @@ public class EmailSendService {
   }
 
 
-
   /**
    * 임의의 6자리 양수 생성
+   *
    * @return
    */
   public String makeRandomValue(String type) {
@@ -74,9 +75,9 @@ public class EmailSendService {
   }
 
 
-
   /**
    * 이메일 인증 메일 전송
+   *
    * @param email
    * @return
    */
@@ -106,54 +107,55 @@ public class EmailSendService {
   }
 
 
-
   /**
    * 비밀번호 찾기 메일 전송
+   *
    * @param email
    * @return
    */
   public String sendEmailNewPassword(String email) {
-  //    1. 임의의 10자리 수 생성
-  String authNumber = makeRandomValue("pw");
+    //    1. 임의의 10자리 수 생성
+//    String encryptedPassword = passwordEncoder.encode(makeRandomValue("pw"));
+    String authNumber = makeRandomValue("pw");
 
-  //    2. 이메일을 통해 해당 유저 확인
-  User userInfo = usersRepository.findUserByEmail(email)
-      .orElseThrow(() -> new BusinessException(EMAIL_NOT_FOUND));
+    //    2. 이메일을 통해 해당 유저 확인
+    User userInfo = usersRepository.findUserByEmail(email)
+        .orElseThrow(() -> new BusinessException(EMAIL_NOT_FOUND));
 
-  //  3. 임시 비번으로 db 업데이트
-  User newUserPassword = User.builder()
-      .userId(userInfo.getUserId())
-      .email(userInfo.getEmail())
-      .password(authNumber)
-      .name(userInfo.getName())
-      .address(userInfo.getAddress())
-      .phone(userInfo.getPhone())
-      .profileImage(userInfo.getProfileImage())
-      .userStatus(userInfo.getUserStatus())
-      .roles(userInfo.getRoles())
-      .rating(userInfo.getRating())
-      .build();
+    //  3. 임시 비번으로 db 업데이트
+    User newUserPassword = User.builder()
+        .userId(userInfo.getUserId())
+        .email(userInfo.getEmail())
+        .password(authNumber)
+        .name(userInfo.getName())
+        .address(userInfo.getAddress())
+        .phone(userInfo.getPhone())
+        .profileImage(userInfo.getProfileImage())
+        .userStatus(userInfo.getUserStatus())
+        .roles(userInfo.getRoles())
+        .rating(userInfo.getRating())
+        .build();
 
-  usersRepository.save(newUserPassword);
+    usersRepository.save(newUserPassword);
 
-  //    4. 입력된 메일에 인증 번호 전송
-  String setFrom = "itsopshop2023@gmail.com";
-  String toMail = email;
-  String title = "임시 비밀번호 관련 이메일 입니다.";
-  String content =
-      "가치잇솝 방문을 환영합니다 :)" +
-          "<br><br>" +
-          "임시 비밀번호는 <strong>" + authNumber + "</strong> 입니다." +
-          "<br>" +
-          "로그인 후 비밀번호를 수정해주세요!!!";
-  mailSend(setFrom, toMail, title, content);
-  return authNumber;
-}
-
+    //    4. 입력된 메일에 인증 번호 전송
+    String setFrom = "itsopshop2023@gmail.com";
+    String toMail = email;
+    String title = "임시 비밀번호 관련 이메일 입니다.";
+    String content =
+        "가치잇솝 방문을 환영합니다 :)" +
+            "<br><br>" +
+            "임시 비밀번호는 <strong>" + authNumber + "</strong> 입니다." +
+            "<br>" +
+            "로그인 후 비밀번호를 수정해주세요!!!";
+    mailSend(setFrom, toMail, title, content);
+    return authNumber;
+  }
 
 
   /**
    * 이메일 전송 과정
+   *
    * @param setFrom
    * @param toMail
    * @param title

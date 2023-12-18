@@ -1,10 +1,7 @@
 package kosta.main.users.controller;
 
 import jakarta.validation.Valid;
-import kosta.main.users.dto.UserCreateDTO;
-import kosta.main.users.dto.UserEmailDTO;
-import kosta.main.users.dto.UserFindIdDTO;
-import kosta.main.users.dto.UserUpdateDTO;
+import kosta.main.users.dto.*;
 import kosta.main.reports.dto.CreateReportDTO;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
@@ -13,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -92,6 +88,16 @@ public class UsersController {
   @PostMapping("/find-id")
   public ResponseEntity<?> findId(@RequestBody UserFindIdDTO userFindIdDTO) {
     String result = usersService.findIdByNamePhone(userFindIdDTO);
+    if (result != null) {
+      UserEmailDTO userEmailDTO = UserEmailDTO.builder().email(result).build();
+      return new ResponseEntity<>(userEmailDTO, HttpStatus.OK);
+    }
+    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  }
+
+  @PutMapping("/find-password")
+  public ResponseEntity<?> findPassword(@RequestBody UserFindPasswordDTO userFindPasswordDTO) {
+    String result = usersService.findIdByNamePhoneEmail(userFindPasswordDTO);
     if (result != null) {
       UserEmailDTO userEmailDTO = UserEmailDTO.builder().email(result).build();
       return new ResponseEntity<>(userEmailDTO, HttpStatus.OK);

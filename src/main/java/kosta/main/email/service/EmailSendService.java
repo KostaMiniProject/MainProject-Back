@@ -76,7 +76,7 @@ public class EmailSendService {
 
 
   /**
-   * 메일을 보내기 위한 상세 정보
+   * 이메일 인증 메일 전송
    * @param email
    * @return
    */
@@ -107,8 +107,12 @@ public class EmailSendService {
 
 
 
-//  비밀번호 찾기 템플릿
-public String sendEmailNewPassword(String email) {
+  /**
+   * 비밀번호 찾기 메일 전송
+   * @param email
+   * @return
+   */
+  public String sendEmailNewPassword(String email) {
   //    1. 임의의 10자리 수 생성
   String authNumber = makeRandomValue("pw");
 
@@ -117,8 +121,17 @@ public String sendEmailNewPassword(String email) {
       .orElseThrow(() -> new BusinessException(EMAIL_NOT_FOUND));
 
   //  3. 임시 비번으로 db 업데이트
-  User newUserPassword = userInfo.builder()
+  User newUserPassword = User.builder()
+      .userId(userInfo.getUserId())
+      .email(userInfo.getEmail())
       .password(authNumber)
+      .name(userInfo.getName())
+      .address(userInfo.getAddress())
+      .phone(userInfo.getPhone())
+      .profileImage(userInfo.getProfileImage())
+      .userStatus(userInfo.getUserStatus())
+      .roles(userInfo.getRoles())
+      .rating(userInfo.getRating())
       .build();
 
   usersRepository.save(newUserPassword);

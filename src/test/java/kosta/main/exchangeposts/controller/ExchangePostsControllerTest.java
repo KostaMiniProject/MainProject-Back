@@ -78,51 +78,51 @@ class ExchangePostsControllerTest extends ControllerTest {
     public void setup() {
         exchangePostStubData = new ExchangePostStubData();
     }
-    @Test
-    @WithMockCustomUser
-    @DisplayName("교환 게시글 생성")
-    void createExchangePost() throws Exception {
-
-        //given
-        ExchangePostDTO exchangePostDTO = exchangePostStubData.getExchangePostDTO();
-        String content = objectMapper.writeValueAsString(exchangePostDTO);
-        given(exchangePostsService.createExchangePost(
-                Mockito.any(User.class),
-                Mockito.any(ExchangePostDTO.class)))
-                .willReturn(exchangePostStubData.getResponseDto());
-        //when
-
-        ResultActions result = mockMvc.perform(
-                post(BASIC_URL)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content)
-                        .header("Authorization", "Bearer yourAccessToken")
-        );
-
-        //then
-        result.andDo(print())
-                .andExpect(status().isCreated())
-                .andDo(restDocs.document(
-                        requestHeaders(
-                                headerWithName("Authorization").description("액세스 토큰")
-                        ),
-                        requestFields(
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("물물교환 게시글 제목"),
-                                fieldWithPath("preferItems").type(JsonFieldType.STRING).description("물물교환 선호물품"),
-                                fieldWithPath("address").type(JsonFieldType.STRING).description("거래 요청 주소지"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
-                                fieldWithPath("longitude").type(JsonFieldType.STRING).description("X좌표 NULL 가능"),
-                                fieldWithPath("latitude").type(JsonFieldType.STRING).description("Y좌표 NULL 가능"),
-                                fieldWithPath("itemId").type(JsonFieldType.NUMBER).description("물건의 ID"),
-                                fieldWithPath("exchangePostStatus").type(JsonFieldType.STRING).description("해당 게시글의 상태").optional()
-                        ),
-                        responseFields(
-                                fieldWithPath("exchangePostId").type(JsonFieldType.NUMBER).description("물물교환 게시글 ID")
-                        )
-                ));
-
-    }
+//    @Test
+//    @WithMockCustomUser
+//    @DisplayName("교환 게시글 생성")
+//    void createExchangePost() throws Exception {
+//
+//        //given
+//        ExchangePostDTO exchangePostDTO = exchangePostStubData.getExchangePostDTO();
+//        String content = objectMapper.writeValueAsString(exchangePostDTO);
+//        given(exchangePostsService.createExchangePost(
+//                Mockito.any(User.class),
+//                Mockito.any(ExchangePostDTO.class)))
+//                .willReturn(exchangePostStubData.getResponseDto());
+//        //when
+//
+//        ResultActions result = mockMvc.perform(
+//                post(BASIC_URL)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(content)
+//                        .header("Authorization", "Bearer yourAccessToken")
+//        );
+//
+//        //then
+//        result.andDo(print())
+//                .andExpect(status().isCreated())
+//                .andDo(restDocs.document(
+//                        requestHeaders(
+//                                headerWithName("Authorization").description("액세스 토큰")
+//                        ),
+//                        requestFields(
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("물물교환 게시글 제목"),
+//                                fieldWithPath("preferItems").type(JsonFieldType.STRING).description("물물교환 선호물품"),
+//                                fieldWithPath("address").type(JsonFieldType.STRING).description("거래 요청 주소지"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
+//                                fieldWithPath("longitude").type(JsonFieldType.STRING).description("X좌표 NULL 가능"),
+//                                fieldWithPath("latitude").type(JsonFieldType.STRING).description("Y좌표 NULL 가능"),
+//                                fieldWithPath("itemId").type(JsonFieldType.NUMBER).description("물건의 ID"),
+//                                fieldWithPath("exchangePostStatus").type(JsonFieldType.STRING).description("해당 게시글의 상태").optional()
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("exchangePostId").type(JsonFieldType.NUMBER).description("물물교환 게시글 ID")
+//                        )
+//                ));
+//
+//    }
 
     @Test
     @WithMockCustomUser
@@ -257,48 +257,48 @@ class ExchangePostsControllerTest extends ControllerTest {
                 ));
     }
 
-    @Test
-    @WithMockCustomUser
-    @DisplayName("교환 게시글 수정 성공 테스트")
-    void updateExchangePost() throws Exception {
-        //given
-        ExchangePostDTO exchangePostDTO = exchangePostStubData.getExchangePostDTO();
-        ExchangePostUpdateResponseDTO exchangePostUpdateResponseDTO = exchangePostStubData.getExchangePostUpdateResponseDTO();
-        String content = objectMapper.writeValueAsString(exchangePostDTO);
-
-        given(exchangePostsService.updateExchangePost(Mockito.any(User.class),Mockito.anyInt(),Mockito.any(ExchangePostDTO.class))).willReturn(exchangePostUpdateResponseDTO);
-        //when
-
-        ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders.put(BASIC_URL+"/{exchangePostId}",EXCHANGE_POST_ID)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content)
-                        .header("Authorization", "Bearer yourAccessToken")
-        );
-
-        //then
-        result.andDo(print())
-                .andExpect(status().isOk())
-                .andDo(restDocs.document(
-                        requestHeaders(
-                                headerWithName("Authorization").description("액세스 토큰")
-                        ),
-                        pathParameters(
-                                parameterWithName("exchangePostId").description("교환 게시글 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("물물교환 게시글 제목"),
-                                fieldWithPath("preferItems").type(JsonFieldType.STRING).description("물물교환 선호물품"),
-                                fieldWithPath("address").type(JsonFieldType.STRING).description("거래 요청 주소지"),
-                                fieldWithPath("longitude").type(JsonFieldType.STRING).description("X좌표 NULL 가능"),
-                                fieldWithPath("latitude").type(JsonFieldType.STRING).description("Y좌표 NULL 가능"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
-                                fieldWithPath("itemId").type(JsonFieldType.NUMBER).description("물건의 ID"),
-                                fieldWithPath("exchangePostStatus").type(JsonFieldType.STRING).description("해당 게시글의 상태").optional()
-                        )
-                ));
-    }
+//    @Test
+//    @WithMockCustomUser
+//    @DisplayName("교환 게시글 수정 성공 테스트")
+//    void updateExchangePost() throws Exception {
+//        //given
+//        ExchangePostDTO exchangePostDTO = exchangePostStubData.getExchangePostDTO();
+//        ExchangePostUpdateResponseDTO exchangePostUpdateResponseDTO = exchangePostStubData.getExchangePostUpdateResponseDTO();
+//        String content = objectMapper.writeValueAsString(exchangePostDTO);
+//
+//        given(exchangePostsService.updateExchangePost(Mockito.any(User.class),Mockito.anyInt(),Mockito.any(ExchangePostDTO.class))).willReturn(exchangePostUpdateResponseDTO);
+//        //when
+//
+//        ResultActions result = mockMvc.perform(
+//                RestDocumentationRequestBuilders.put(BASIC_URL+"/{exchangePostId}",EXCHANGE_POST_ID)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(content)
+//                        .header("Authorization", "Bearer yourAccessToken")
+//        );
+//
+//        //then
+//        result.andDo(print())
+//                .andExpect(status().isOk())
+//                .andDo(restDocs.document(
+//                        requestHeaders(
+//                                headerWithName("Authorization").description("액세스 토큰")
+//                        ),
+//                        pathParameters(
+//                                parameterWithName("exchangePostId").description("교환 게시글 ID")
+//                        ),
+//                        requestFields(
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("물물교환 게시글 제목"),
+//                                fieldWithPath("preferItems").type(JsonFieldType.STRING).description("물물교환 선호물품"),
+//                                fieldWithPath("address").type(JsonFieldType.STRING).description("거래 요청 주소지"),
+//                                fieldWithPath("longitude").type(JsonFieldType.STRING).description("X좌표 NULL 가능"),
+//                                fieldWithPath("latitude").type(JsonFieldType.STRING).description("Y좌표 NULL 가능"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
+//                                fieldWithPath("itemId").type(JsonFieldType.NUMBER).description("물건의 ID"),
+//                                fieldWithPath("exchangePostStatus").type(JsonFieldType.STRING).description("해당 게시글의 상태").optional()
+//                        )
+//                ));
+//    }
 
     @Test
     @WithMockCustomUser

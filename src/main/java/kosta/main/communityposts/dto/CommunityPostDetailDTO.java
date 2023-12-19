@@ -4,6 +4,8 @@ import kosta.main.communityposts.entity.CommunityPost;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @Builder
 public class CommunityPostDetailDTO {
@@ -15,6 +17,7 @@ public class CommunityPostDetailDTO {
     private String content;
 
     private Integer views;
+    private List<String> imageUrl;
     private CommunityPost.CommunityPostStatus communityPostStatus;
 
     private Integer likeCount;
@@ -26,6 +29,7 @@ public class CommunityPostDetailDTO {
                 .title(communityPost.getTitle())
                 .content(communityPost.getContent())
                 .views(communityPost.getViews())
+                .imageUrl(communityPost.getImages())
                 .communityPostStatus(communityPost.getCommunityPostStatus())
                 .likeCount(communityPost.getLikePostList().size())
                 .build();

@@ -4,6 +4,8 @@ import kosta.main.communityposts.entity.CommunityPost;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 public class CommunityPostListDTO { // stackoverflow에러로 인하여 조회 Dto 처리
@@ -14,6 +16,7 @@ public class CommunityPostListDTO { // stackoverflow에러로 인하여 조회 D
     private String content;
 
     private Integer views;
+    private List<String> imageUrl;
     private CommunityPost.CommunityPostStatus communityPostStatus;
 
     private Integer likeCount;
@@ -24,6 +27,7 @@ public class CommunityPostListDTO { // stackoverflow에러로 인하여 조회 D
                 communityPost.getTitle(),
                 communityPost.getContent(),
                 communityPost.getViews(),
+                communityPost.getImages(),
                 communityPost.getCommunityPostStatus(),
                 communityPost.getLikePostList().size()
         );

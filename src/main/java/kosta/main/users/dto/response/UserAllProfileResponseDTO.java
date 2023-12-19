@@ -71,6 +71,37 @@ public class UserAllProfileResponseDTO {
         }
     }
 
+    public static UserAllProfileResponseDTO from(
+            User user
+            ,List<MyItemInfo> myItemInfo
+            ,List<MyExchangeHistoryInfo> myExchangeHistoryInfo
+            ,List<MyDibbedExchangeHistoryInfo> myDibbedExhcangePostInfo){
+        List<ExchangeHistory> initiatedExchanges = user.getInitiatedExchanges();
+        List<ExchangeHistory> participatedExchanges = user.getParticipatedExchanges();
+        initiatedExchanges.addAll(participatedExchanges);
+        initiatedExchanges.sort(new Comparator<ExchangeHistory>() {
+            @Override
+            public int compare(ExchangeHistory o1, ExchangeHistory o2) {
+                if (o1.getCreatedAt().isBefore(o2.getCreatedAt())) {
+                    return 1;
+                } else if (o1.getCreatedAt().isAfter(o2.getCreatedAt())) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        return new UserAllProfileResponseDTO(
+                user.getUserId(),
+                user.getEmail(),
+                user.getName(),
+                user.getAddress(),
+                user.getRating(),
+                user.getProfileImage(),
+                myItemInfo,
+                myExchangeHistoryInfo,
+                myDibbedExhcangePostInfo);
+    }
     public static UserAllProfileResponseDTO from(User user){
         List<ExchangeHistory> initiatedExchanges = user.getInitiatedExchanges();
         List<ExchangeHistory> participatedExchanges = user.getParticipatedExchanges();

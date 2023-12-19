@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static kosta.main.global.error.exception.CommonErrorCode.*;
 
@@ -155,6 +156,11 @@ public class UsersService {
   }
 
   public UserAllProfileResponseDTO findMyAllProfile(User user) {
-    return UserAllProfileResponseDTO.from(user);
+    // failed to lazily initialize a collection of role
+    Optional<User> findUser = usersRepository.findById(user.getUserId());
+    User user1 = findUser.get();
+
+
+    return UserAllProfileResponseDTO.from(user1);
   }
 }

@@ -1,5 +1,6 @@
 package kosta.main.chatrooms.dto;
 
+import kosta.main.bids.entity.Bid;
 import lombok.*;
 
 import java.util.List;
@@ -11,11 +12,14 @@ import java.util.Optional;
 @NoArgsConstructor
 @Builder
 public class ChatRoomEnterResponseDTO {
+  private Boolean isOwner;// ExchangePost 작성자이면 true
   private Integer exchangePostId; // 대화중인 교환 게시글 ID
   private String exchangePostTittle; // 대화중인 교환 게시글의 제목
   private String exchangePostAddress; // 대화중인 교환 게시글의 거래 희망 주소
   private String exchangePostCategory; // 대화중인 교환 게시글의 카테고리
   private String exchangePostImage; // 대화중인 교환 게시글의 대표 이미지
+  private Bid.BidStatus status; // 입찰 상태
+  private Integer bidId; // Bid ID
   private Integer userId; // 상대방 유저의 ID
   private String userName; // 상대방 유저의 닉네임
   private String userProfileImage; // 상대방 유저의 이미지

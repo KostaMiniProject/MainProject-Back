@@ -64,9 +64,11 @@ public class ExchangePostsController {
     return exchangePostsService.getLocation(exchangePostDTO.getAddress().orElse(null));
   }
   @GetMapping("/exchangePostMap")
-  public List<ExchangePostListForMapDTO> getExchangePostForMap(){
-    return exchangePostsService.getExchangePostForMap();
+  public List<ExchangePostListForMapDTO> getExchangePostForMap(
+      @RequestParam("longitude") String longitude,
+      @RequestParam("latitude") String latitude) {
+    // MapDTO 객체를 생성하여 서비스에 전달
+    return exchangePostsService.getExchangePostForMap(longitude, latitude);
   }
-
 
 }

@@ -12,6 +12,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @Builder
 public class ChatRoomEnterResponseDTO {
+  private Boolean isOwner;// ExchangePost 작성자이면 true
   private Integer exchangePostId; // 대화중인 교환 게시글 ID
   private String exchangePostTittle; // 대화중인 교환 게시글의 제목
   private String exchangePostAddress; // 대화중인 교환 게시글의 거래 희망 주소

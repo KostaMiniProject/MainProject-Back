@@ -24,10 +24,10 @@ public class EmailController {
    * @return
    */
 
-  @PostMapping("/api/mailSend")
+  @PostMapping("/api/email-verification")
   public ResponseEntity<?> mailSend(@RequestBody @Valid EmailSendDto emailSendDto) {
     log.info("이메일 :" + emailSendDto.getEmail());
-    emailService.joinEmail(emailSendDto.getEmail());
+    emailService.sendEmailAuthNumber(emailSendDto.getEmail());
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

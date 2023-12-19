@@ -1,8 +1,8 @@
 package kosta.main.users.controller;
 
 import jakarta.validation.Valid;
-import kosta.main.users.dto.*;
 import kosta.main.reports.dto.CreateReportDTO;
+import kosta.main.users.dto.request.*;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.service.UsersService;
@@ -31,6 +31,11 @@ public class UsersController {
   @GetMapping("/users/profile")
   public ResponseEntity<?> findProfileByName(@RequestParam(value = "name") String name) {
     return ResponseEntity.ok(usersService.findProfileByName(name));
+  }
+
+  @GetMapping("/users/my-profile")
+  public ResponseEntity<?> findMyAllProfile(@LoginUser User user){
+    return new ResponseEntity<>(usersService.findMyAllProfile(user), HttpStatus.OK);
   }
 
   @PostMapping("/signup")

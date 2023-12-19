@@ -1,10 +1,7 @@
 package kosta.main.comments.repository;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kosta.main.comments.dto.CommentDTO;
 import kosta.main.comments.entity.Comment;
-import kosta.main.users.dto.UsersResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -3,6 +3,8 @@ package kosta.main.items.service;
 import jakarta.validation.Valid;
 import kosta.main.categories.entity.Category;
 import kosta.main.categories.repository.CategoriesRepository;
+import kosta.main.global.dto.PageInfo;
+import kosta.main.global.dto.PageResponseDto;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.global.error.exception.BusinessException;
@@ -14,9 +16,11 @@ import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDTO;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
+import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +40,7 @@ public class ItemsService {
   private final ItemsRepository itemsRepository;
   private final ImageService imageService;
   private final CategoriesRepository categoriesRepository;
-
+  private final UsersRepository usersRepository;
 
   /**
    * 물건 생성
@@ -88,14 +92,19 @@ public class ItemsService {
   /**
    * 물건 목록 조회
    *
-   * @param userId
    * @param pageable
    * @return
    */
-//  @Transactional(readOnly = true)
-  public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
-    Page<Item> byUserUserId = itemsRepository.findByUser_UserId(userId, pageable);
-    return byUserUserId.map(ItemPageDTO::from);
+  @Transactional(readOnly = true)
+  public PageResponseDto<List<ItemPageDTO>> getItems(User user, Pageable pageable) {
+    User userWithItems = itemsRepository.findUserWithItems(user);
+    List<Item> items = userWithItems.getItems();
+    int size = items.size();
+    int start = (int) pageable.getOffset();
+    int end = Math.min((start + pageable.getPageSize()), size);
+    List<ItemPageDTO> items1 = items.subList(start, end).stream().map(ItemPageDTO::from).toList();
+    Page<Item> byUserUserId = new PageImpl<>(items.subList(start, end), pageable, size);
+    return new PageResponseDto<>(items1, PageInfo.of(byUserUserId));
   }
   public Page<ItemPageDTO> getCanBidItems(Integer userId, Pageable pageable) {
     Page<Item> byUserUserId = itemsRepository.findByUser_UserIdAndIsBiding(userId, Item.IsBiding.NOT_BIDING ,pageable);

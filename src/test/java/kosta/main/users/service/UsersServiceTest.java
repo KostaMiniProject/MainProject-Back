@@ -4,10 +4,10 @@ import kosta.main.blockedusers.repository.BlockedUsersRepository;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.reports.repository.ReportsRepository;
 import kosta.main.users.UserStubData;
-import kosta.main.users.dto.UserCreateDTO;
-import kosta.main.users.dto.UserCreateResponseDTO;
-import kosta.main.users.dto.UserUpdateDTO;
-import kosta.main.users.dto.UsersResponseDTO;
+import kosta.main.users.dto.request.UserCreateDTO;
+import kosta.main.users.dto.response.UserCreateResponseDTO;
+import kosta.main.users.dto.request.UserUpdateDTO;
+import kosta.main.users.dto.response.UsersResponseDTO;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

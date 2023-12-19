@@ -9,7 +9,13 @@ import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.reports.dto.CreateReportDTO;
 import kosta.main.reports.entity.Report;
 import kosta.main.reports.repository.ReportsRepository;
-import kosta.main.users.dto.*;
+import kosta.main.users.dto.request.UserCreateDTO;
+import kosta.main.users.dto.request.UserFindIdDTO;
+import kosta.main.users.dto.request.UserFindPasswordDTO;
+import kosta.main.users.dto.request.UserUpdateDTO;
+import kosta.main.users.dto.response.UserAllProfileResponseDTO;
+import kosta.main.users.dto.response.UserCreateResponseDTO;
+import kosta.main.users.dto.response.UsersResponseDTO;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -146,5 +152,9 @@ public class UsersService {
       return userInfo.getEmail();
     }
     return null;
+  }
+
+  public UserAllProfileResponseDTO findMyAllProfile(User user) {
+    return UserAllProfileResponseDTO.from(user);
   }
 }

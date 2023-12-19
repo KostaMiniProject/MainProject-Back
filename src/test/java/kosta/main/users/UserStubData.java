@@ -1,9 +1,9 @@
 package kosta.main.users;
 
-import kosta.main.users.dto.UserCreateDTO;
-import kosta.main.users.dto.UserCreateResponseDTO;
-import kosta.main.users.dto.UserUpdateDTO;
-import kosta.main.users.dto.UsersResponseDTO;
+import kosta.main.users.dto.request.UserCreateDTO;
+import kosta.main.users.dto.response.UserCreateResponseDTO;
+import kosta.main.users.dto.request.UserUpdateDTO;
+import kosta.main.users.dto.response.UsersResponseDTO;
 import kosta.main.users.entity.User;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;

@@ -159,8 +159,6 @@ public class UsersService {
     // failed to lazily initialize a collection of role
     Optional<User> findUser = usersRepository.findById(user.getUserId());
     User user1 = findUser.get();
-
-
     return UserAllProfileResponseDTO.from(user1);
   }
 }

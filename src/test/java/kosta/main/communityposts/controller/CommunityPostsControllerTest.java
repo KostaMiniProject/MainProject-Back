@@ -108,6 +108,7 @@ class CommunityPostsControllerTest extends ControllerTest {
                                 fieldWithPath("data.[].content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
                                 fieldWithPath("data.[].views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
                                 fieldWithPath("data.[].communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
+                                fieldWithPath("data.[].imageUrl").type(JsonFieldType.ARRAY).description("이미지 데이터"),
                                 fieldWithPath("data.[].likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수"),
                                 fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description("페이지 정보를 감싸고 있는 배열"),
                                 fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description("현재 페이지 숫자"),
@@ -141,6 +142,7 @@ class CommunityPostsControllerTest extends ControllerTest {
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
                                 fieldWithPath("views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
+                                fieldWithPath("imageUrl").type(JsonFieldType.ARRAY).description("이미지 데이터"),
                                 fieldWithPath("communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
                                 fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수")
                         )
@@ -372,6 +374,7 @@ class CommunityPostsControllerTest extends ControllerTest {
                                 fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
                                 fieldWithPath("data.[].content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
                                 fieldWithPath("data.[].views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
+                                fieldWithPath("data.[].imageUrl").type(JsonFieldType.ARRAY).description("이미지 데이터"),
                                 fieldWithPath("data.[].communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
                                 fieldWithPath("data.[].likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수"),
                                 fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description("페이지 정보를 감싸고 있는 배열"),

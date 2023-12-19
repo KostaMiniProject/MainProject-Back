@@ -23,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.COMMUNITY_POST_NOT_FOUND;
@@ -46,9 +48,10 @@ public class CommunityPostsService {
 
     /* 커뮤니티 목록 조회 */
     @Transactional(readOnly = true)
-    public Page<CommunityPostListDTO> findPosts(Pageable pageable) {
+    public Page<CommunityPostDetailDTO> findPosts(Pageable pageable,User user) {
         Page<CommunityPost> posts = communityPostsRepository.findAll(pageable);
-        return posts.map(CommunityPostListDTO::from);
+        List<CommunityPostDetailDTO> list = posts.stream().map(post -> CommunityPostDetailDTO.from(post, user)).toList();
+        return new PageImpl<>(list, posts.getPageable(), posts.getTotalElements());
     }
 
     /* 커뮤니티 게시글 상세 조회 */
@@ -57,13 +60,15 @@ public class CommunityPostsService {
         CommunityPost post = findCommunityPostByCommunityPostId(communityPostId);
         boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
 
+
         /* 비공개글 일 경우 작성자외 접근 에러 처리 */
         if (post.getCommunityPostStatus() == CommunityPost.CommunityPostStatus.PRIVATE && !isOwner) {
             throw new RuntimeException(ErrorCode.ACCESS_DENIED.getMessage());
         }
 
-        return CommunityPostDetailDTO.from(post, isOwner);
+        return CommunityPostDetailDTO.from(post, currentUser);
     }
+
 
     /* 커뮤니티 게시글 작성 */
     public CommunityPostDTO addPost(User user, CommunityPostCreateDTO communityPostCreateDTO, List<MultipartFile> files) {

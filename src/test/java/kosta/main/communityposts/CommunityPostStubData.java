@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class CommunityPostStubData {
                 .content(CONTENT)
                 .views(VIEWS)
                 .build();
+        communityPost.setCreatedAt(LocalDateTime.now());
         Like like = Like.builder()
                 .likeId(LIKE_ID)
                 .user(user)
@@ -60,6 +62,7 @@ public class CommunityPostStubData {
                 .content(ANOTHER_CONTENT)
                 .views(VIEWS)
                 .build();
+        communityPost.setCreatedAt(LocalDateTime.now());
         Like like = Like.builder()
                 .likeId(ANOTHER_LIKE_ID)
                 .user(anotherUser)
@@ -69,6 +72,15 @@ public class CommunityPostStubData {
         return communityPost;
     }
 
+    public List<CommunityPostDetailDTO> getCommunityPostDetailDTO(){
+        CommunityPost communityPost = getCommunityPost();
+        User user = getCommunityPost().getUser();
+        CommunityPost anotherCommunityPost = getAnotherCommunityPost();
+        List<CommunityPostDetailDTO> communityPostLists = new ArrayList<>();
+        communityPostLists.add(CommunityPostDetailDTO.from(communityPost,user));
+        communityPostLists.add(CommunityPostDetailDTO.from(anotherCommunityPost,user));
+        return communityPostLists;
+    }
     public List<CommunityPostListDTO> getCommunityPostListDTO(){
         CommunityPost communityPost = getCommunityPost();
         CommunityPost anotherCommunityPost = getAnotherCommunityPost();
@@ -87,6 +99,14 @@ public class CommunityPostStubData {
         int end = Math.min((start + pageRequest.getPageSize()), communityPostListDto.size());
         return new PageImpl<>(communityPostListDto.subList(start, end), pageRequest, communityPostListDto.size());
     }
+    public Page<CommunityPostDetailDTO> getCommunityPostDetailDTOPage(){
+        List<CommunityPostDetailDTO> communityPostDetailDTO = getCommunityPostDetailDTO();
+        // 요청으로 들어온 page와 한 page당 원하는 데이터의 갯수
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), communityPostDetailDTO.size());
+        return new PageImpl<>(communityPostDetailDTO.subList(start, end), pageRequest, communityPostDetailDTO.size());
+    }
 
     public CommunityPostResponseDTO getCommunityPostResponseDTO(){
         CommunityPost communityPost = getCommunityPost();
@@ -104,7 +124,7 @@ public class CommunityPostStubData {
     }
     public CommunityPostDetailDTO getCommunityPostDetailDto(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostDetailDTO.from(communityPost,true);
+        return CommunityPostDetailDTO.from(communityPost,communityPost.getUser());
     }
     public CommunityPostCreateDTO getCommunityPostCreateDTO(){
         return CommunityPostCreateDTO.builder()

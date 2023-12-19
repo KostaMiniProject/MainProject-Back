@@ -3,6 +3,8 @@ package kosta.main.items.service;
 import jakarta.validation.Valid;
 import kosta.main.categories.entity.Category;
 import kosta.main.categories.repository.CategoriesRepository;
+import kosta.main.global.dto.PageInfo;
+import kosta.main.global.dto.PageResponseDto;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.global.error.exception.BusinessException;
@@ -17,6 +19,7 @@ import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,9 +96,13 @@ public class ItemsService {
    * @return
    */
 //  @Transactional(readOnly = true)
-  public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
-    Page<Item> byUserUserId = itemsRepository.findByUser_UserId(userId, pageable);
-    return byUserUserId.map(ItemPageDTO::from);
+  public PageResponseDto<ItemPageDTO> getItems(User user, Pageable pageable) {
+    List<Item> items = user.getItems();
+    int start = (int) pageable.getOffset();
+    int end = Math.min((start + pageable.getPageSize()), items.size());
+    List<Item> items1 = user.getItems().subList(start, end);
+    Page<Item> byUserUserId = new PageImpl<>(user.getItems().subList(start,end), pageable,items.size());
+    return new PageResponseDto(items1, PageInfo.of(byUserUserId));
   }
   public Page<ItemPageDTO> getCanBidItems(Integer userId, Pageable pageable) {
     Page<Item> byUserUserId = itemsRepository.findByUser_UserIdAndIsBiding(userId, Item.IsBiding.NOT_BIDING ,pageable);

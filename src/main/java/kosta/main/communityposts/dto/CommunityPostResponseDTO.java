@@ -1,7 +1,7 @@
 package kosta.main.communityposts.dto;
 
 import kosta.main.communityposts.entity.CommunityPost;
-import kosta.main.users.dto.UsersResponseDTO;
+import kosta.main.users.dto.response.UsersResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

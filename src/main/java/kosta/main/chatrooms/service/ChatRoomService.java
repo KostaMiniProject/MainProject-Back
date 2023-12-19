@@ -140,7 +140,7 @@ public class ChatRoomService {
     Item exchangePostItem = exchangePost.getItem();
     String exchangePostImage = exchangePostItem.getImages().isEmpty() ? null : exchangePostItem.getImages().get(0);
     String exchangePostCategory = exchangePostItem.getCategory() != null ? exchangePostItem.getCategory().getCategoryName() : null;
-
+    Bid bid = findEntityById(bidRepository, chatRoom.getBid().getBidId(), "bid Not Found");
     Page<Chat> chats = chatsRepository.findByChatRoom(chatRoom, pageable);
     List<ChatRoomEnterResponseDTO.ChatMessageResponseDTO> chatMessageResponseDTOList = chats.stream()
         .map(chat -> ChatRoomEnterResponseDTO.ChatMessageResponseDTO.builder()
@@ -165,6 +165,7 @@ public class ChatRoomService {
         .exchangePostAddress(exchangePost.getAddress())
         .exchangePostCategory(exchangePostCategory)
         .exchangePostImage(exchangePostImage)
+        .status(bid.getStatus())
         .userId(otherUser.getUserId())
         .userName(otherUser.getName())
         .userProfileImage(otherUser.getProfileImage())

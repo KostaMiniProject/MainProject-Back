@@ -160,6 +160,7 @@ public class ChatRoomService {
       }
     }
     return ChatRoomEnterResponseDTO.builder()
+        .isOwner(user.getUserId().equals(exchangePost.getUser().getUserId()))
         .exchangePostId(exchangePost.getExchangePostId())
         .exchangePostTittle(exchangePost.getTitle())
         .exchangePostAddress(exchangePost.getAddress())

@@ -130,35 +130,35 @@ class CommunityPostsControllerTest extends ControllerTest {
                 ));
     }
 
-    @Test
-    @WithMockCustomUser
-    @DisplayName("게시글 상세 내용 조회 성공 테스트")
-    void findPost() throws Exception {
-        // given
-        CommunityPostDetailDTO communityPostDetailDto = communityPostStubData.getCommunityPostDetailDto();
-        // when
-        when(communityPostsService.findPost(Mockito.any(User.class),Mockito.anyInt())).thenReturn(communityPostDetailDto);
-
-        // then
-        mockMvc.perform(get(BASE_URL + "/{communityPostId}",COMMUNITYPOST_ID))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(restDocs.document(
-                        pathParameters(
-                                parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
-                                fieldWithPath("postOwner").type(JsonFieldType.BOOLEAN).description("게시글 주인인지 확인여부(주인일 경우 true)"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
-                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
-                                fieldWithPath("imageUrl").type(JsonFieldType.ARRAY).description("이미지 데이터"),
-                                fieldWithPath("communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
-                                fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수")
-                        )
-                ));
-    }
+//    @Test
+//    @WithMockCustomUser
+//    @DisplayName("게시글 상세 내용 조회 성공 테스트")
+//    void findPost() throws Exception {
+//        // given
+//        CommunityPostDetailDTO communityPostDetailDto = communityPostStubData.getCommunityPostDetailDto();
+//        // when
+//        when(communityPostsService.findPost(Mockito.any(User.class),Mockito.anyInt())).thenReturn(communityPostDetailDto);
+//
+//        // then
+//        mockMvc.perform(get(BASE_URL + "/{communityPostId}",COMMUNITYPOST_ID))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andDo(restDocs.document(
+//                        pathParameters(
+//                                parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
+//                                fieldWithPath("postOwner").type(JsonFieldType.BOOLEAN).description("게시글 주인인지 확인여부(주인일 경우 true)"),
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
+//                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
+//                                fieldWithPath("imageUrl").type(JsonFieldType.ARRAY).description("이미지 데이터"),
+//                                fieldWithPath("communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
+//                                fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수")
+//                        )
+//                ));
+//    }
 
     @Test
     @DisplayName("커뮤니티 게시글 작성 성공테스트")

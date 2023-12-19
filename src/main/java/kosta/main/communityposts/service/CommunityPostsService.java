@@ -62,15 +62,7 @@ public class CommunityPostsService {
             throw new RuntimeException(ErrorCode.ACCESS_DENIED.getMessage());
         }
 
-        return CommunityPostDetailDTO.builder()
-                .postOwner(isOwner)
-                .communityPostId(post.getCommunityPostId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .views(post.getViews())
-                .communityPostStatus(post.getCommunityPostStatus())
-                .likeCount(post.getLikePostList().size())
-                .build();
+        return CommunityPostDetailDTO.from(post, isOwner);
     }
 
     /* 커뮤니티 게시글 작성 */

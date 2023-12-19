@@ -1,6 +1,6 @@
 package kosta.main.users.repository;
 
-import kosta.main.users.dto.UsersResponseDTO;
+import kosta.main.users.dto.response.UsersResponseDTO;
 
 import java.util.Optional;
 

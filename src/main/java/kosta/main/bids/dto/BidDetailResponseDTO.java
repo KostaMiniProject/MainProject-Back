@@ -2,8 +2,7 @@ package kosta.main.bids.dto;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.items.dto.ItemBidDetailsDTO;
-import kosta.main.users.dto.UserBidResponseDTO;
-import kosta.main.users.entity.User;
+import kosta.main.users.dto.response.UserBidResponseDTO;
 import lombok.Builder;
 import lombok.Getter;
 

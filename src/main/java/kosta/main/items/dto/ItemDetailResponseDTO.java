@@ -1,7 +1,7 @@
 package kosta.main.items.dto;
 
 import kosta.main.items.entity.Item;
-import kosta.main.users.dto.UserItemResponseDTO;
+import kosta.main.users.dto.response.UserItemResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

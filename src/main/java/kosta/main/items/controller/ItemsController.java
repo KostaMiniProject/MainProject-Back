@@ -61,11 +61,10 @@ public class ItemsController {
   @GetMapping
   public ResponseEntity<?> getItems(@LoginUser User user,
                                     @PageableDefault(page = 0, size = 10, sort = "itemId", direction = Sort.Direction.DESC) Pageable pageable) {
-    Integer userId = 0;
-    if(user != null) userId = user.getUserId();
-    Page<ItemPageDTO> items = itemsService.getItems(userId, pageable);
-    List<ItemPageDTO> list = items.stream().toList();
-    return new ResponseEntity<>(new PageResponseDto(list, PageInfo.of(items)), HttpStatus.OK);
+//    Integer userId = 0;
+//    if(user != null) userId = user.getUserId();
+
+    return new ResponseEntity<>(itemsService.getItems(user, pageable), HttpStatus.OK);
   }
 
   @GetMapping("/bid")
@@ -102,7 +101,7 @@ public class ItemsController {
    * @return
    */
   @PutMapping("/{itemId}")
-  public ResponseEntity<?> updateItem(@PathVariable int itemId,
+  public ResponseEntity<?> updateItem(@PathVariable Integer itemId,
                                       @Validated @RequestPart("itemUpdateDTO") ItemUpdateDTO itemUpdateDTO,
                                       @Validated @RequestPart(value = "file") List<MultipartFile> files,
                                       @LoginUser User user) {

@@ -2,7 +2,7 @@ package kosta.main.users.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kosta.main.users.dto.UsersResponseDTO;
+import kosta.main.users.dto.response.UsersResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

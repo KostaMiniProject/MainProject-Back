@@ -1,12 +1,12 @@
-package kosta.main.users.dto;
+package kosta.main.users.dto.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserFindPasswordDTO {
-  private String email;
+public class UserFindIdDTO {
   private String name;
   private String phone;
 }

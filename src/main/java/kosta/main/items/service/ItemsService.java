@@ -16,6 +16,7 @@ import kosta.main.items.entity.Item;
 import kosta.main.items.dto.ItemSaveDTO;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
+import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,7 +40,7 @@ public class ItemsService {
   private final ItemsRepository itemsRepository;
   private final ImageService imageService;
   private final CategoriesRepository categoriesRepository;
-
+  private final UsersRepository usersRepository;
 
   /**
    * 물건 생성
@@ -91,18 +92,19 @@ public class ItemsService {
   /**
    * 물건 목록 조회
    *
-   * @param userId
    * @param pageable
    * @return
    */
-//  @Transactional(readOnly = true)
-  public PageResponseDto<ItemPageDTO> getItems(User user, Pageable pageable) {
-    List<Item> items = user.getItems();
+  @Transactional(readOnly = true)
+  public PageResponseDto<List<ItemPageDTO>> getItems(User user, Pageable pageable) {
+    User userWithItems = itemsRepository.findUserWithItems(user);
+    List<Item> items = userWithItems.getItems();
+    int size = items.size();
     int start = (int) pageable.getOffset();
-    int end = Math.min((start + pageable.getPageSize()), items.size());
-    List<Item> items1 = user.getItems().subList(start, end);
-    Page<Item> byUserUserId = new PageImpl<>(user.getItems().subList(start,end), pageable,items.size());
-    return new PageResponseDto(items1, PageInfo.of(byUserUserId));
+    int end = Math.min((start + pageable.getPageSize()), size);
+    List<ItemPageDTO> items1 = items.subList(start, end).stream().map(ItemPageDTO::from).toList();
+    Page<Item> byUserUserId = new PageImpl<>(items.subList(start, end), pageable, size);
+    return new PageResponseDto<>(items1, PageInfo.of(byUserUserId));
   }
   public Page<ItemPageDTO> getCanBidItems(Integer userId, Pageable pageable) {
     Page<Item> byUserUserId = itemsRepository.findByUser_UserIdAndIsBiding(userId, Item.IsBiding.NOT_BIDING ,pageable);

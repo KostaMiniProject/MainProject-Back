@@ -2,6 +2,7 @@ package kosta.main.items.repository;
 
 import kosta.main.items.dto.ItemPageDTO;
 import kosta.main.items.entity.Item;
+import kosta.main.users.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,5 +28,6 @@ public interface ItemsRepository extends JpaRepository<Item, Integer> {
           "ORDER BY i.itemId DESC")
   Page<Item> findByTitleContainingAndItemStatusOrUserId(@Param("searchTerm") String searchTerm, @Param("userId") Integer userId, Pageable pageable);
 
-
+  @Query("SELECT DISTINCT u FROM User u JOIN FETCH u.items WHERE u = :user")
+  User findUserWithItems(@Param("user") User user);
 }

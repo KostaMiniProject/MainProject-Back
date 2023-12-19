@@ -166,6 +166,7 @@ public class ChatRoomService {
         .exchangePostCategory(exchangePostCategory)
         .exchangePostImage(exchangePostImage)
         .status(bid.getStatus())
+        .bidId(bid.getBidId())
         .userId(otherUser.getUserId())
         .userName(otherUser.getName())
         .userProfileImage(otherUser.getProfileImage())

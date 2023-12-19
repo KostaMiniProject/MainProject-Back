@@ -18,6 +18,7 @@ public class ChatRoomEnterResponseDTO {
   private String exchangePostCategory; // 대화중인 교환 게시글의 카테고리
   private String exchangePostImage; // 대화중인 교환 게시글의 대표 이미지
   private Bid.BidStatus status; // 입찰 상태
+  private Integer bidId; // Bid ID
   private Integer userId; // 상대방 유저의 ID
   private String userName; // 상대방 유저의 닉네임
   private String userProfileImage; // 상대방 유저의 이미지

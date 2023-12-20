@@ -1,5 +1,7 @@
 package kosta.main.communityposts;
 
+import kosta.main.comments.controller.CommentStubData;
+import kosta.main.comments.dto.CommentParentDTO;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.likes.dto.LikeDTO;
@@ -73,20 +75,23 @@ public class CommunityPostStubData {
     }
 
     public List<CommunityPostDetailDTO> getCommunityPostDetailDTO(){
+        CommentStubData commentStubData = new CommentStubData();
+        List<CommentParentDTO> commentListDTO = commentStubData.getCommentListDTO();
         CommunityPost communityPost = getCommunityPost();
         User user = getCommunityPost().getUser();
         CommunityPost anotherCommunityPost = getAnotherCommunityPost();
         List<CommunityPostDetailDTO> communityPostLists = new ArrayList<>();
-        communityPostLists.add(CommunityPostDetailDTO.from(communityPost,user));
-        communityPostLists.add(CommunityPostDetailDTO.from(anotherCommunityPost,user));
+        communityPostLists.add(CommunityPostDetailDTO.from(communityPost,user,commentListDTO));
+        communityPostLists.add(CommunityPostDetailDTO.from(anotherCommunityPost,user,commentListDTO));
         return communityPostLists;
     }
     public List<CommunityPostListDTO> getCommunityPostListDTO(){
         CommunityPost communityPost = getCommunityPost();
+        User user = getCommunityPost().getUser();
         CommunityPost anotherCommunityPost = getAnotherCommunityPost();
         List<CommunityPostListDTO> communityPostLists = new ArrayList<>();
-        communityPostLists.add(CommunityPostListDTO.from(communityPost));
-        communityPostLists.add(CommunityPostListDTO.from(anotherCommunityPost));
+        communityPostLists.add(CommunityPostListDTO.from(communityPost,user));
+        communityPostLists.add(CommunityPostListDTO.from(anotherCommunityPost,user));
         return communityPostLists;
     }
 
@@ -124,7 +129,9 @@ public class CommunityPostStubData {
     }
     public CommunityPostDetailDTO getCommunityPostDetailDto(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostDetailDTO.from(communityPost,communityPost.getUser());
+        CommentStubData commentStubData = new CommentStubData();
+        List<CommentParentDTO> commentListDTO = commentStubData.getCommentListDTO();
+        return CommunityPostDetailDTO.from(communityPost,communityPost.getUser(),commentListDTO);
     }
     public CommunityPostCreateDTO getCommunityPostCreateDTO(){
         return CommunityPostCreateDTO.builder()

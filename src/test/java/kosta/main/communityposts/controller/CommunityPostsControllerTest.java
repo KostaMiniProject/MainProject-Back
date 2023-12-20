@@ -87,7 +87,7 @@ class CommunityPostsControllerTest extends ControllerTest {
     void findPosts() throws Exception {
         // given
 
-        Page<CommunityPostDetailDTO> communityPostListDTOPage = communityPostStubData.getCommunityPostDetailDTOPage();
+        Page<CommunityPostListDTO> communityPostListDTOPage = communityPostStubData.getCommunityPostListDTOPage();
 
         // when
         when(communityPostsService.findPosts(Mockito.any(Pageable.class),Mockito.any(User.class))).thenReturn(communityPostListDTOPage);
@@ -382,12 +382,23 @@ class CommunityPostsControllerTest extends ControllerTest {
                         responseFields(
                                 fieldWithPath("data").type(JsonFieldType.ARRAY).description("커뮤니티게시글을 감싸고 있는 배열"),
                                 fieldWithPath("data.[].communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
+                                fieldWithPath("data.[].postOwner").type(JsonFieldType.BOOLEAN).description("게시글 소유주 여부"),
                                 fieldWithPath("data.[].title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
                                 fieldWithPath("data.[].content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
-                                fieldWithPath("data.[].views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
-                                fieldWithPath("data.[].imageUrl").type(JsonFieldType.ARRAY).description("이미지 데이터"),
+                                fieldWithPath("data.[].user").type(JsonFieldType.OBJECT).description("게시글 유저 정보를 담고있는 객체"),
+                                fieldWithPath("data.[].user.userId").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("data.[].user.email").type(JsonFieldType.STRING).description("유저 이메일"),
+                                fieldWithPath("data.[].user.name").type(JsonFieldType.STRING).description("유저 이름"),
+                                fieldWithPath("data.[].user.address").type(JsonFieldType.STRING).description("유저 주소"),
+                                fieldWithPath("data.[].user.phone").type(JsonFieldType.STRING).description("유저 전화번호"),
+                                fieldWithPath("data.[].user.rating").type(JsonFieldType.NUMBER).description("유저 평점"),
+                                fieldWithPath("data.[].user.profileImage").type(JsonFieldType.STRING).description("유저 프로필 이미지"),
                                 fieldWithPath("data.[].communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
+                                fieldWithPath("data.[].isPressLike").type(JsonFieldType.BOOLEAN).description("게시글들을 조회하는 유저가 좋아요를 눌렀는지 여부"),
+                                fieldWithPath("data.[].commentCount").type(JsonFieldType.NUMBER).description("댓글 개수"),
+                                fieldWithPath("data.[].imageUrl").type(JsonFieldType.ARRAY).description("이미지 데이터"),
                                 fieldWithPath("data.[].likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수"),
+                                fieldWithPath("data.[].date").type(JsonFieldType.STRING).description("해당 날짜와 비교한 커뮤니티 게시글 생성일자(~일전등)"),
                                 fieldWithPath("pageInfo").type(JsonFieldType.OBJECT).description("페이지 정보를 감싸고 있는 배열"),
                                 fieldWithPath("pageInfo.page").type(JsonFieldType.NUMBER).description("현재 페이지 숫자"),
                                 fieldWithPath("pageInfo.size").type(JsonFieldType.NUMBER).description("페이지 크기(한 번에 몇개의 정보를 가져올지"),

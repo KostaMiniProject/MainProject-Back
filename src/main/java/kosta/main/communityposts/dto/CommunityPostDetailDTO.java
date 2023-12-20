@@ -1,5 +1,6 @@
 package kosta.main.communityposts.dto;
 
+import kosta.main.comments.dto.CommentParentDTO;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.likes.entity.Like;
 import kosta.main.users.dto.response.UserItemResponseDTO;
@@ -39,8 +40,9 @@ public class CommunityPostDetailDTO {
     private Integer likeCount;
     private String date;
 
+    private List<CommentParentDTO> comments;
 
-    public static CommunityPostDetailDTO from(CommunityPost communityPost, User user){
+    public static CommunityPostDetailDTO from(CommunityPost communityPost, User user,List<CommentParentDTO> comments){
         return CommunityPostDetailDTO.builder()
                 .communityPostId(communityPost.getCommunityPostId())
                 .postOwner(user != null && communityPost.getUser().getUserId().equals(user.getUserId()))
@@ -53,6 +55,7 @@ public class CommunityPostDetailDTO {
                 .likeCount(communityPost.getLikePostList().size())
                 .commentCount(communityPost.getCommentList().size())
                 .date(makeDate(communityPost))
+                .comments(comments)
                 .build();
     }
 

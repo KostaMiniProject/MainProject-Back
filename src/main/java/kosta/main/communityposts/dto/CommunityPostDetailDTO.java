@@ -17,11 +17,12 @@ import java.util.Optional;
 @Getter
 @Builder
 public class CommunityPostDetailDTO {
-    public static final String BEFORE_SECOND = "초전";
+    public static final String BEFORE_SECOND = "방금전";
     public static final String BEFORE_MINUTE = "분전";
     public static final String BEFORE_DATE = "일전";
     public static final String BEFORE_MONTH = "개월전";
     public static final String BEFORE_YEAR = "년전";
+    public static final String BEFORE_HOUR = "시간전";
     private Integer communityPostId;
 
     private Boolean postOwner;
@@ -60,7 +61,7 @@ public class CommunityPostDetailDTO {
             Optional<Like> first = post
                     .getLikePostList()
                     .stream()
-                    .filter(a -> Objects.equals(a.getUser().getUserId(), currentUser.getUserId()))
+                    .filter(a -> Objects.equals(a.getUser().getUserId(), currentUser.getUserId()) && Objects.equals(a.getCommunityPost().getCommunityPostId(), post.getCommunityPostId()))
                     .findFirst();
             return first.isPresent();
         } else return false;
@@ -69,18 +70,23 @@ public class CommunityPostDetailDTO {
     public static String makeDate(CommunityPost post) {
         LocalDateTime createdAt = post.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
-        if (createdAt.isBefore(now.minusMonths(1))) {
-            if (createdAt.isBefore(now.minusDays(1))) {
-                if (createdAt.isBefore(now.minusHours(1))) {
-                    if (createdAt.isBefore(now.minusMinutes(1))) {
-                        return (now.getSecond() - createdAt.getSecond()) + BEFORE_SECOND;
-                    }
-                    return (now.getMinute() - createdAt.getMinute()) + BEFORE_MINUTE;
-                }
-                return (now.getDayOfMonth() - createdAt.getDayOfMonth()) + BEFORE_DATE;
-            }
+
+        if (now.getYear() - createdAt.getYear() > 1) {
+            return (now.getYear() - createdAt.getYear()) + BEFORE_YEAR;
+        }
+        if (now.getMonthValue() - createdAt.getMonthValue() >1) {
             return (now.getMonthValue() - createdAt.getMonthValue()) + BEFORE_MONTH;
-        } else return (now.getYear() - createdAt.getYear()) + BEFORE_YEAR;
+        }
+        if (now.getDayOfMonth() - createdAt.getMonthValue() > 1) {
+            return (now.getDayOfMonth() - createdAt.getDayOfMonth()) + BEFORE_DATE;
+        }
+        if (now.getHour() - createdAt.getHour() > 1) {
+            return (now.getHour() - createdAt.getHour()) + BEFORE_HOUR;
+        }
+        if(now.getMinute() - createdAt.getMinute() > 1) {
+            return (now.getMinute() - createdAt.getMinute()) + BEFORE_MINUTE;
+        }
+        return BEFORE_SECOND;
     }
 
 }

@@ -130,35 +130,61 @@ class CommunityPostsControllerTest extends ControllerTest {
                 ));
     }
 
-//    @Test
-//    @WithMockCustomUser
-//    @DisplayName("게시글 상세 내용 조회 성공 테스트")
-//    void findPost() throws Exception {
-//        // given
-//        CommunityPostDetailDTO communityPostDetailDto = communityPostStubData.getCommunityPostDetailDto();
-//        // when
-//        when(communityPostsService.findPost(Mockito.any(User.class),Mockito.anyInt())).thenReturn(communityPostDetailDto);
-//
-//        // then
-//        mockMvc.perform(get(BASE_URL + "/{communityPostId}",COMMUNITYPOST_ID))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andDo(restDocs.document(
-//                        pathParameters(
-//                                parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
-//                        ),
-//                        responseFields(
-//                                fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
-//                                fieldWithPath("postOwner").type(JsonFieldType.BOOLEAN).description("게시글 주인인지 확인여부(주인일 경우 true)"),
-//                                fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
-//                                fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
-//                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
-//                                fieldWithPath("imageUrl").type(JsonFieldType.ARRAY).description("이미지 데이터"),
-//                                fieldWithPath("communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
-//                                fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수")
-//                        )
-//                ));
-//    }
+    @Test
+    @WithMockCustomUser
+    @DisplayName("게시글 상세 내용 조회 성공 테스트")
+    void findPost() throws Exception {
+        // given
+        CommunityPostDetailDTO communityPostDetailDto = communityPostStubData.getCommunityPostDetailDto();
+        // when
+        when(communityPostsService.findPost(Mockito.any(User.class),Mockito.anyInt())).thenReturn(communityPostDetailDto);
+
+        // then
+        mockMvc.perform(get(BASE_URL + "/{communityPostId}",COMMUNITYPOST_ID))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰").optional()
+                        ),
+                        pathParameters(
+                                parameterWithName("communityPostId").description("커뮤니티 게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티게시글 ID"),
+                                fieldWithPath("postOwner").type(JsonFieldType.BOOLEAN).description("게시글 소유주 여부"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("커뮤니티게시글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
+                                fieldWithPath("user").type(JsonFieldType.OBJECT).description("게시글 유저 정보를 담고있는 객체"),
+                                fieldWithPath("user.userId").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("user.email").type(JsonFieldType.STRING).description("유저 이메일"),
+                                fieldWithPath("user.name").type(JsonFieldType.STRING).description("유저 이름"),
+                                fieldWithPath("user.address").type(JsonFieldType.STRING).description("유저 주소"),
+                                fieldWithPath("user.phone").type(JsonFieldType.STRING).description("유저 전화번호"),
+                                fieldWithPath("user.rating").type(JsonFieldType.NUMBER).description("유저 평점"),
+                                fieldWithPath("user.profileImage").type(JsonFieldType.STRING).description("유저 프로필 이미지"),
+                                fieldWithPath("communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
+                                fieldWithPath("isPressLike").type(JsonFieldType.BOOLEAN).description("게시글들을 조회하는 유저가 좋아요를 눌렀는지 여부"),
+                                fieldWithPath("commentCount").type(JsonFieldType.NUMBER).description("댓글 개수"),
+                                fieldWithPath("imageUrl").type(JsonFieldType.ARRAY).description("이미지 데이터"),
+                                fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수"),
+                                fieldWithPath("date").type(JsonFieldType.STRING).description("해당 날짜와 비교한 커뮤니티 게시글 생성일자(~일전등)"),
+                                fieldWithPath("comments.[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("comments.[].content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("comments.[].profile").type(JsonFieldType.OBJECT).description("유저 정보를 담고있는 객체"),
+                                fieldWithPath("comments.[].profile.userId").type(JsonFieldType.NUMBER).description("유저 Id"),
+                                fieldWithPath("comments.[].profile.name").type(JsonFieldType.STRING).description("유저이름"),
+                                fieldWithPath("comments.[].profile.imageUrl").type(JsonFieldType.STRING).description("유저 프로필 사진"),
+                                fieldWithPath("comments.[].children").type(JsonFieldType.ARRAY).description("자식 댓글을 담고있는 배열"),
+                                fieldWithPath("comments.[].children.[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("comments.[].children.[].content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("comments.[].children.[].profile").type(JsonFieldType.OBJECT).description("유저 정보를 담고있는 객체"),
+                                fieldWithPath("comments.[].children.[].profile.userId").type(JsonFieldType.NUMBER).description("유저 Id"),
+                                fieldWithPath("comments.[].children.[].profile.name").type(JsonFieldType.STRING).description("유저이름"),
+                                fieldWithPath("comments.[].children.[].profile.imageUrl").type(JsonFieldType.STRING).description("유저 프로필 사진")
+                        )
+                ));
+    }
 
     @Test
     @DisplayName("커뮤니티 게시글 작성 성공테스트")

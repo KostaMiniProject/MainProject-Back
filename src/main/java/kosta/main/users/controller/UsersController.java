@@ -130,7 +130,7 @@ public class UsersController {
     return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(myExchangePostList)), HttpStatus.OK);
   }
 
-  @GetMapping("/users/community-post-list")
+  @GetMapping("/users/community-post-list") // 12월
   public ResponseEntity<?> findMyCommunityPostList(@PageableDefault(size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable,
                                                   @LoginUser User user){
     Page<CommunityPostDetailDTO> myCommunityPostList = usersService.findMyCommunityPostList(pageable, user);

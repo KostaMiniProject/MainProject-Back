@@ -65,6 +65,11 @@ include::{snippets}/users-controller-test/withdrawal/http-request.adoc[]
 
 include::{snippets}/users-controller-test/withdrawal/http-response.adoc[]
 
+== 카테고리
+
+=== 카테고리 전체 내역 가지고 오기
+
+operation::categories-controller-test/get-all-category[snippets='curl-request,http-request,http-response,response-fields']
 
 == 물물교환
 

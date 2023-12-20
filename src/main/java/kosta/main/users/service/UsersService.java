@@ -105,16 +105,30 @@ public class UsersService {
             .build());
   }
 
+  @Transactional
   public void blockUser(Integer blockUserId, Integer userId) {
     User blockUser = findUserByUserId(blockUserId);
-    User user = findUserByUserId(userId);
+    Optional<User> byId = usersRepository.findById(userId);
+    User user = byId.orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+
+      Optional<BlockedUser> first =
+              user.getBlockedUsers()
+                      .stream()
+                      .filter(bUser -> Objects.equals(bUser.getBlockedUserId(), blockUser.getUserId()))
+                      .findFirst();
+      if(first.isPresent()){
+        user.removeBlockedUser(first.get());
+        return;
+      }
+
+
 
     BlockedUser blockedUser = BlockedUser.builder()
         .user(user)
         .blockingUser(blockUser)
         .build();
-    user.addBlockedUser(blockedUser);
-    blockedUsersRepository.save(blockedUser);
+    BlockedUser save = blockedUsersRepository.save(blockedUser);
+    user.addBlockedUser(save);
   }
 
 //    public List<ExchangeHistoryResponseDTO> findMyExchangeHistory(User user) {

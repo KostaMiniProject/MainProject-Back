@@ -1,17 +1,29 @@
 package kosta.main.users.controller;
 
 import jakarta.validation.Valid;
+import kosta.main.communityposts.dto.CommunityPostDetailDTO;
+import kosta.main.exchangeposts.dto.ExchangePostListDTO;
+import kosta.main.global.dto.PageInfo;
+import kosta.main.global.dto.PageResponseDto;
 import kosta.main.reports.dto.CreateReportDTO;
 import kosta.main.users.dto.request.*;
+import kosta.main.users.dto.response.UserExchangePostResponseDTO;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @RestController
@@ -108,6 +120,22 @@ public class UsersController {
       return new ResponseEntity<>(userEmailDTO, HttpStatus.OK);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  }
+
+  @GetMapping("/users/exchange-post-list")
+  public ResponseEntity<?> findMyExchangePostList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                  @LoginUser User user){
+    Page<UserExchangePostResponseDTO> myExchangePostList = usersService.findMyExchangePostList(pageable, user);
+    List<UserExchangePostResponseDTO> list = myExchangePostList.stream().toList();
+    return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(myExchangePostList)), HttpStatus.OK);
+  }
+
+  @GetMapping("/users/community-post-list")
+  public ResponseEntity<?> findMyCommunityPostList(@PageableDefault(size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable,
+                                                  @LoginUser User user){
+    Page<CommunityPostDetailDTO> myCommunityPostList = usersService.findMyCommunityPostList(pageable, user);
+    List<CommunityPostDetailDTO> list = myCommunityPostList.stream().toList();
+    return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(myCommunityPostList)), HttpStatus.OK);
   }
 
 }

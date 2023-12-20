@@ -2,6 +2,7 @@ package kosta.main.users.controller;
 
 import jakarta.validation.Valid;
 import kosta.main.communityposts.dto.CommunityPostDetailDTO;
+import kosta.main.communityposts.dto.CommunityPostListDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
 import kosta.main.global.dto.PageInfo;
 import kosta.main.global.dto.PageResponseDto;
@@ -135,8 +136,8 @@ public class UsersController {
   @GetMapping("/users/community-post-list") // 12월
   public ResponseEntity<?> findMyCommunityPostList(@PageableDefault(size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable,
                                                   @LoginUser User user){
-    Page<CommunityPostDetailDTO> myCommunityPostList = usersService.findMyCommunityPostList(pageable, user);
-    List<CommunityPostDetailDTO> list = myCommunityPostList.stream().toList();
+    Page<CommunityPostListDTO> myCommunityPostList = usersService.findMyCommunityPostList(pageable, user);
+    List<CommunityPostListDTO> list = myCommunityPostList.stream().toList();
     return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(myCommunityPostList)), HttpStatus.OK);
   }
 

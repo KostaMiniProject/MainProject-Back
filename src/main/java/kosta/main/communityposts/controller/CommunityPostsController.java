@@ -33,8 +33,8 @@ public class CommunityPostsController {
     /* 테스트 성공 확인 */
     @GetMapping
     public ResponseEntity<?> findPosts(@PageableDefault(page = 0, size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable,@LoginUser User user) {
-        Page<CommunityPostDetailDTO> posts = communityPostsService.findPosts(pageable, user);
-        List<CommunityPostDetailDTO> list = posts.stream().toList();
+        Page<CommunityPostListDTO> posts = communityPostsService.findPosts(pageable, user);
+        List<CommunityPostListDTO> list = posts.stream().toList();
 
         return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(posts)), HttpStatus.OK);
     }

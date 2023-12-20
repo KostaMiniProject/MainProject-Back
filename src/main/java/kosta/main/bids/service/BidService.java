@@ -176,7 +176,7 @@ public class BidService {
 
 
     // 거래 완료 로직
-    @Transactional
+//    @Transactional
     public void completeExchange(Integer exchangePostId, Integer selectedBidId, Integer userId) {
         ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
 
@@ -196,7 +196,7 @@ public class BidService {
         );
         User user = usersRepository.findById(userId)
             .orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
-        exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user);
+        exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user,selectedBidId);
 
 
 

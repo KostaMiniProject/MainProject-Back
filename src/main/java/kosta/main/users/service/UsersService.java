@@ -1,13 +1,14 @@
 package kosta.main.users.service;
 
+import kosta.main.bids.repository.BidRepository;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
-import kosta.main.communityposts.dto.CommunityPostDetailDTO;
+
+import kosta.main.communityposts.dto.CommunityPostListDTO;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
 import kosta.main.dibs.dto.DibResponseDto;
 import kosta.main.email.service.EmailSendService;
-import kosta.main.exchangeposts.dto.ExchangePostListDTO;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
 import kosta.main.global.error.exception.BusinessException;
@@ -47,12 +48,14 @@ public class UsersService {
   private final UsersRepository usersRepository;
   private final ReportsRepository reportsRepository;
   private final ExchangePostsRepository exchangePostRepository;
-  private final BidRepository bidRepository;
   private final BlockedUsersRepository blockedUsersRepository;
   private final ImageService imageService;
   private final PasswordEncoder passwordEncoder;
   private final EmailSendService emailSendService;
   private final CommunityPostsRepository communityPostsRepository;
+  private final BidRepository bidRepository;
+
+
   @Value("${profile}")
   private String basicProfileImage;
 
@@ -214,9 +217,10 @@ public class UsersService {
         });
   }
 
-  public Page<CommunityPostDetailDTO> findMyCommunityPostList(Pageable pageable, User user){
+  public Page<CommunityPostListDTO> findMyCommunityPostList(Pageable pageable, User user){
     Page<CommunityPost> posts = communityPostsRepository.findByUser_UserId(pageable, user.getUserId());
-    List<CommunityPostDetailDTO> list = posts.stream().map(post -> CommunityPostDetailDTO.from(post, user)).toList();
+
+    List<CommunityPostListDTO> list = posts.stream().map(post -> CommunityPostListDTO.from(post, user)).toList();
     return new PageImpl<>(list, posts.getPageable(), posts.getTotalElements());
   }
 }

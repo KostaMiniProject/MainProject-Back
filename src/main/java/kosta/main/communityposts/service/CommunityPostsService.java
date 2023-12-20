@@ -1,6 +1,8 @@
 package kosta.main.communityposts.service;
 
+import kosta.main.comments.dto.CommentChildDTO;
 import kosta.main.comments.dto.CommentParentDTO;
+import kosta.main.comments.entity.Comment;
 import kosta.main.comments.repository.CommentsRepository;
 import kosta.main.comments.service.CommentsService;
 import kosta.main.communityposts.dto.*;
@@ -25,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.COMMUNITY_POST_NOT_FOUND;
@@ -35,11 +39,11 @@ import static kosta.main.global.error.exception.CommonErrorCode.NOT_COMMUNITY_PO
 @Transactional
 @RequiredArgsConstructor
 public class CommunityPostsService {
-    @Getter
+
     private final CommunityPostsRepository communityPostsRepository;
     private final LikesRepository likesRepository;
-    private final CommentsService commentsService;
     private final ImageService imageService;
+    private final CommentsRepository commentsRepository;
     /* RuntimeException 추상 메소드 */
 
     public CommunityPost findCommunityPostByCommunityPostId(Integer communityPostId) {
@@ -67,12 +71,31 @@ public class CommunityPostsService {
         if (post.getCommunityPostStatus() == CommunityPost.CommunityPostStatus.PRIVATE && !isOwner) {
             throw new RuntimeException(ErrorCode.ACCESS_DENIED.getMessage());
         }
-        List<CommentParentDTO> commentsByPostId = commentsService.findCommentsByPostId(post.getCommunityPostId());
+        List<CommentParentDTO> commentsByPostId = findCommentsByPostId(post.getCommunityPostId());
 
         return CommunityPostDetailDTO.from(post, currentUser,commentsByPostId);
     }
 
 
+    @Transactional(readOnly = true)
+    public List<CommentParentDTO>findCommentsByPostId(Integer communityPostId) {
+        findCommunityPostByCommunityPostId(communityPostId); // 커뮤니티 게시글이 존재하는지 확인
+        List<Comment> comments = commentsRepository.findComments(communityPostId);
+        return convert(comments);
+    }
+
+    private List<CommentParentDTO> convert(List<Comment> comments) {
+        Map<Integer,CommentParentDTO> result = new HashMap<>();
+        for (Comment comment : comments) {
+            if(comment.getParent() == null) {
+                result.put(comment.getCommentId(),CommentParentDTO.from(comment));
+            }
+            else {
+                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment));
+            }
+        }
+        return new ArrayList<>(result.values());
+    }
     /* 커뮤니티 게시글 작성 */
     public CommunityPostDTO addPost(User user, CommunityPostCreateDTO communityPostCreateDTO, List<MultipartFile> files) {
         List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();

@@ -1,10 +1,15 @@
 package kosta.main.users.service;
 
-import kosta.main.blockedusers.dto.BlockedUserDTO;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
+import kosta.main.communityposts.dto.CommunityPostDetailDTO;
+import kosta.main.communityposts.entity.CommunityPost;
+import kosta.main.communityposts.repository.CommunityPostsRepository;
 import kosta.main.dibs.dto.DibResponseDto;
 import kosta.main.email.service.EmailSendService;
+import kosta.main.exchangeposts.dto.ExchangePostListDTO;
+import kosta.main.exchangeposts.entity.ExchangePost;
+import kosta.main.exchangeposts.repository.ExchangePostsRepository;
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.reports.dto.CreateReportDTO;
@@ -14,18 +19,21 @@ import kosta.main.users.dto.request.UserCreateDTO;
 import kosta.main.users.dto.request.UserFindIdDTO;
 import kosta.main.users.dto.request.UserFindPasswordDTO;
 import kosta.main.users.dto.request.UserUpdateDTO;
-import kosta.main.users.dto.response.UserAllProfileResponseDTO;
-import kosta.main.users.dto.response.UserCreateResponseDTO;
-import kosta.main.users.dto.response.UsersResponseDTO;
+import kosta.main.users.dto.response.*;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,12 +46,16 @@ public class UsersService {
 
   private final UsersRepository usersRepository;
   private final ReportsRepository reportsRepository;
+  private final ExchangePostsRepository exchangePostRepository;
+  private final BidRepository bidRepository;
   private final BlockedUsersRepository blockedUsersRepository;
   private final ImageService imageService;
   private final PasswordEncoder passwordEncoder;
   private final EmailSendService emailSendService;
+  private final CommunityPostsRepository communityPostsRepository;
   @Value("${profile}")
   private String basicProfileImage;
+
 
   @Transactional(readOnly = true)
   public UsersResponseDTO findMyProfile(User user) {
@@ -177,5 +189,34 @@ public class UsersService {
     Optional<User> findUser = usersRepository.findById(user.getUserId());
     User user1 = findUser.get();
     return UserAllProfileResponseDTO.from(user1);
+  }
+
+  public Page<UserExchangePostResponseDTO> findMyExchangePostList(Pageable pageable, User user){
+    Page<ExchangePost> all = exchangePostRepository.findByUser_UserId(pageable, user.getUserId());
+    return all
+        .map(post -> {
+          // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
+          String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
+
+          // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
+          Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
+
+          return UserExchangePostResponseDTO.builder()
+              .exchangePostId(post.getExchangePostId())
+              .title(post.getTitle())
+              .preferItem(post.getPreferItems())
+              .address(post.getAddress())
+              .exchangePostStatus(post.getExchangePostStatus().toString())
+              .createdAt(post.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)))
+              .imgUrl(imgUrl)
+              .bidCount(bidCount)
+              .build();
+        });
+  }
+
+  public Page<CommunityPostDetailDTO> findMyCommunityPostList(Pageable pageable, User user){
+    Page<CommunityPost> posts = communityPostsRepository.findByUser_UserId(pageable, user.getUserId());
+    List<CommunityPostDetailDTO> list = posts.stream().map(post -> CommunityPostDetailDTO.from(post, user)).toList();
+    return new PageImpl<>(list, posts.getPageable(), posts.getTotalElements());
   }
 }

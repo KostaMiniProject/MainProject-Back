@@ -1,6 +1,8 @@
 package kosta.main.communityposts.service;
 
+import kosta.main.comments.dto.CommentParentDTO;
 import kosta.main.comments.repository.CommentsRepository;
+import kosta.main.comments.service.CommentsService;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
@@ -13,6 +15,7 @@ import kosta.main.likes.dto.LikeDTO;
 import kosta.main.likes.entity.Like;
 import kosta.main.likes.repository.LikesRepository;
 import kosta.main.users.entity.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,8 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.COMMUNITY_POST_NOT_FOUND;
@@ -34,9 +35,10 @@ import static kosta.main.global.error.exception.CommonErrorCode.NOT_COMMUNITY_PO
 @Transactional
 @RequiredArgsConstructor
 public class CommunityPostsService {
+    @Getter
     private final CommunityPostsRepository communityPostsRepository;
     private final LikesRepository likesRepository;
-    private final CommentsRepository commentsRepository;
+    private final CommentsService commentsService;
     private final ImageService imageService;
     /* RuntimeException 추상 메소드 */
 
@@ -48,9 +50,9 @@ public class CommunityPostsService {
 
     /* 커뮤니티 목록 조회 */
     @Transactional(readOnly = true)
-    public Page<CommunityPostDetailDTO> findPosts(Pageable pageable,User user) {
+    public Page<CommunityPostListDTO> findPosts(Pageable pageable,User user) {
         Page<CommunityPost> posts = communityPostsRepository.findAll(pageable);
-        List<CommunityPostDetailDTO> list = posts.stream().map(post -> CommunityPostDetailDTO.from(post, user)).toList();
+        List<CommunityPostListDTO> list = posts.stream().map(post -> CommunityPostListDTO.from(post, user)).collect(Collectors.toList());
         return new PageImpl<>(list, posts.getPageable(), posts.getTotalElements());
     }
 
@@ -65,8 +67,9 @@ public class CommunityPostsService {
         if (post.getCommunityPostStatus() == CommunityPost.CommunityPostStatus.PRIVATE && !isOwner) {
             throw new RuntimeException(ErrorCode.ACCESS_DENIED.getMessage());
         }
+        List<CommentParentDTO> commentsByPostId = commentsService.findCommentsByPostId(post.getCommunityPostId());
 
-        return CommunityPostDetailDTO.from(post, currentUser);
+        return CommunityPostDetailDTO.from(post, currentUser,commentsByPostId);
     }
 
 
@@ -147,13 +150,13 @@ public class CommunityPostsService {
             Page<CommunityPost> allTitleContaining =
                     communityPostsRepository.findAllTitleContainingByUser(keyword, user.getUserId(), pageable);
 
-            List<CommunityPostListDTO> list = allTitleContaining.map(CommunityPostListDTO::from).stream().toList();
+            List<CommunityPostListDTO> list = allTitleContaining.map(a-> CommunityPostListDTO.from(a,user)).stream().toList();
             return new PageImpl<CommunityPostListDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
         } else {
 
             Page<CommunityPost> allTitleContaining =
                     communityPostsRepository.findAllTitleContaining(keyword, pageable);
-            List<CommunityPostListDTO> list = allTitleContaining.map(CommunityPostListDTO::from).stream().toList();
+            List<CommunityPostListDTO> list = allTitleContaining.map(a-> CommunityPostListDTO.from(a,user)).stream().toList();
             return new PageImpl<CommunityPostListDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
         }
     }

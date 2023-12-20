@@ -63,14 +63,15 @@ public class UsersController {
                                       @LoginUser User user,
                                       @RequestBody CreateReportDTO createReportDTO) {
     usersService.reportUser(reportedUserId, user, createReportDTO);
-    return new ResponseEntity(HttpStatus.CREATED);
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
-  @PutMapping("/users/block/{blockUserId}/{userId}")
+  @PutMapping("/users/block/{blockUserId}")
   public ResponseEntity<?> blockUser(@PathVariable("blockUserId") Integer blockUserId,
-                                     @PathVariable("userId") Integer userId) {
-    usersService.blockUser(blockUserId, userId);
-    return new ResponseEntity(HttpStatus.CREATED);
+                                     @LoginUser User user)  {
+    boolean isCreate = usersService.blockUser(blockUserId, user);
+    if(isCreate) return new ResponseEntity<>(HttpStatus.CREATED);
+    else return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
 //  @GetMapping("/users/exchange-history")

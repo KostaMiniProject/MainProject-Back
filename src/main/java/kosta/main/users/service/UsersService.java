@@ -1,5 +1,6 @@
 package kosta.main.users.service;
 
+import kosta.main.blockedusers.dto.BlockedUserDTO;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
 import kosta.main.dibs.dto.DibResponseDto;
@@ -106,19 +107,20 @@ public class UsersService {
   }
 
   @Transactional
-  public void blockUser(Integer blockUserId, Integer userId) {
+  public boolean blockUser(Integer blockUserId, User user) {
     User blockUser = findUserByUserId(blockUserId);
-    Optional<User> byId = usersRepository.findById(userId);
-    User user = byId.orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
-
-      Optional<BlockedUser> first =
+    user = findUserByUserId(user.getUserId());
+    System.out.println("User before blockUser: " + user.toString());
+    Optional<BlockedUser> first =
               user.getBlockedUsers()
                       .stream()
-                      .filter(bUser -> Objects.equals(bUser.getBlockedUserId(), blockUser.getUserId()))
+                      .filter(bUser -> Objects.equals(bUser.getBlockingUser().getUserId(), blockUser.getUserId()))
                       .findFirst();
       if(first.isPresent()){
-        user.removeBlockedUser(first.get());
-        return;
+        BlockedUser blockedUser = first.get();
+        user.removeBlockedUser(blockedUser);
+        blockedUsersRepository.delete(blockedUser);
+        return false;
       }
 
 
@@ -129,6 +131,7 @@ public class UsersService {
         .build();
     BlockedUser save = blockedUsersRepository.save(blockedUser);
     user.addBlockedUser(save);
+    return true;
   }
 
 //    public List<ExchangeHistoryResponseDTO> findMyExchangeHistory(User user) {

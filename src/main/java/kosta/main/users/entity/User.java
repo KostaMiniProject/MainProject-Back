@@ -137,4 +137,14 @@ public class User extends Auditable {
     public void removeBlockedUser(BlockedUser blockedUser){
         this.blockedUsers.remove(blockedUser);
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", email='" + email + '\'' +
+
+                ", blockedUsers=" + blockedUsers +
+                '}';
+    }
 }

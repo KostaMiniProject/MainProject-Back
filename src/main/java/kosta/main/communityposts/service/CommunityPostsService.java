@@ -40,6 +40,7 @@ import static kosta.main.global.error.exception.CommonErrorCode.NOT_COMMUNITY_PO
 @RequiredArgsConstructor
 public class CommunityPostsService {
 
+    public static final int NOT_LOGIN = 0;
     private final CommunityPostsRepository communityPostsRepository;
     private final LikesRepository likesRepository;
     private final ImageService imageService;
@@ -64,34 +65,36 @@ public class CommunityPostsService {
     @Transactional(readOnly = true)
     public CommunityPostDetailDTO findPost(User currentUser, Integer communityPostId){
         CommunityPost post = findCommunityPostByCommunityPostId(communityPostId);
-        boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
+        Integer userId = NOT_LOGIN;
+        if(currentUser != null) userId = currentUser.getUserId();
+        boolean isOwner = currentUser != null && post.getUser().getUserId().equals(userId);
 
 
         /* 비공개글 일 경우 작성자외 접근 에러 처리 */
         if (post.getCommunityPostStatus() == CommunityPost.CommunityPostStatus.PRIVATE && !isOwner) {
             throw new RuntimeException(ErrorCode.ACCESS_DENIED.getMessage());
         }
-        List<CommentParentDTO> commentsByPostId = findCommentsByPostId(post.getCommunityPostId());
+        List<CommentParentDTO> commentsByPostId = findCommentsByPostId(post.getCommunityPostId(),userId);
 
         return CommunityPostDetailDTO.from(post, currentUser,commentsByPostId);
     }
 
 
     @Transactional(readOnly = true)
-    public List<CommentParentDTO>findCommentsByPostId(Integer communityPostId) {
+    public List<CommentParentDTO>findCommentsByPostId(Integer communityPostId,Integer userId) {
         findCommunityPostByCommunityPostId(communityPostId); // 커뮤니티 게시글이 존재하는지 확인
         List<Comment> comments = commentsRepository.findComments(communityPostId);
-        return convert(comments);
+        return convert(comments,userId);
     }
 
-    private List<CommentParentDTO> convert(List<Comment> comments) {
+    private List<CommentParentDTO> convert(List<Comment> comments,Integer userId) {
         Map<Integer,CommentParentDTO> result = new HashMap<>();
         for (Comment comment : comments) {
             if(comment.getParent() == null) {
-                result.put(comment.getCommentId(),CommentParentDTO.from(comment));
+                result.put(comment.getCommentId(),CommentParentDTO.from(comment,userId));
             }
             else {
-                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment));
+                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment,userId));
             }
         }
         return new ArrayList<>(result.values());

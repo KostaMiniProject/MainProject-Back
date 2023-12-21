@@ -22,6 +22,7 @@ public class ChatRoomResponseDTO {
   private Integer chatRoomId;
   private String participantName;
   private LocalDateTime lastMessageTimeDifference;
+  private LocalDateTime lastMessageDateTime; // 실제 마지막 메시지의 시간을 저장하는 필드
   private String lastMessageContent;
   private String participantProfileImg;
   private String exchangePostAddress;
@@ -48,7 +49,8 @@ public class ChatRoomResponseDTO {
 
     if (lastChat != null) {
       dto.setLastMessageContent(lastChat.getMessage());
-      dto.setLastMessageTimeDifference(lastChat.getCreatedAt()); // 마지막 메시지 시간 저장
+      dto.setLastMessageTimeDifference(lastChat.getCreatedAt()); // 마지막 메시지 시간 문자열로 변환
+      dto.setLastMessageDateTime(lastChat.getCreatedAt()); // 실제 마지막 메시지 시간 저장
     }
 
     // 거래 게시글 주소

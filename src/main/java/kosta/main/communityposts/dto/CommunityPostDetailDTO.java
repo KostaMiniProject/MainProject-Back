@@ -59,6 +59,8 @@ public class CommunityPostDetailDTO {
                 .build();
     }
 
+
+
     public static boolean checkPressLike(User currentUser, CommunityPost post) {
         if (currentUser != null){
             Optional<Like> first = post

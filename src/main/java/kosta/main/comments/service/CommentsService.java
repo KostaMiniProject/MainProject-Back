@@ -28,20 +28,21 @@ public class CommentsService {
 
     // 댓글 조회(대댓글 할때는 사용자 아이디 필요)
     @Transactional(readOnly = true)
-    public List<CommentParentDTO>findCommentsByPostId(Integer communityPostId) {
+    public List<CommentParentDTO>findCommentsByPostId(Integer communityPostId,User user) {
         communityPostsService.findCommunityPostByCommunityPostId(communityPostId); // 커뮤니티 게시글이 존재하는지 확인
         List<Comment> comments = commentsRepository.findComments(communityPostId);
-        return convert(comments);
+        return convert(comments,user);
     }
 
-    private List<CommentParentDTO> convert(List<Comment> comments) {
+    private List<CommentParentDTO> convert(List<Comment> comments,User user) {
         Map<Integer,CommentParentDTO> result = new HashMap<>();
+        Integer userId = user.getUserId();
         for (Comment comment : comments) {
             if(comment.getParent() == null) {
-                result.put(comment.getCommentId(),CommentParentDTO.from(comment));
+                result.put(comment.getCommentId(),CommentParentDTO.from(comment,userId));
             }
             else {
-                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment));
+                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment,userId));
             }
         }
         return new ArrayList<>(result.values());

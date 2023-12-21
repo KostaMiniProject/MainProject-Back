@@ -70,7 +70,7 @@ class CommentsControllerTest extends ControllerTest {
     void findComments() throws Exception {
         //given
         List<CommentParentDTO> commentListDTO = commentStubData.getCommentListDTO();
-        given(commentsService.findCommentsByPostId(Mockito.anyInt())).willReturn(commentListDTO);
+        given(commentsService.findCommentsByPostId(Mockito.anyInt(),Mockito.any(User.class))).willReturn(commentListDTO);
         //when & then
         mockMvc.perform(get(BASIC_URL + "/{communityPostId}/comments", COMMUNITY_POST_ID)
                 )

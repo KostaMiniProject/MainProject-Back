@@ -177,19 +177,20 @@ public class ChatRoomService {
           });
     }
     return ChatRoomEnterResponseDTO.builder()
-        .isOwner(user.getUserId().equals(exchangePost.getUser().getUserId()))
+        .isOwner(user.getUserId().equals(exchangePost.getUser() != null ? exchangePost.getUser().getUserId() : null))
         .exchangePostId(exchangePost.getExchangePostId())
         .exchangePostTittle(exchangePost.getTitle())
         .exchangePostAddress(exchangePost.getAddress())
-        .exchangePostCategory(exchangePostCategory)
-        .exchangePostImage(exchangePostImage)
+        .exchangePostCategory(exchangePostCategory) // 이전에 null 체크를 이미 수행했다고 가정
+        .exchangePostImage(exchangePostImage) // 이전에 null 체크를 이미 수행했다고 가정
         .status(bid.getStatus())
         .bidId(bid.getBidId())
-        .userId(otherUser.getUserId())
-        .userName(otherUser.getName())
-        .userProfileImage(otherUser.getProfileImage())
+        .userId(otherUser != null ? otherUser.getUserId() : null)
+        .userName(otherUser != null ? otherUser.getName() : null)
+        .userProfileImage(otherUser != null ? otherUser.getProfileImage() : null)
         .messages(chatMessageResponseDTOList)
         .build();
+
   }
 
 

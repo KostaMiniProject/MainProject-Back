@@ -5,12 +5,14 @@ import kosta.main.exchangehistories.dto.ItemHistoryDTO;
 import kosta.main.global.audit.Auditable;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.entity.Item;
+import kosta.main.reviews.entity.Review;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity

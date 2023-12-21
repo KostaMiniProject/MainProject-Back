@@ -8,6 +8,7 @@ import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.global.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.items.entity.Item;
+import kosta.main.reviews.entity.Review;
 import kosta.main.users.dto.request.UserCreateDTO;
 import kosta.main.users.dto.request.UserUpdateDTO;
 import lombok.*;
@@ -71,6 +72,9 @@ public class User extends Auditable {
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Bid> bids = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> reviews = new ArrayList<>();
 
 
 
@@ -137,14 +141,7 @@ public class User extends Auditable {
     public void removeBlockedUser(BlockedUser blockedUser){
         this.blockedUsers.remove(blockedUser);
     }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", email='" + email + '\'' +
-
-                ", blockedUsers=" + blockedUsers +
-                '}';
+    public void updateReviews(Review review){
+        this.reviews.add(review);
     }
 }

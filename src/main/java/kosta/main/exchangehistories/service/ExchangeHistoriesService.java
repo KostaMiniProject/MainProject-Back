@@ -8,7 +8,9 @@ import kosta.main.exchangehistories.dto.ExchangeHistoriesResponseDTO;
 import kosta.main.exchangehistories.dto.ExchangeHistoryCreateResponseDTO;
 import kosta.main.exchangehistories.dto.ItemHistoryDTO;
 import kosta.main.exchangehistories.entity.ExchangeHistory;
+import kosta.main.exchangehistories.entity.ItemInfo;
 import kosta.main.exchangehistories.repository.ExchangeHistoriesRepository;
+import kosta.main.exchangehistories.repository.ItemInfoRepository;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
 import kosta.main.global.error.exception.BusinessException;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 public class ExchangeHistoriesService {
   private final ExchangeHistoriesRepository exchangeHistoriesRepository;
   private final ExchangePostsRepository exchangePostsRepository;
+  private final ItemInfoRepository itemInfoRepository;
   private final BidRepository bidRepository;
 
 
@@ -62,6 +65,9 @@ public class ExchangeHistoriesService {
     User bidUser = selectedBid.getUser();
     // 게시글의 아이템 정보
     Item postItem = exchangePost.getItem();
+    ItemInfo itemInfo = ItemInfo.from(postItem);
+
+
 
     // 아이템 정보를 ItemHistoryDTO 리스트로 변환
     List<ItemHistoryDTO> exchangedItems = createItemHistoryList(selectedBid, postItem);
@@ -71,9 +77,10 @@ public class ExchangeHistoriesService {
         .exchangeInitiator(postUser)
         .exchangePartner(bidUser)
         .exchangePost(exchangePost)
-        .item(postItem)
+        .itemInfo(itemInfo)
         .exchangedItems(exchangedItems) // 추가된 필드
         .build();
+    itemInfoRepository.save(itemInfo);
     ExchangeHistory savedExchangeHistory = exchangeHistoriesRepository.save(exchangeHistory);
 
     return new ExchangeHistoryCreateResponseDTO(savedExchangeHistory.getExchangeHistoryId());

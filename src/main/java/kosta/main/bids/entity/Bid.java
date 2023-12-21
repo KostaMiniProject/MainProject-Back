@@ -62,4 +62,8 @@ public class Bid extends Auditable {
     public enum BidStatus {
         BIDDING, DENIED, SELECTED, DELETED, RESERVATION
     }
+
+    public void removeItem(Item item) {
+        this.items.remove(item);
+    }
 }

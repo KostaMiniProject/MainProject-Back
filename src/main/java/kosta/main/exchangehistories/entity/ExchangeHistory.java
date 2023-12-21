@@ -25,9 +25,9 @@ public class ExchangeHistory extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer exchangeHistoryId;
 
-    @ManyToOne
-    @JoinColumn(name = "item_id")
-    private Item item;
+    @OneToOne
+    @JoinColumn(name = "item_info_id")
+    private ItemInfo itemInfo;
 
     @ManyToOne
     @JoinColumn(name = "exchange_initiator_id")

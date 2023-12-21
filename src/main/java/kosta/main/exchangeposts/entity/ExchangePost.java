@@ -2,6 +2,7 @@ package kosta.main.exchangeposts.entity;
 
 import jakarta.persistence.*;
 import kosta.main.bids.entity.Bid;
+import kosta.main.exchangehistories.entity.ItemInfo;
 import kosta.main.exchangeposts.dto.ExchangePostDTO;
 import kosta.main.global.audit.Auditable;
 import kosta.main.items.entity.Item;
@@ -56,6 +57,10 @@ public class ExchangePost extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @OneToOne
+    @JoinColumn(name = "item_info_id")
+    private Item itemInfo;
+
     @Builder.Default
     @Column(length = 20, nullable = false)
     private ExchangePostStatus exchangePostStatus = ExchangePostStatus.EXCHANGING;
@@ -82,5 +87,9 @@ public class ExchangePost extends Auditable {
     }
     public void addBid(Bid bid){
         bids.add(bid);
+    }
+
+    public void setBids(List<Bid> bids) {
+        this.bids = bids;
     }
 }

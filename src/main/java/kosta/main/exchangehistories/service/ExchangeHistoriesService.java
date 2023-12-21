@@ -49,13 +49,11 @@ public class ExchangeHistoriesService {
 
   // 교환 내역 생성 = 거래완료 후의 로직
   @Transactional
-  public ExchangeHistoryCreateResponseDTO createExchangeHistory(ExchangeHistoryCreateDTO exchangeHistoryCreateDTO, User user, Integer selectedBidId) {
+  public ExchangeHistoryCreateResponseDTO createExchangeHistory(User user, Integer selectedBidId,Integer exchangePostId) {
     // 교환 게시글 정보 가져오기
-    ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangeHistoryCreateDTO.getExchangePostId(), "ExchangePost not found");
+    ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
 
     // 선택된 입찰 정보 가져오기
-//    Bid selectedBid = findEntityById(bidRepository, exchangeHistoryCreateDTO.getSelectedBidId(), "Bid not found");
-
     Bid selectedBid =
             exchangePost.getBids().stream().filter(bid -> Objects.equals(bid.getBidId(), selectedBidId)).findFirst().orElseThrow(() -> new BusinessException(CommonErrorCode.SELECTED_BID_NOT_FOUND));
 

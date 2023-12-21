@@ -2,6 +2,7 @@ package kosta.main.exchangeposts.service;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
+import kosta.main.exchangehistories.entity.ItemInfo;
 import kosta.main.exchangehistories.repository.ExchangeHistoriesRepository;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
@@ -224,7 +225,7 @@ public class ExchangePostsService {
                       .bidId(bid.getBidId())
                       .name(bid.getUser().getName())
                       .imageUrl(bid.getItems().get(0).getImages().get(0))
-                      .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
+                      .items(convertItemListToString(bid.getExchangeFinishedItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
                       .build())
               .collect(Collectors.toList());
     }
@@ -253,11 +254,11 @@ public class ExchangePostsService {
   }
 
 
-  private String convertItemListToString(List<Item> items) {
+  private String convertItemListToString(List<ItemInfo> items) {
     // 아이템 리스트를 문자열로 변환하는 로직 구현
     if(!items.isEmpty()) {
       return items.stream()
-              .map(Item::getTitle)
+              .map(ItemInfo::getTitle)
               .collect(Collectors.joining(", "));
     } else{
       return "nothing";

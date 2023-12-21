@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import kosta.main.bids.entity.Bid;
 import kosta.main.categories.entity.Category;
+import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
 import lombok.*;
@@ -46,12 +47,15 @@ public class ItemInfo {
     private String description;
 
     @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "itemInfo")
+    private ExchangePost exchangePost;
+
+    @OneToOne(cascade = CascadeType.PERSIST, mappedBy = "itemInfo")
     private ExchangeHistory exchangeHistory;
     @ElementCollection
     @Builder.Default
-    @CollectionTable(name = "item_images", joinColumns = @JoinColumn(name = "item_id"))
-    @Column(name = "item_image")
-    private List<String> images = new ArrayList<>(); // 아이템의 이미지 리스트
+    @CollectionTable(name = "item_info_images", joinColumns = @JoinColumn(name = "item_info_id"))
+    @Column(name = "item_info_image")
+    private List<String> images = new ArrayList<>(); // 아이템 정보의 이미지 리스트
 
 
     public static ItemInfo from(Item item){

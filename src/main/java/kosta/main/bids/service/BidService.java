@@ -4,7 +4,9 @@ import kosta.main.bids.dto.*;
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
 import kosta.main.exchangehistories.dto.ExchangeHistoryCreateDTO;
+import kosta.main.exchangehistories.entity.ItemInfo;
 import kosta.main.exchangehistories.repository.ExchangeHistoriesRepository;
+import kosta.main.exchangehistories.repository.ItemInfoRepository;
 import kosta.main.exchangehistories.service.ExchangeHistoriesService;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
@@ -22,9 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.*;
+import static kosta.main.items.entity.Item.IsBiding.NOT_BIDING;
 
 @Service
 @AllArgsConstructor
@@ -36,6 +40,7 @@ public class BidService {
     private final UsersRepository usersRepository;
     private final ItemsRepository itemsRepository;
     private final ExchangeHistoriesService exchangeHistoriesService; // 추가
+    private final ItemInfoRepository itemInfoRepository;
 
     // 공통 메서드: 특정 ID를 가진 엔티티를 찾고, 없으면 예외를 발생시키는 메서드
     private <T> T findEntityById(JpaRepository<T, Integer> repository, Integer id, String errorMessage) {
@@ -130,7 +135,7 @@ public class BidService {
         validateItemsForBidding(itemsToUpdate);
 
         // 우선 기존에 있던 모든 Item들의 상태를 Not_Biding으로 바꾸고 bid의 참조도 모두 해제해줌
-        updateItemsBidingStatus(existingBid.getItems(), Item.IsBiding.NOT_BIDING, null);
+        updateItemsBidingStatus(existingBid.getItems(), NOT_BIDING, null);
 
         // 그 다음 업데이트 예정에 담겨있던 Item들은 확정적으로 업데이트 될것이기 때문에 BIDING으로 바꿔주고 existingBid와의 참조도 맺어줌
         updateItemsBidingStatus(itemsToUpdate, Item.IsBiding.BIDING, existingBid); // 새 아이템 상태 변경 및 bid 참조 설정
@@ -173,7 +178,7 @@ public class BidService {
             throw new BusinessException(CommonErrorCode.NOT_BID_OWNER);
         }
 
-        updateItemsBidingStatus(bid.getItems(), Item.IsBiding.NOT_BIDING, null); // 아이템 상태 변경 및 bid 참조 제거
+        updateItemsBidingStatus(bid.getItems(), NOT_BIDING, null); // 아이템 상태 변경 및 bid 참조 제거
         bid.updateStatus(Bid.BidStatus.DELETED);
         bidRepository.save(bid);
     }
@@ -182,41 +187,28 @@ public class BidService {
     // 거래 완료 로직
     @Transactional
     public void completeExchange(Integer exchangePostId, Integer selectedBidId, User user) {
-        ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
 
+        //순서
+        //exchangePost가 존재하는지 확인
+        ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangePostId, "ExchangePost not found");
+        //입력받은 입찰번호와 유저가 존재하는지 확인
         user = usersRepository.findById(user.getUserId()).orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
         Integer userId = user.getUserId();
-        // 거래 완료 권한 확인
+        //거래가 가능한지 권한 확인
         if (!exchangePost.getUser().getUserId().equals(userId)) {
             throw new BusinessException(NOT_EXCHANGE_POST_OWNER);
         }
-
-        // 입찰 정보 가져오기
-
         Bid selectedBid = bidRepository.findById(selectedBidId)
                 .orElseThrow(() -> new BusinessException(BID_NOT_FOUND));
-
-
-        // 입찰 정보 및 게시글 정보를 가져와 교환 내역 생성
-        ExchangeHistoryCreateDTO exchangeHistoryCreateDTO = new ExchangeHistoryCreateDTO(
-            LocalDateTime.now(), exchangePostId, selectedBidId
-        );
-        exchangeHistoriesService.createExchangeHistory(exchangeHistoryCreateDTO, user,selectedBidId);
-
-        //입찰 물건에 대한 exchangeHistory
-
-        // 선택된 입찰 아이템 소유권 변경
+        // 입찰정보와게시글 정보를 통해 교환 내역 생성함 -> 모든 itemInfo 생성
+        exchangeHistoriesService.createExchangeHistory(user,selectedBidId, exchangePostId);
+        //입찰 아이템 소유권 변경
         transferItemOwnership(selectedBid.getItems(), exchangePost.getUser());
-
-        // 게시글의 아이템 소유권 변경
+        //게시글 아이템 소유권 변경
         transferItemOwnership(List.of(exchangePost.getItem()), selectedBid.getUser());
-
         // 게시글 상태 업데이트
         exchangePost.updateExchangePostStatus(ExchangePost.ExchangePostStatus.COMPLETED);
-        exchangePostsRepository.save(exchangePost);
-
-        //
-        // 모든 입찰의 상태 업데이트
+        //모든 입찰의 상태 변경 -> 선택된 것은 SELECTED, 나머지는 DENIED
         List<Bid> bids = exchangePost.getBids();
         for (Bid bid : bids) {
             if (bid.getBidId().equals(selectedBidId)) {
@@ -224,14 +216,58 @@ public class BidService {
             } else {
                 bid.updateStatus(Bid.BidStatus.DENIED);
             }
+            //내부의 ITEM 연관관계는 전부 삭제, FINISHED ITEM으로 기존의 정보는 이관
             List<Item> items = bid.getItems();
-            bid.exchangeFinishedItems(items);// 연관 관계가 끊어질 아이템들을 finishedItems에 저장
-            //얘내도 ItemInfo에 저장
-            
-            finishItemsBidingStatus(bid);
+            //입찰의 물건 데이터 이관
+            List<ItemInfo> list = items.stream().map(ItemInfo::from).map(itemInfoRepository::save).toList();
+            bid.exchangeFinishedItems(list);// 연관 관계가 끊어질 아이템들을 finishedItems에 저장
+            //ITEM의 ISBIDING는 다시 NOT_BIDING으로 변경
+            List<Item> updatedItems = makeItemBidIsNotBiding(items);
+            //BID 참조는 삭제
+            List<Item> updateItems = deleteItemBidreference(updatedItems);
+            itemsRepository.saveAll(updateItems);
+            List<Item> voidItems = new ArrayList<>();
+            bid.updateItems(voidItems);
+            bidRepository.save(bid);
         }
+        //모든 과정을 끝내고 전부 저장
+        exchangePostsRepository.save(exchangePost);
+        //변경 상태 저장
+
+        // 거래 완료 권한 확인
+
+        // 입찰 정보 가져오기
+
+
+
+        // 입찰 정보 및 게시글 정보를 가져와 교환 내역 생성
+
+        //입찰 물건에 대한 exchangeHistory
+
+        // 모든 입찰의 상태 업데이트
     }
-    private void finishItemsBidingStatus(Bid bid) {
+
+    private List<Item> deleteItemBidreference(List<Item> items) {
+        List<Item> newItems = new ArrayList<>();
+        for (int i = 0; i < items.size(); i++) {
+            Item item = items.get(i);
+            item.updateBid(null);
+            newItems.add(item);
+        }
+        return newItems;
+    }
+
+    private List<Item> makeItemBidIsNotBiding(List<Item> items) {
+        List<Item> newItems = new ArrayList<>();
+        for (int i = 0; i < items.size(); i++) {
+            Item item = items.get(i);
+            item.updateIsBiding(NOT_BIDING);
+            newItems.add(item);
+        }
+        return newItems;
+    }
+
+    private Bid finishItemsBidingStatus(Bid bid) {
 //        List<Item> items = bid.getItems();
 ////        List<Item> updatedItems = new ArrayList<>();
 //        for (Item item : items) {
@@ -251,8 +287,11 @@ public class BidService {
 //        }
 //
 //        bidRepository.save(bid);
+        Integer exchangePostId = bid.getExchangePost().getExchangePostId();
+        Optional<ExchangePost> byId = exchangePostsRepository.findById(exchangePostId);
+        ExchangePost exchangePost = byId.orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
         for (Item item : items) {
-            item.updateIsBiding(Item.IsBiding.NOT_BIDING);
+            item.updateIsBiding(NOT_BIDING);
             item.updateBid(null);
         }
 
@@ -261,9 +300,7 @@ public class BidService {
 
         // Bid에서 Item 삭제
         bid.getItems().clear();
-
-        // Bid 저장
-        bidRepository.save(bid);
+        return bid;
     }
 
 

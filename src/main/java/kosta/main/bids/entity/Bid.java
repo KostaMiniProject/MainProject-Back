@@ -1,6 +1,7 @@
 package kosta.main.bids.entity;
 
 import jakarta.persistence.*;
+import kosta.main.exchangehistories.entity.ItemInfo;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.global.audit.Auditable;
 import kosta.main.items.entity.Item;
@@ -46,7 +47,7 @@ public class Bid extends Auditable {
     private List<Item> items = new ArrayList<>();
     @Builder.Default
     @OneToMany(mappedBy = "bid", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    private List<Item> exchangeFinishedItems = new ArrayList<>();
+    private List<ItemInfo> exchangeFinishedItems = new ArrayList<>();
 
     public void updateStatus(BidStatus status) {
         this.status = status;
@@ -55,7 +56,7 @@ public class Bid extends Auditable {
     public void updateItems(List<Item> items) {
         this.items = items;
     }
-    public void exchangeFinishedItems(List<Item> items) {
+    public void exchangeFinishedItems(List<ItemInfo> items) {
         this.exchangeFinishedItems = items;
     }
 

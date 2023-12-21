@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -31,8 +32,8 @@ public class CommunityPostsController {
     /* 커뮤니티 목록 조회 */
     /* 테스트 성공 확인 */
     @GetMapping
-    public ResponseEntity<?> findPosts(@PageableDefault(page = 0, size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<CommunityPostListDTO> posts = communityPostsService.findPosts(pageable);
+    public ResponseEntity<?> findPosts(@PageableDefault(page = 0, size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable,@LoginUser User user) {
+        Page<CommunityPostListDTO> posts = communityPostsService.findPosts(pageable, user);
         List<CommunityPostListDTO> list = posts.stream().toList();
 
         return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(posts)), HttpStatus.OK);
@@ -50,7 +51,8 @@ public class CommunityPostsController {
     /* 테스트 성공 확인 */
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<CommunityPostDTO> addPost(@LoginUser User user, @RequestPart("communityPostCreateDTO") CommunityPostCreateDTO communityPostCreateDTO,
-                                                    @RequestPart("file") List<MultipartFile> files) {
+                                                    @RequestPart(value = "file",required = false) List<MultipartFile> files) {
+        if(files == null) files = new ArrayList<>();
         CommunityPostDTO communityPostDTO = communityPostsService.addPost(user, communityPostCreateDTO,files);
         return ResponseEntity.ok(communityPostDTO);
     }

@@ -112,8 +112,8 @@ class ExchangePostsControllerTest extends ControllerTest {
                                 fieldWithPath("preferItems").type(JsonFieldType.STRING).description("물물교환 선호물품"),
                                 fieldWithPath("address").type(JsonFieldType.STRING).description("거래 요청 주소지"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
-                                fieldWithPath("longitude").type(JsonFieldType.STRING).description("X좌표 NULL 가능"),
-                                fieldWithPath("latitude").type(JsonFieldType.STRING).description("Y좌표 NULL 가능"),
+                                fieldWithPath("ma").type(JsonFieldType.STRING).description("X좌표 NULL 가능"),
+                                fieldWithPath("la").type(JsonFieldType.STRING).description("Y좌표 NULL 가능"),
                                 fieldWithPath("itemId").type(JsonFieldType.NUMBER).description("물건의 ID"),
                                 fieldWithPath("exchangePostStatus").type(JsonFieldType.STRING).description("해당 게시글의 상태").optional()
                         ),
@@ -291,8 +291,8 @@ class ExchangePostsControllerTest extends ControllerTest {
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("물물교환 게시글 제목"),
                                 fieldWithPath("preferItems").type(JsonFieldType.STRING).description("물물교환 선호물품"),
                                 fieldWithPath("address").type(JsonFieldType.STRING).description("거래 요청 주소지"),
-                                fieldWithPath("longitude").type(JsonFieldType.STRING).description("X좌표 NULL 가능"),
-                                fieldWithPath("latitude").type(JsonFieldType.STRING).description("Y좌표 NULL 가능"),
+                                fieldWithPath("ma").type(JsonFieldType.STRING).description("X좌표 NULL 가능"),
+                                fieldWithPath("la").type(JsonFieldType.STRING).description("Y좌표 NULL 가능"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
                                 fieldWithPath("itemId").type(JsonFieldType.NUMBER).description("물건의 ID"),
                                 fieldWithPath("exchangePostStatus").type(JsonFieldType.STRING).description("해당 게시글의 상태").optional()

@@ -1,4 +1,4 @@
-package kosta.main.users.dto;
+package kosta.main.users.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

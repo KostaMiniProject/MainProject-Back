@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +46,7 @@ public class ExchangeHistoriesService {
 
   // 교환 내역 생성 = 거래완료 후의 로직
   @Transactional
-  public ExchangeHistoryCreateResponseDTO createExchangeHistory(ExchangeHistoryCreateDTO exchangeHistoryCreateDTO, User user) {
+  public ExchangeHistoryCreateResponseDTO createExchangeHistory(ExchangeHistoryCreateDTO exchangeHistoryCreateDTO, User user, Integer selectedBidId) {
     // 교환 게시글 정보 가져오기
     ExchangePost exchangePost = findEntityById(exchangePostsRepository, exchangeHistoryCreateDTO.getExchangePostId(), "ExchangePost not found");
 
@@ -53,7 +54,7 @@ public class ExchangeHistoriesService {
 //    Bid selectedBid = findEntityById(bidRepository, exchangeHistoryCreateDTO.getSelectedBidId(), "Bid not found");
 
     Bid selectedBid =
-            exchangePost.getBids().stream().filter(bid -> bid.getStatus() == Bid.BidStatus.SELECTED).findFirst().orElseThrow(() -> new BusinessException(CommonErrorCode.SELECTED_BID_NOT_FOUND));
+            exchangePost.getBids().stream().filter(bid -> Objects.equals(bid.getBidId(), selectedBidId)).findFirst().orElseThrow(() -> new BusinessException(CommonErrorCode.SELECTED_BID_NOT_FOUND));
 
     // 게시글 작성자 정보
     User postUser = exchangePost.getUser();

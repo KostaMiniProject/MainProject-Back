@@ -1,17 +1,31 @@
 package kosta.main.users.controller;
 
 import jakarta.validation.Valid;
-import kosta.main.users.dto.*;
+import kosta.main.communityposts.dto.CommunityPostDetailDTO;
+import kosta.main.communityposts.dto.CommunityPostListDTO;
+import kosta.main.exchangeposts.dto.ExchangePostListDTO;
+import kosta.main.global.dto.PageInfo;
+import kosta.main.global.dto.PageResponseDto;
 import kosta.main.reports.dto.CreateReportDTO;
+import kosta.main.users.dto.request.*;
+import kosta.main.users.dto.response.UserExchangePostResponseDTO;
 import kosta.main.users.entity.LoginUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @RestController
@@ -31,6 +45,11 @@ public class UsersController {
   @GetMapping("/users/profile")
   public ResponseEntity<?> findProfileByName(@RequestParam(value = "name") String name) {
     return ResponseEntity.ok(usersService.findProfileByName(name));
+  }
+
+  @GetMapping("/users/my-profile")
+  public ResponseEntity<?> findMyAllProfile(@LoginUser User user){
+    return new ResponseEntity<>(usersService.findMyAllProfile(user), HttpStatus.OK);
   }
 
   @PostMapping("/signup")
@@ -57,14 +76,15 @@ public class UsersController {
                                       @LoginUser User user,
                                       @RequestBody CreateReportDTO createReportDTO) {
     usersService.reportUser(reportedUserId, user, createReportDTO);
-    return new ResponseEntity(HttpStatus.CREATED);
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
-  @PutMapping("/users/block/{blockUserId}/{userId}")
+  @PutMapping("/users/block/{blockUserId}")
   public ResponseEntity<?> blockUser(@PathVariable("blockUserId") Integer blockUserId,
-                                     @PathVariable("userId") Integer userId) {
-    usersService.blockUser(blockUserId, userId);
-    return new ResponseEntity(HttpStatus.CREATED);
+                                     @LoginUser User user)  {
+    boolean isCreate = usersService.blockUser(blockUserId, user);
+    if(isCreate) return new ResponseEntity<>(HttpStatus.CREATED);
+    else return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
 //  @GetMapping("/users/exchange-history")
@@ -103,6 +123,22 @@ public class UsersController {
       return new ResponseEntity<>(userEmailDTO, HttpStatus.OK);
     }
     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  }
+
+  @GetMapping("/users/exchange-post-list")
+  public ResponseEntity<?> findMyExchangePostList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                  @LoginUser User user){
+    Page<UserExchangePostResponseDTO> myExchangePostList = usersService.findMyExchangePostList(pageable, user);
+    List<UserExchangePostResponseDTO> list = myExchangePostList.stream().toList();
+    return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(myExchangePostList)), HttpStatus.OK);
+  }
+
+  @GetMapping("/users/community-post-list") // 12월
+  public ResponseEntity<?> findMyCommunityPostList(@PageableDefault(size = 10, sort = "communityPostId", direction = Sort.Direction.DESC) Pageable pageable,
+                                                  @LoginUser User user){
+    Page<CommunityPostListDTO> myCommunityPostList = usersService.findMyCommunityPostList(pageable, user);
+    List<CommunityPostListDTO> list = myCommunityPostList.stream().toList();
+    return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(myCommunityPostList)), HttpStatus.OK);
   }
 
 }

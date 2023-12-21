@@ -1,4 +1,4 @@
-package kosta.main.users.dto;
+package kosta.main.users.dto.response;
 
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;

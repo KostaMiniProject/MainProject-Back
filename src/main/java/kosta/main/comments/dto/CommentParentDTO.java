@@ -1,7 +1,7 @@
 package kosta.main.comments.dto;
 
 import kosta.main.comments.entity.Comment;
-import kosta.main.users.dto.UserCommentResponseDTO;
+import kosta.main.users.dto.response.UserCommentResponseDTO;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

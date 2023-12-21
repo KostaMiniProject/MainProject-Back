@@ -2,7 +2,6 @@ package kosta.main.exchangeposts.service;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
-import kosta.main.exchangehistories.entity.ExchangeHistory;
 import kosta.main.exchangehistories.repository.ExchangeHistoriesRepository;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
@@ -12,8 +11,6 @@ import kosta.main.items.entity.Item;
 import kosta.main.items.repository.ItemsRepository;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,7 +21,9 @@ import java.time.format.FormatStyle;
 
 import java.util.ArrayList;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.*;
@@ -73,8 +72,8 @@ public class ExchangePostsService {
             .title(exchangePostDTO.getTitle())
             .preferItems(exchangePostDTO.getPreferItems().orElse(null))
             .address(exchangePostDTO.getAddress().orElse(null))
-            .longitude(exchangePostDTO.getLongitude().orElse(null))
-            .latitude(exchangePostDTO.getLatitude().orElse(null))
+            .longitude(exchangePostDTO.getLa().orElse(null))
+            .latitude(exchangePostDTO.getMa().orElse(null))
             .content(exchangePostDTO.getContent())
             .build();
     ExchangePost savedExchangePost = exchangePostRepository.save(exchangePost);
@@ -109,6 +108,60 @@ public class ExchangePostsService {
               .build();
         });
   }
+
+  // 지도에 불러올 교환 게시글의 리스트 출력
+  @Transactional(readOnly = true)
+  public List<ExchangePostListForMapDTO> getExchangePostForMap(String longitude, String latitude) {
+    Double lat = latitude != null ? Double.parseDouble(latitude) : 37.338860;
+    Double lon = longitude != null ? Double.parseDouble(longitude) : 127.109316;
+
+    List<ExchangePost> exchangePosts = exchangePostRepository.findPostsWithinDistance(lat, lon);
+
+    return exchangePosts.stream()
+        .sorted(Comparator.comparingDouble(post -> calculateDistance(lat, lon, Double.parseDouble(post.getLatitude()), Double.parseDouble(post.getLongitude()))))
+        .map(exchangePost -> {
+          String imgUrl = exchangePost.getItem().getImages().isEmpty() ? null : exchangePost.getItem().getImages().get(0);
+          return ExchangePostListForMapDTO.builder()
+              .exchangePostId(exchangePost.getExchangePostId())
+              .title(exchangePost.getTitle())
+              .longitude(Optional.ofNullable(exchangePost.getLongitude()))
+              .latitude(Optional.ofNullable(exchangePost.getLatitude()))
+              .exchangePostStatus(exchangePost.getExchangePostStatus().toString())
+              .createdAt(exchangePost.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)))
+              .imgUrl(imgUrl)
+              .build();
+        })
+        .collect(Collectors.toList());
+  }
+
+  public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    final int EARTH_RADIUS = 6371; // 지구의 반경(km 단위)
+
+    double latDistance = Math.toRadians(lat2 - lat1);
+    double lonDistance = Math.toRadians(lon2 - lon1);
+
+    double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+        + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
+    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return EARTH_RADIUS * c;
+  }
+
+
+
+//  public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+//    final int R = 6371; // 지구의 반경(km)
+//    double latDistance = Math.toRadians(lat2 - lat1);
+//    double lonDistance = Math.toRadians(lon2 - lon1);
+//    double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+//        + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+//        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+//    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+//    return R * c;
+//  }
+
   @Transactional(readOnly = true)
   public Page<ExchangePostListDTO> searchAllExchangePosts(String keyword,Pageable pageable) {
     Page<ExchangePost> all = exchangePostRepository.searchExchangePost(keyword,pageable);
@@ -279,6 +332,7 @@ public class ExchangePostsService {
   public String getLocation(String address) {
     return kakaoAPI.getLocation(address);
   }
+
 
 
 }

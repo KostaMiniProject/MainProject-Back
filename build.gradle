@@ -74,6 +74,9 @@ dependencies {
     // stomp
     implementation 'org.webjars:stomp-websocket:2.3.4'
 
+    //openfeign
+//    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
     // 메일전송 관련
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework:spring-context-support'

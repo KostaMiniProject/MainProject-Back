@@ -1,5 +1,7 @@
 package kosta.main.communityposts;
 
+import kosta.main.comments.controller.CommentStubData;
+import kosta.main.comments.dto.CommentParentDTO;
 import kosta.main.communityposts.dto.*;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.likes.dto.LikeDTO;
@@ -15,6 +17,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +45,7 @@ public class CommunityPostStubData {
                 .content(CONTENT)
                 .views(VIEWS)
                 .build();
+        communityPost.setCreatedAt(LocalDateTime.now());
         Like like = Like.builder()
                 .likeId(LIKE_ID)
                 .user(user)
@@ -60,6 +64,7 @@ public class CommunityPostStubData {
                 .content(ANOTHER_CONTENT)
                 .views(VIEWS)
                 .build();
+        communityPost.setCreatedAt(LocalDateTime.now());
         Like like = Like.builder()
                 .likeId(ANOTHER_LIKE_ID)
                 .user(anotherUser)
@@ -69,12 +74,24 @@ public class CommunityPostStubData {
         return communityPost;
     }
 
+    public List<CommunityPostDetailDTO> getCommunityPostDetailDTO(){
+        CommentStubData commentStubData = new CommentStubData();
+        List<CommentParentDTO> commentListDTO = commentStubData.getCommentListDTO();
+        CommunityPost communityPost = getCommunityPost();
+        User user = getCommunityPost().getUser();
+        CommunityPost anotherCommunityPost = getAnotherCommunityPost();
+        List<CommunityPostDetailDTO> communityPostLists = new ArrayList<>();
+        communityPostLists.add(CommunityPostDetailDTO.from(communityPost,user,commentListDTO));
+        communityPostLists.add(CommunityPostDetailDTO.from(anotherCommunityPost,user,commentListDTO));
+        return communityPostLists;
+    }
     public List<CommunityPostListDTO> getCommunityPostListDTO(){
         CommunityPost communityPost = getCommunityPost();
+        User user = getCommunityPost().getUser();
         CommunityPost anotherCommunityPost = getAnotherCommunityPost();
         List<CommunityPostListDTO> communityPostLists = new ArrayList<>();
-        communityPostLists.add(CommunityPostListDTO.from(communityPost));
-        communityPostLists.add(CommunityPostListDTO.from(anotherCommunityPost));
+        communityPostLists.add(CommunityPostListDTO.from(communityPost,user));
+        communityPostLists.add(CommunityPostListDTO.from(anotherCommunityPost,user));
         return communityPostLists;
     }
 
@@ -86,6 +103,14 @@ public class CommunityPostStubData {
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), communityPostListDto.size());
         return new PageImpl<>(communityPostListDto.subList(start, end), pageRequest, communityPostListDto.size());
+    }
+    public Page<CommunityPostDetailDTO> getCommunityPostDetailDTOPage(){
+        List<CommunityPostDetailDTO> communityPostDetailDTO = getCommunityPostDetailDTO();
+        // 요청으로 들어온 page와 한 page당 원하는 데이터의 갯수
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), communityPostDetailDTO.size());
+        return new PageImpl<>(communityPostDetailDTO.subList(start, end), pageRequest, communityPostDetailDTO.size());
     }
 
     public CommunityPostResponseDTO getCommunityPostResponseDTO(){
@@ -104,7 +129,9 @@ public class CommunityPostStubData {
     }
     public CommunityPostDetailDTO getCommunityPostDetailDto(){
         CommunityPost communityPost = getCommunityPost();
-        return CommunityPostDetailDTO.from(communityPost,true);
+        CommentStubData commentStubData = new CommentStubData();
+        List<CommentParentDTO> commentListDTO = commentStubData.getCommentListDTO();
+        return CommunityPostDetailDTO.from(communityPost,communityPost.getUser(),commentListDTO);
     }
     public CommunityPostCreateDTO getCommunityPostCreateDTO(){
         return CommunityPostCreateDTO.builder()

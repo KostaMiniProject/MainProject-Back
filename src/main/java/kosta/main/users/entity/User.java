@@ -1,11 +1,15 @@
 package kosta.main.users.entity;
 import jakarta.persistence.*;
+import kosta.main.bids.entity.Bid;
+import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.dibs.entity.Dib;
 import kosta.main.exchangehistories.entity.ExchangeHistory;
+import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.global.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
-import kosta.main.users.dto.UserCreateDTO;
-import kosta.main.users.dto.UserUpdateDTO;
+import kosta.main.items.entity.Item;
+import kosta.main.users.dto.request.UserCreateDTO;
+import kosta.main.users.dto.request.UserUpdateDTO;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -55,6 +59,21 @@ public class User extends Auditable {
     @Builder.Default
     @Column(nullable = false)
     private Double rating = 3.0;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Item> items = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ExchangePost> exchangePosts = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Bid> bids = new ArrayList<>();
+
+
+
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -114,5 +133,18 @@ public class User extends Auditable {
 
     public void addBlockedUser(BlockedUser blockedUser){
         this.blockedUsers.add(blockedUser);
+    }
+    public void removeBlockedUser(BlockedUser blockedUser){
+        this.blockedUsers.remove(blockedUser);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", email='" + email + '\'' +
+
+                ", blockedUsers=" + blockedUsers +
+                '}';
     }
 }

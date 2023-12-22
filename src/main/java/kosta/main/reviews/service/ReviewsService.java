@@ -37,11 +37,10 @@ public class ReviewsService {
 //    5. Review 형인 newReview 객체에 빌드 패턴을 통해 (reviewer, reviewedUser, rating, review)값을 넣어준다.
 //    6. ReviewRepository의 save 메서드를 이용해서 newReview를 DB에 적용시켜준다.
     //리뷰 유저 존재하는지 확인
-    if(reviewer == null) throw new BusinessException(CommonErrorCode.USER_NOT_FOUND);
+    reviewer = usersService.findUserByUserId(reviewer.getUserId());
     Integer reviewerId = reviewer.getUserId();
     Optional<ExchangePost> byId = exchangePostsRepository.findById(exchangePostId);
     ExchangePost exchangePost = byId.orElseThrow(() -> new BusinessException(CommonErrorCode.EXCHANGE_POST_NOT_FOUND));
-
 //해당 유저가 해당 거래(exchangePost)에 대한 리뷰를 작성했는지,
     Optional<Review> first = reviewer.getReviews().stream().filter(review -> Objects.equals(review.getExchangePostId(),exchangePostId)).findFirst();
     if(first.isPresent()) throw new BusinessException(CommonErrorCode.ALREADY_WRITE_REVIEW);

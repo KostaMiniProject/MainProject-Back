@@ -22,7 +22,7 @@ public class CommentChildDTO {
     private UserCommentResponseDTO profile;
 
     public static CommentChildDTO from(Comment comment, Integer userId){
-        String replyContent = "@" + comment.getUser().getName()+ " " + comment.getContent();
+        String replyContent = "@" + comment.getParent().getUser().getName()+ " " + comment.getContent();
         return new CommentChildDTO(comment.getCommentId(), replyContent, Objects.equals(userId, comment.getUser().getUserId()),UserCommentResponseDTO.from(comment.getUser()));
     }
 }

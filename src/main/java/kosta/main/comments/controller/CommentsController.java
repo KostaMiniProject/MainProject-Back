@@ -20,8 +20,9 @@ public class CommentsController {
     private final CommentsService commentsService;
     /* 커뮤니티 댓글 조회 */
     @GetMapping("/{communityPostId}/comments")
-    public ResponseEntity<?> findComments(@PathVariable("communityPostId") Integer communityPostId) {
-        return ResponseEntity.ok(commentsService.findCommentsByPostId(communityPostId));
+    public ResponseEntity<?> findComments(@PathVariable("communityPostId") Integer communityPostId,
+                                          @LoginUser User user) {
+        return ResponseEntity.ok(commentsService.findCommentsByPostId(communityPostId,user));
     }
 
     /* 커뮤니티 댓글 작성 */

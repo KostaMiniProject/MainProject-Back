@@ -78,10 +78,10 @@ public class CommentStubData {
         Map<Integer,CommentParentDTO> result = new HashMap<>();
         for (Comment comment : comments) {
             if(comment.getParent() == null) {
-                result.put(comment.getCommentId(),CommentParentDTO.from(comment));
+                result.put(comment.getCommentId(),CommentParentDTO.from(comment,1));
             }
             else {
-                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment));
+                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment,1));
             }
         }
         return new ArrayList<>(result.values());

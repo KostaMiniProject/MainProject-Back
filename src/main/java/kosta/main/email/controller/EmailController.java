@@ -42,6 +42,6 @@ public class EmailController {
     log.info("입력값 : " + emailCheckDto.getEmailCheckNum());
     Boolean result = emailService.emailAuthNumCheck(emailCheckDto);
     log.info("인증 여부 : " + (result ? "완료" : "오류"));
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 }

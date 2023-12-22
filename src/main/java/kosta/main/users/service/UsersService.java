@@ -219,7 +219,6 @@ public class UsersService {
 
   public Page<CommunityPostListDTO> findMyCommunityPostList(Pageable pageable, User user){
     Page<CommunityPost> posts = communityPostsRepository.findByUser_UserId(pageable, user.getUserId());
-
     List<CommunityPostListDTO> list = posts.stream().map(post -> CommunityPostListDTO.from(post, user)).toList();
     return new PageImpl<>(list, posts.getPageable(), posts.getTotalElements());
   }

@@ -51,17 +51,30 @@ public class ChatRoomService {
     Optional<ChatRoom> existingChatRoom = chatRoomsRepository.findByBid_BidId(createChatRoomDTO.getBidId());
     if (existingChatRoom.isPresent()) {
       // 이미 존재하는 채팅방의 정보를 반환
-      return CreateChatRoomResponseDTO.from(existingChatRoom.get());
+      ChatRoom chatRoom = existingChatRoom.get();
+
+      // 채팅방의 참가자가 나갔을 경우를 처리
+      if (chatRoom.getSender() == null) {
+        chatRoom.updateSender(sender);
+      } else if (chatRoom.getReceiver() == null) {
+        chatRoom.updateReceiver(sender);
+      }
+
+      // 변경된 채팅방 저장
+      chatRoomsRepository.save(chatRoom);
+
+      return CreateChatRoomResponseDTO.from(chatRoom);
     } else {
       // 새 채팅방 생성
       Bid bid = findEntityById(bidRepository, createChatRoomDTO.getBidId(), "Bid not found");
       User receiver = findEntityById(usersRepository, bid.getUser().getUserId(), "Receiver not found");
       ExchangePost exchangePost = findEntityById(exchangePostsRepository, bid.getExchangePost().getExchangePostId(), "ExchangePost not found");
-      if(!sender.getUserId().equals(exchangePost.getUser().getUserId())){
-        new RuntimeException("교환 게시글의 작성자만 채팅방을 개설할 수 있습니다!");
+
+      if (!sender.getUserId().equals(exchangePost.getUser().getUserId())) {
+        throw new RuntimeException("교환 게시글의 작성자만 채팅방을 개설할 수 있습니다!");
       }
 
-        ChatRoom chatRoom = ChatRoom.of(exchangePost, bid, sender, receiver);
+      ChatRoom chatRoom = ChatRoom.of(exchangePost, bid, sender, receiver);
 
       // 초기 시스템 메시지 생성
       Chat initialChat = Chat.builder()
@@ -86,37 +99,26 @@ public class ChatRoomService {
   public void leaveChatRoom(Integer chatRoomId, User user) {
     ChatRoom chatRoom = findEntityById(chatRoomsRepository, chatRoomId, "ChatRoom not found with id: " + chatRoomId);
 
-    // Optional을 사용하여 null 체크 수행
-    boolean isSender = Optional.ofNullable(chatRoom.getSender())
-        .map(User::getUserId)
-        .filter(userId -> userId.equals(user.getUserId()))
-        .isPresent();
+    Optional<User> optionalSender = Optional.ofNullable(chatRoom.getSender());
+    Optional<User> optionalReceiver = Optional.ofNullable(chatRoom.getReceiver());
 
-    boolean isReceiver = Optional.ofNullable(chatRoom.getReceiver())
-        .map(User::getUserId)
-        .filter(userId -> userId.equals(user.getUserId()))
-        .isPresent();
-
-    if (!isSender && !isReceiver) {
+    if (optionalSender.map(User::getUserId).filter(userId -> userId.equals(user.getUserId())).isPresent()) {
+      chatRoom.updateSender(null); // 교환 게시글 작성자가 나갔다면 Sender를 null로 처리
+    } else if (optionalReceiver.map(User::getUserId).filter(userId -> userId.equals(user.getUserId())).isPresent()) {
+      chatRoom.updateReceiver(null); // 입찰자가 나갔다면 Receiver를 null로 처리
+    } else {
       throw new RuntimeException("User does not belong to the chat room");
     }
 
-    if ((isSender && chatRoom.getReceiver() == null) || (isReceiver && chatRoom.getSender() == null)) {
-      // 모든 유저가 나갔다면 채팅방은 삭제 처리 된다.
+    if (!optionalSender.isPresent() && !optionalReceiver.isPresent()) {
+      // 모든 유저가 나갔다면 채팅방 삭제
       chatRoomsRepository.delete(chatRoom);
     } else {
-      if (isSender) { // 교환 게시글 작성자가 나갔다면 해당 채팅방의 Sender를 null로 처리한다.
-        chatRoom.updateSender(null);
-      } else { // 입찰자가 나갔다면 Receiver를 null로 처리한다.
-        chatRoom.updateReceiver(null);
-      }
+      // 변경 사항 저장
       chatRoomsRepository.save(chatRoom);
-
-      // Send system message to the remaining user
-      String systemMessageContent = "User :" + user.getName() + " has left the chat room.";
-//      sendMessageSystem(chatRoomId, systemMessageContent);
     }
   }
+
 
 
   // 채팅방 목록 조회
@@ -126,7 +128,7 @@ public class ChatRoomService {
     // 채팅방을 마지막 메시지 시간에 따라 내림차순으로 정렬
     return chatRooms.stream()
         .map(chatRoom -> ChatRoomResponseDTO.of(chatRoom, currentUser))
-        .sorted(Comparator.comparing(ChatRoomResponseDTO::getLastMessageTimeDifference).reversed())
+        .sorted(Comparator.comparing(ChatRoomResponseDTO::getLastMessageDateTime).reversed())
         .collect(Collectors.toList());
   }
 
@@ -134,7 +136,9 @@ public class ChatRoomService {
   public ChatRoomEnterResponseDTO getChatList(Integer chatRoomId, User user, Pageable pageable) {
     ChatRoom chatRoom = findEntityById(chatRoomsRepository, chatRoomId, "ChatRoom Not Found");
 
-    User otherUser = chatRoom.getSender().getUserId().equals(user.getUserId()) ? chatRoom.getReceiver() : chatRoom.getSender();
+    User otherUser = Optional.ofNullable(chatRoom.getSender())
+        .filter(sender -> !sender.getUserId().equals(user.getUserId()))
+        .orElse(chatRoom.getReceiver());
 
     ExchangePost exchangePost = chatRoom.getExchangePost();
     Item exchangePostItem = exchangePost.getItem();
@@ -142,37 +146,51 @@ public class ChatRoomService {
     String exchangePostCategory = exchangePostItem.getCategory() != null ? exchangePostItem.getCategory().getCategoryName() : null;
     Bid bid = findEntityById(bidRepository, chatRoom.getBid().getBidId(), "bid Not Found");
     Page<Chat> chats = chatsRepository.findByChatRoom(chatRoom, pageable);
+
     List<ChatRoomEnterResponseDTO.ChatMessageResponseDTO> chatMessageResponseDTOList = chats.stream()
-        .map(chat -> ChatRoomEnterResponseDTO.ChatMessageResponseDTO.builder()
-            .chatId(chat.getChatId())
-            .senderId(chat.getUser().getUserId())
-            .content(Optional.ofNullable(chat.getMessage()))
-            .imageUrl(Optional.ofNullable(chat.getChatImage()))
-            .createAt(chat.getCreatedAt().toString()) // 여기서 날짜 형식을 조정할 수 있습니다.
-            .isRead(chat.isRead())
-            .build())
+        .map(chat -> {
+          Integer senderId = Optional.ofNullable(chat.getUser())
+              .map(User::getUserId)
+              .orElse(null); // User가 null일 경우를 대비
+
+          return ChatRoomEnterResponseDTO.ChatMessageResponseDTO.builder()
+              .chatId(chat.getChatId())
+              .senderId(senderId)
+              .content(Optional.ofNullable(chat.getMessage()))
+              .imageUrl(Optional.ofNullable(chat.getChatImage()))
+              .createAt(chat.getCreatedAt().toString())
+              .isRead(chat.isRead())
+              .build();
+        })
         .collect(Collectors.toList());
 
+
+    // 메시지 읽음 처리
     for (Chat chat : chats) {
-      if (!chat.getUser().getUserId().equals(user.getUserId()) && !chat.isRead()) {
-        chat.updateIsRead(true); // 본인이 보낸 메시지가 아닌 경우 읽음 처리
-        chatsRepository.save(chat); // 변경된 상태 저장
-      }
+      Optional.ofNullable(chat.getUser())
+          .map(User::getUserId)
+          .ifPresent(userId -> {
+            if (!userId.equals(user.getUserId()) && !chat.isRead()) {
+              chat.updateIsRead(true);
+              chatsRepository.save(chat);
+            }
+          });
     }
     return ChatRoomEnterResponseDTO.builder()
-        .isOwner(user.getUserId().equals(exchangePost.getUser().getUserId()))
+        .isOwner(user.getUserId().equals(exchangePost.getUser() != null ? exchangePost.getUser().getUserId() : null))
         .exchangePostId(exchangePost.getExchangePostId())
         .exchangePostTittle(exchangePost.getTitle())
         .exchangePostAddress(exchangePost.getAddress())
-        .exchangePostCategory(exchangePostCategory)
-        .exchangePostImage(exchangePostImage)
+        .exchangePostCategory(exchangePostCategory) // 이전에 null 체크를 이미 수행했다고 가정
+        .exchangePostImage(exchangePostImage) // 이전에 null 체크를 이미 수행했다고 가정
         .status(bid.getStatus())
         .bidId(bid.getBidId())
-        .userId(otherUser.getUserId())
-        .userName(otherUser.getName())
-        .userProfileImage(otherUser.getProfileImage())
+        .userId(otherUser != null ? otherUser.getUserId() : null)
+        .userName(otherUser != null ? otherUser.getName() : null)
+        .userProfileImage(otherUser != null ? otherUser.getProfileImage() : null)
         .messages(chatMessageResponseDTOList)
         .build();
+
   }
 
 

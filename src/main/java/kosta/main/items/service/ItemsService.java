@@ -70,6 +70,8 @@ public class ItemsService {
     // 사용자와 카테고리 정보 조회
 //    Category category = categoriesRepository.findById(itemSaveDTO.getCategoryId())
 //            .orElseThrow(() -> new RuntimeException("Category not found"));
+    //유저 미발견 에러 추가
+    if(user == null) throw new BusinessException(USER_NOT_FOUND);
 
     List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
     String categoryName = itemSaveDTO.getCategory();

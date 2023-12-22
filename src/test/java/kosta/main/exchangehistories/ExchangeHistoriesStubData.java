@@ -21,6 +21,10 @@ public class ExchangeHistoriesStubData {
 
 
 
+
+
+
+
     // 아이템 정보를 ItemHistoryDTO 리스트로 변환하는 로직
     private List<ItemHistoryDTO> createItemHistoryList(Bid selectedBid, Item postItem) {
         List<ItemHistoryDTO> exchangedItems = new ArrayList<>();

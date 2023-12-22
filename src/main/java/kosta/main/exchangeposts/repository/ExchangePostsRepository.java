@@ -2,6 +2,7 @@ package kosta.main.exchangeposts.repository;
 
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.exchangeposts.entity.ExchangePost;
+import kosta.main.users.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +22,7 @@ public interface ExchangePostsRepository extends JpaRepository<ExchangePost, Int
     @Query(value = "SELECT * FROM exchange_posts e WHERE ST_Distance_Sphere(point(e.longitude, e.latitude), point(:lon, :lat)) < 5000", nativeQuery = true)
     List<ExchangePost> findPostsWithinDistance(@Param("lat") double lat, @Param("lon") double lon);
 
+    Page<ExchangePost> findByExchangePostStatusIsAndUser_UserId(ExchangePost.ExchangePostStatus exchangePostStatus, Integer userId, Pageable pageable);
     Page<ExchangePost> findByUser_UserId(Pageable pageable, Integer userId);
 
 }

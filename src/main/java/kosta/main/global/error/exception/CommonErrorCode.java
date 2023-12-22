@@ -21,7 +21,9 @@ public enum CommonErrorCode implements ErrorCode {
     OTHER_ITEM_USE(HttpStatus.BAD_REQUEST, "본인의 물건만 입찰에 사용할 수 있습니다."),
     ALREADY_BIDDING_ITEM(HttpStatus.BAD_REQUEST,"이미 입찰에 사용중인 물건입니다."),
     ALREADY_WRITE_REVIEW(HttpStatus.BAD_REQUEST,"이미 교환 게시글에 대한 리뷰를 작성했습니다"),
+    NOT_RESERVATED(HttpStatus.BAD_REQUEST,"예약 중이 아닙니다"),
     NOT_BID_OWNER(HttpStatus.BAD_REQUEST, "입찰을 작성한 유저가 아닙니다."),
+    NOT_FINISHED_EXCHANGE(HttpStatus.BAD_REQUEST, "거래가 완료된 게시글이 아닙니다."),
     NOT_EXCHANGE_POST_OWNER(HttpStatus.BAD_REQUEST, "교환 게시글 작성자가 아닙니다."),
     FINISHED_EXCHANGE(HttpStatus.BAD_REQUEST,"거래가 완료된 게시물입니다."),
     NOT_DENIED_STATUS(HttpStatus.BAD_REQUEST, "입찰이 DENIED 상태가 아닙니다."),
@@ -30,6 +32,7 @@ public enum CommonErrorCode implements ErrorCode {
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST,"비밀번호가 일치하지 않습니다."),
     NOT_EQUAL_COMMUNITY_POST(HttpStatus.BAD_REQUEST, "부모댓글과 자식댓글의 커뮤니티 게시글이 일치하지 않습니다"),
     NOT_JOIN_EXCHANGE(HttpStatus.BAD_REQUEST, "해당 물물교환에 참여한 유저가 아닙니다"),
+    NOT_EQUAL_EXCHANGE_POST(HttpStatus.BAD_REQUEST, "입찰이 작성된 교환게시글과 해당 교환게시글이 일치하지 않습니다"),
 
 
     /**

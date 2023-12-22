@@ -260,7 +260,7 @@ class BidControllerTest extends ControllerTest {
         //given
 
         //when
-        doNothing().when(bidService).completeExchange(Mockito.anyInt(),Mockito.anyInt(),Mockito.anyInt());
+        doNothing().when(bidService).completeExchange(Mockito.anyInt(),Mockito.anyInt(),Mockito.any(User.class));
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders.put(BASE_URL+"/{exchangePostId}/bids/{bidId}/complete", EXCHANGE_POST_ID,BID_ID)
                         .header("Authorization", "Bearer yourAccessToken")

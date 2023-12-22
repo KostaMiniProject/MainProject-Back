@@ -1,9 +1,7 @@
 package kosta.main.users.entity;
 import jakarta.persistence.*;
 import kosta.main.bids.entity.Bid;
-import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.dibs.entity.Dib;
-import kosta.main.exchangehistories.entity.ExchangeHistory;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.global.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
@@ -83,13 +81,6 @@ public class User extends Auditable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BlockedUser> blockedUsers = new ArrayList<>(); // 클래스 이름을 단수형으로 변경
 
-
-    // 교환 내역에 대한 관계를 두 개의 별도 필드로 정의
-    @OneToMany(mappedBy = "exchangeInitiator")
-    private List<ExchangeHistory> initiatedExchanges;
-
-    @OneToMany(mappedBy = "exchangePartner")
-    private List<ExchangeHistory> participatedExchanges;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -21,7 +21,7 @@ public class Review extends Auditable {
     private Integer reviewId;
 
     @Column
-    private Integer exchangeHistoryId;
+    private Integer exchangePostId;
 
     @ManyToOne
     @JoinColumn(name = "reviewer_id")

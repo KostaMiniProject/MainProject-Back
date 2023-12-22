@@ -2,6 +2,7 @@ package kosta.main.reviews.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kosta.main.ControllerTest;
+import kosta.main.items.dto.ItemSaveDTO;
 import kosta.main.reviews.ReviewStubData;
 import kosta.main.reviews.dto.ReviewSaveDTO;
 import kosta.main.reviews.entity.Review;
@@ -11,6 +12,7 @@ import kosta.main.users.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,10 +24,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.ResultActions;
 
 
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,6 +43,7 @@ class ReviewsControllerTest extends ControllerTest {
 
     public static final int ONE_ACTION = 1;
     public static final String BASIC_URL = "/api/reviews";
+    public static final int EXCHANGE_POST_ID = 1;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -64,10 +70,11 @@ class ReviewsControllerTest extends ControllerTest {
 
         //given
 
+        doNothing().when(reviewsService).addReviews(Mockito.any(ReviewSaveDTO.class),Mockito.any(User.class), Mockito.anyInt());
 
         //when
         ResultActions action = mockMvc.perform(
-                post(BASIC_URL)
+                post(BASIC_URL+"/{exchangePostId}", EXCHANGE_POST_ID)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer yourAccessToken")
@@ -81,6 +88,9 @@ class ReviewsControllerTest extends ControllerTest {
                 .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("exchangePostId").description("물물교환 게시글 ID")
                         ),
                         requestFields(
                                 fieldWithPath("reviewedUserId").type(JsonFieldType.NUMBER).description("유저의 아이디로 사용되는 이메일"),

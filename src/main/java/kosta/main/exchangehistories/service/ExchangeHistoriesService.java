@@ -11,6 +11,7 @@ import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.error.exception.CommonErrorCode;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
+import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class ExchangeHistoriesService {
   private final ExchangePostsRepository exchangePostsRepository;
   private final BidRepository bidRepository;
+  private final UsersRepository usersRepository;
 
 
   // 공통 메서드: 특정 ID를 가진 엔티티를 찾고, 없으면 예외를 발생시키는 메서드
@@ -97,7 +99,10 @@ public class ExchangeHistoriesService {
   @Transactional(readOnly = true)
   public Page<ExchangeHistoriesResponseDTO> getExchangeHistories(User user, Pageable pageable) {
     Integer userId = 0;
-    if(user != null) userId = user.getUserId();
+    if(user != null) {
+      userId = user.getUserId();
+      user = usersRepository.findById(userId).get();
+    }
     Page<ExchangePost> exchangePost = exchangePostsRepository.findByExchangePostStatusIsAndUser_UserId(ExchangePost.ExchangePostStatus.COMPLETED, userId, pageable);
     List<ExchangeHistoriesResponseDTO> exchangeHistoriesResponseDTOS = makeExchangeHistoriesResponseDTO(user,exchangePost);
     PageRequest pageRequest = PageRequest.of(exchangePost.getNumber(), exchangePost.getSize());
@@ -106,7 +111,7 @@ public class ExchangeHistoriesService {
     return new PageImpl<>(exchangeHistoriesResponseDTOS.subList(start, end), pageRequest, exchangeHistoriesResponseDTOS.size());
   }
 
-  private static List<ExchangeHistoriesResponseDTO> makeExchangeHistoriesResponseDTO(User user, Page<ExchangePost> exchangePosts) {
+  private List<ExchangeHistoriesResponseDTO> makeExchangeHistoriesResponseDTO(User user, Page<ExchangePost> exchangePosts) {
     return exchangePosts.stream().map(exchangePost -> {
       Bid selectedBid = exchangePost.getBids().stream()
               .filter(bid -> bid.getStatus() == Bid.BidStatus.COMPLETED)

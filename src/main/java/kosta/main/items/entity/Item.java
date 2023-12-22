@@ -51,6 +51,10 @@ public class Item extends Auditable {
   @Column(length = 20, nullable = false)
   private ItemStatus itemStatus = ItemStatus.PUBLIC;
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "before_item")
+  private Item beforeItem;
+
   @ElementCollection
   @Builder.Default
   @CollectionTable(name = "item_images", joinColumns = @JoinColumn(name = "item_id"))
@@ -62,7 +66,7 @@ public class Item extends Auditable {
   private IsBiding isBiding = IsBiding.NOT_BIDING;
 
   public enum ItemStatus {
-    PUBLIC, PRIVATE, DELETED
+    PUBLIC, PRIVATE, DELETED, COMPLETED
   }
 
   public enum IsBiding {

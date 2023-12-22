@@ -2,8 +2,6 @@ package kosta.main.exchangeposts.service;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
-import kosta.main.exchangehistories.entity.ItemInfo;
-import kosta.main.exchangehistories.repository.ExchangeHistoriesRepository;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
@@ -33,7 +31,6 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 public class ExchangePostsService {
 
   private final ExchangePostsRepository exchangePostRepository;
-  private final ExchangeHistoriesRepository exchangeHistoriesRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
   private final KakaoAPI kakaoAPI;
@@ -225,7 +222,7 @@ public class ExchangePostsService {
                       .bidId(bid.getBidId())
                       .name(bid.getUser().getName())
                       .imageUrl(bid.getItems().get(0).getImages().get(0))
-                      .items(convertItemListToString(bid.getExchangeFinishedItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
+                      .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
                       .build())
               .collect(Collectors.toList());
     }
@@ -247,18 +244,18 @@ public class ExchangePostsService {
             .map(bid -> ExchangePostDetailDTO.BidDetails.builder()
                     .bidId(bid.getBidId())
                     .name(bid.getUser().getName())
-                    .imageUrl(bid.getExchangeFinishedItems().get(0).getImages().get(0))
-                    .items(convertItemListToString(bid.getExchangeFinishedItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
+                    .imageUrl(bid.getItems().get(0).getImages().get(0))
+                    .items(convertItemListToString(bid.getItems())) // 예시: 아이템 목록을 문자열로 변환하는 메서드
                     .build())
             .collect(Collectors.toList());
   }
 
 
-  private String convertItemListToString(List<ItemInfo> items) {
+  private String convertItemListToString(List<Item> items) {
     // 아이템 리스트를 문자열로 변환하는 로직 구현
     if(!items.isEmpty()) {
       return items.stream()
-              .map(ItemInfo::getTitle)
+              .map(Item::getTitle)
               .collect(Collectors.joining(", "));
     } else{
       return "nothing";

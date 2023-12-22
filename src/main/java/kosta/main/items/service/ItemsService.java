@@ -40,7 +40,6 @@ public class ItemsService {
   private final ItemsRepository itemsRepository;
   private final ImageService imageService;
   private final CategoriesRepository categoriesRepository;
-  private final UsersRepository usersRepository;
 
   /**
    * 물건 생성

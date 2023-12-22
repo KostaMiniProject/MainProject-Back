@@ -47,7 +47,7 @@ public class ReviewsService {
 // 그리고 리뷰를 작성하지 않았다면 거래가 완료된 입찰자나, 게시자 중 한명인지를 점검하고 리뷰를 작성할 수 있게 만들
     if(!exchangePost.getExchangePostStatus().equals(ExchangePost.ExchangePostStatus.COMPLETED))
       throw new BusinessException(CommonErrorCode.NOT_FINISHED_EXCHANGE);
-    if(!Objects.equals(exchangePost.getUser().getUserId(), reviewerId) || exchangePost.getBids().stream().filter(b -> b.getStatus().equals(Bid.BidStatus.COMPLETED) && Objects.equals(b.getUser().getUserId(), reviewerId)).findFirst().isEmpty())
+    if(!Objects.equals(exchangePost.getUser().getUserId(), reviewerId) && exchangePost.getBids().stream().filter(b -> b.getStatus().equals(Bid.BidStatus.COMPLETED) && Objects.equals(b.getUser().getUserId(), reviewerId)).findFirst().isEmpty())
       throw new BusinessException(CommonErrorCode.NOT_JOIN_EXCHANGE);
 
     User reviewedUser = usersService.findUserByUserId(reviewSaveDto.getReviewedUserId());

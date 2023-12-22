@@ -23,6 +23,7 @@ public enum CommonErrorCode implements ErrorCode {
     ALREADY_WRITE_REVIEW(HttpStatus.BAD_REQUEST,"이미 교환 게시글에 대한 리뷰를 작성했습니다"),
     NOT_RESERVATED(HttpStatus.BAD_REQUEST,"예약 중이 아닙니다"),
     NOT_BID_OWNER(HttpStatus.BAD_REQUEST, "입찰을 작성한 유저가 아닙니다."),
+    NOT_FINISHED_EXCHANGE(HttpStatus.BAD_REQUEST, "거래가 완료된 게시글이 아닙니다."),
     NOT_EXCHANGE_POST_OWNER(HttpStatus.BAD_REQUEST, "교환 게시글 작성자가 아닙니다."),
     FINISHED_EXCHANGE(HttpStatus.BAD_REQUEST,"거래가 완료된 게시물입니다."),
     NOT_DENIED_STATUS(HttpStatus.BAD_REQUEST, "입찰이 DENIED 상태가 아닙니다."),

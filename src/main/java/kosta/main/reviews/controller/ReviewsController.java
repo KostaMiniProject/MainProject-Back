@@ -21,13 +21,13 @@ public class ReviewsController {
   private final ReviewsService reviewsService;
 
   // 리뷰 작성하기
-  @PostMapping("/api/reviews/{exchangeHistoryId}")
+  @PostMapping("/api/reviews/{exchangePostId}")
   public ResponseEntity<?> addReviews(@RequestBody ReviewSaveDTO reviewSaveDto,
-                                      @PathVariable("exchangeHistoryId") Integer exchangeHistoryId,
+                                      @PathVariable("exchangePostId") Integer exchangePostId,
                                       @LoginUser User reviewer) {
 //    TODO @LoginUser 값을 받아와서 new User() 수정
     log.info("{}=================================",reviewer);
-    reviewsService.addReviews(reviewSaveDto, reviewer,exchangeHistoryId);
+    reviewsService.addReviews(reviewSaveDto, reviewer,exchangePostId);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 

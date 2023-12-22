@@ -110,7 +110,7 @@ public class ExchangeHistoriesService {
   private static List<ExchangeHistoriesResponseDTO> makeExchangeHistoriesResponseDTO(Page<ExchangePost> exchangePosts) {
     return exchangePosts.stream().map(exchangePost -> {
       Bid selectedBid = exchangePost.getBids().stream()
-              .filter(bid -> bid.getStatus() == Bid.BidStatus.SELECTED)
+              .filter(bid -> bid.getStatus() == Bid.BidStatus.COMPLETED)
               .findFirst()
               .orElseThrow(() -> new EntityNotFoundException("Selected bid not found"));
 

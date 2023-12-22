@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -100,14 +99,14 @@ public class ExchangeHistoriesService {
     Integer userId = 0;
     if(user != null) userId = user.getUserId();
     Page<ExchangePost> exchangePost = exchangePostsRepository.findByExchangePostStatusIsAndUser_UserId(ExchangePost.ExchangePostStatus.COMPLETED, userId, pageable);
-    List<ExchangeHistoriesResponseDTO> exchangeHistoriesResponseDTOS = makeExchangeHistoriesResponseDTO(exchangePost);
+    List<ExchangeHistoriesResponseDTO> exchangeHistoriesResponseDTOS = makeExchangeHistoriesResponseDTO(user,exchangePost);
     PageRequest pageRequest = PageRequest.of(exchangePost.getNumber(), exchangePost.getSize());
     int start = (int) pageRequest.getOffset();
     int end = Math.min((start + pageRequest.getPageSize()), exchangeHistoriesResponseDTOS.size());
     return new PageImpl<>(exchangeHistoriesResponseDTOS.subList(start, end), pageRequest, exchangeHistoriesResponseDTOS.size());
   }
 
-  private static List<ExchangeHistoriesResponseDTO> makeExchangeHistoriesResponseDTO(Page<ExchangePost> exchangePosts) {
+  private static List<ExchangeHistoriesResponseDTO> makeExchangeHistoriesResponseDTO(User user, Page<ExchangePost> exchangePosts) {
     return exchangePosts.stream().map(exchangePost -> {
       Bid selectedBid = exchangePost.getBids().stream()
               .filter(bid -> bid.getStatus() == Bid.BidStatus.COMPLETED)
@@ -138,6 +137,8 @@ public class ExchangeHistoriesService {
 
       return new ExchangeHistoriesResponseDTO(
               exchangePost.getUpdatedAt(),
+              exchangePost.getExchangePostId(),
+              user.getReviews().stream().anyMatch(r -> Objects.equals(r.getExchangePostId(), exchangePost.getExchangePostId())),
               exchangePost.getUser().getName(),
               exchangePost.getUser().getAddress(),
               exchangePost.getUser().getProfileImage(),

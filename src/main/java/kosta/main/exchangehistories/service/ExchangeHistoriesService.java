@@ -112,6 +112,7 @@ public class ExchangeHistoriesService {
   }
 
   private List<ExchangeHistoriesResponseDTO> makeExchangeHistoriesResponseDTO(User user, Page<ExchangePost> exchangePosts) {
+
     return exchangePosts.stream().map(exchangePost -> {
       Bid selectedBid = exchangePost.getBids().stream()
               .filter(bid -> bid.getStatus() == Bid.BidStatus.COMPLETED)
@@ -143,7 +144,8 @@ public class ExchangeHistoriesService {
       return new ExchangeHistoriesResponseDTO(
               exchangePost.getUpdatedAt(),
               exchangePost.getExchangePostId(),
-              user.getReviews().stream().anyMatch(r -> Objects.equals(r.getExchangePostId(), exchangePost.getExchangePostId())),
+              findAnotherUser(user, exchangePost),
+              checkWriteReview(user, exchangePost),
               exchangePost.getUser().getName(),
               exchangePost.getUser().getAddress(),
               exchangePost.getUser().getProfileImage(),
@@ -154,5 +156,18 @@ public class ExchangeHistoriesService {
               otherUserItems
       );
     }).collect(Collectors.toList());
+  }
+
+  private Integer findAnotherUser(User user, ExchangePost exchangePost) {
+    Bid first = exchangePost.getBids().stream().filter(b -> b.getStatus().equals(Bid.BidStatus.COMPLETED)).findFirst().get();
+    Integer bidderUserId = first.getUser().getUserId();
+    if(Objects.equals(bidderUserId, user.getUserId())) return exchangePost.getUser().getUserId();
+    else return bidderUserId;
+  }
+
+  private Boolean checkWriteReview(User user,ExchangePost exchangePost) {
+    if(user != null) {
+      return user.getReviews().stream().anyMatch(r -> Objects.equals(r.getExchangePostId(), exchangePost.getExchangePostId()));
+    } else return false;
   }
 }

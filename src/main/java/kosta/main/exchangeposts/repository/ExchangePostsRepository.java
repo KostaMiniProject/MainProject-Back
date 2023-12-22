@@ -22,7 +22,12 @@ public interface ExchangePostsRepository extends JpaRepository<ExchangePost, Int
     @Query(value = "SELECT * FROM exchange_posts e WHERE ST_Distance_Sphere(point(e.longitude, e.latitude), point(:lon, :lat)) < 5000", nativeQuery = true)
     List<ExchangePost> findPostsWithinDistance(@Param("lat") double lat, @Param("lon") double lon);
 
-    Page<ExchangePost> findByExchangePostStatusIsAndUser_UserId(ExchangePost.ExchangePostStatus exchangePostStatus, Integer userId, Pageable pageable);
+    @Query("SELECT ep FROM ExchangePost ep " +
+            "JOIN ep.bids bid " +
+            "WHERE ep.exchangePostStatus = 2 " +
+            "AND (ep.user.userId = :userId OR bid.user.userId = :userId " +
+            "AND bid.status = 5)")
+    Page<ExchangePost> findCompletedExchangePostsByUserId(@Param("userId") Integer userId,Pageable pageable);
     Page<ExchangePost> findByUser_UserId(Pageable pageable, Integer userId);
 
 }

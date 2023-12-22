@@ -103,13 +103,14 @@ public class ExchangeHistoriesService {
       userId = user.getUserId();
       user = usersRepository.findById(userId).get();
     }
-    Page<ExchangePost> exchangePost = exchangePostsRepository.findByExchangePostStatusIsAndUser_UserId(ExchangePost.ExchangePostStatus.COMPLETED, userId, pageable);
+    Page<ExchangePost> exchangePost = exchangePostsRepository.findCompletedExchangePostsByUserId(userId, pageable);
     List<ExchangeHistoriesResponseDTO> exchangeHistoriesResponseDTOS = makeExchangeHistoriesResponseDTO(user,exchangePost);
     PageRequest pageRequest = PageRequest.of(exchangePost.getNumber(), exchangePost.getSize());
     int start = (int) pageRequest.getOffset();
     int end = Math.min((start + pageRequest.getPageSize()), exchangeHistoriesResponseDTOS.size());
     return new PageImpl<>(exchangeHistoriesResponseDTOS.subList(start, end), pageRequest, exchangeHistoriesResponseDTOS.size());
   }
+//서비스 10분, 15분 기술발표
 
   private List<ExchangeHistoriesResponseDTO> makeExchangeHistoriesResponseDTO(User user, Page<ExchangePost> exchangePosts) {
 

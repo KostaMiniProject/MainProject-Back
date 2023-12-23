@@ -39,9 +39,15 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
             String targetUrl = determineTargetUrl(request, response, authentication);
 
-            UserOAuth2DTO userOAuth2DTO = usersRepository.findUserByEmail(oAuth2User.getAttribute("email").toString())
-                    .map(user -> UserOAuth2DTO.of(user,"temporaryUserId"))
-                    .orElse(saveNewMember(oAuth2User));    //orElse에 계정저장
+            UserOAuth2DTO userOAuth2DTO = null;
+            Optional<User> userByEmail = usersRepository.findUserByEmail(oAuth2User.getAttribute("email").toString());
+            if(userByEmail.isPresent())
+                userOAuth2DTO = userByEmail.map(user -> UserOAuth2DTO.of(user, "temporaryUserId")).get();
+            else {
+                userOAuth2DTO = saveNewMember(oAuth2User);
+            }
+//                    .map(user -> UserOAuth2DTO.of(user,"temporaryUserId"))
+//                    .orElse(saveNewMember(oAuth2User));    //orElse에 계정저장
 
 
             //소셜이 아닌 회원이 이메일로 저장했을 때
@@ -58,7 +64,7 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
                 response.setCharacterEncoding("utf-8");
             }
 
-            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000");
         }
 
 

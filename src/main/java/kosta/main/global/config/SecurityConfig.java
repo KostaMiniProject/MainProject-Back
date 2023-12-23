@@ -42,7 +42,6 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService userDetailsService;
-    private final HttpCookieOAuth2AuthorizationRequestRepository oauth2requestRepository;
     private final CustomOAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
@@ -95,10 +94,7 @@ public class SecurityConfig {
         );
         http.oauth2Login(
                 oauth2Login -> oauth2Login.authorizationEndpoint(authEndpoint ->
-                                authEndpoint.baseUri("/oauth2/authorization")
-                        .authorizationRequestRepository(oauth2requestRepository))
-                        .redirectionEndpoint(redEndpoint ->
-                                redEndpoint.baseUri("/login/oauth2/code/**"))
+                                authEndpoint.baseUri("/oauth2/authorization"))
                         .userInfoEndpoint(userInfoEndpoint ->
                                 userInfoEndpoint.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)

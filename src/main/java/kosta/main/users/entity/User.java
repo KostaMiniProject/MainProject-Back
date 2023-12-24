@@ -144,4 +144,7 @@ public class User extends Auditable {
     public void updateReviews(Review review){
         this.reviews.add(review);
     }
+    public void updateProfileImage(String profileImage){
+        this.profileImage = profileImage;
+    }
 }

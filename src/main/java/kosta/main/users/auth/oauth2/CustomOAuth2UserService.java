@@ -6,6 +6,7 @@ import kosta.main.users.entity.OAuth2CustomUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -23,6 +24,8 @@ import java.util.*;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
         private final UsersRepository usersRepository;
+        @Value("${profile}")
+        private String profileImage;
 
 
         @Override
@@ -64,6 +67,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
         else {
             User user = authAttributes.toEntity();
+            user.updateProfileImage(profileImage);
             return usersRepository.save(user);
         }
     }

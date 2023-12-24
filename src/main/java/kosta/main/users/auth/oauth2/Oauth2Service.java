@@ -28,7 +28,7 @@ public class Oauth2Service {
         Optional<User> userByEmail =
                 usersRepository.findUserByEmail(email);
         User user = userByEmail.orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
-        boolean additionalInfo = true;
+        Boolean additionalInfo = true;
         if(Objects.equals(user.getAddress(), OAUTH_DEFAULT_INFO) && Objects.equals(user.getPhone(), OAUTH_DEFAULT_INFO)) additionalInfo = false;
         return new Oauth2ResponseDTO(user.getUserId(),user.getEmail(),additionalInfo);
     }

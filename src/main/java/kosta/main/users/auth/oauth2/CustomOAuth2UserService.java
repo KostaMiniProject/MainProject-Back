@@ -2,6 +2,7 @@ package kosta.main.users.auth.oauth2;
 
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.error.exception.CommonErrorCode;
+import kosta.main.users.dto.response.UsersResponseDTO;
 import kosta.main.users.entity.OAuth2CustomUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
@@ -66,10 +67,19 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             return user;
         }
         else {
-            User user = authAttributes.toEntity();
+            User user = authAttributes.toEntity(nickNameCreate());
             user.updateProfileImage(profileImage);
             return usersRepository.save(user);
         }
+    }
+    private String nickNameCreate() {
+        String createNickName = "";
+        while(true) {
+            createNickName = "임시_" + UUID.randomUUID().toString().substring(0, 10);
+            Optional<UsersResponseDTO> userByUserName = usersRepository.findUserByUserName(createNickName);
+            if(userByUserName.isEmpty()) break;
+        }
+        return createNickName;
     }
 }
 

@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -148,6 +149,22 @@ public class UsersService {
     user.addBlockedUser(save);
     return true;
   }
+
+  @Transactional(readOnly = true)
+  public List<User> getBlockedUsers(User user) {
+    user = findUserByUserId(user.getUserId()); // 차단 목록을 가져올 사용자
+    List<BlockedUser> blockedUsers = user.getBlockedUsers(); // 차단 목록
+
+    // 차단 목록에 있는 모든 사용자
+    List<User> blockedUsersList = new ArrayList<>();
+    for(BlockedUser blockedUser : blockedUsers) {
+      blockedUsersList.add(blockedUser.getBlockingUser());
+    }
+
+    return blockedUsersList; // 차단된 사용자 목록을 반환
+  }
+
+
 
 //    public List<ExchangeHistoryResponseDTO> findMyExchangeHistory(User user) {
 //        return user.getExchangeHistories()

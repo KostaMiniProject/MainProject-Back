@@ -75,7 +75,7 @@ public class UsersService {
 
   @Transactional
   public UserCreateResponseDTO createUser(UserCreateDTO userCreateDTO) {
-    if (!Objects.equals(userCreateDTO.getPassword(), userCreateDTO.getCheckPassword()))
+    if (!Objects.equals(userCreateDTO.getPassword(), userCreateDTO.getPasswordConfirm()))
       throw new BusinessException(INVALID_PASSWORD);
     String encryptedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
     userCreateDTO.updatePassword(encryptedPassword);

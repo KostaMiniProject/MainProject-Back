@@ -50,7 +50,6 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
         String accessToken = delegateAccessToken(email, authorities);  // Access Token 생성
         String refreshToken = delegateRefreshToken(email);     // Refresh Token 생성
         User user = usersRepository.findUserByEmail(email).get();
-        usersRepository.save(user);
 
         response.setHeader(AUTHORIZATION,BEARER+accessToken);
         response.setHeader(REFRESH, refreshToken);

@@ -1,6 +1,7 @@
 package kosta.main.users.service;
 
 import kosta.main.bids.repository.BidRepository;
+import kosta.main.blockedusers.dto.BlockedUserResponseDTO;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
 
@@ -128,17 +129,16 @@ public class UsersService {
     user = findUserByUserId(user.getUserId());
     System.out.println("User before blockUser: " + user.toString());
     Optional<BlockedUser> first =
-              user.getBlockedUsers()
-                      .stream()
-                      .filter(bUser -> Objects.equals(bUser.getBlockingUser().getUserId(), blockUser.getUserId()))
-                      .findFirst();
-      if(first.isPresent()){
-        BlockedUser blockedUser = first.get();
-        user.removeBlockedUser(blockedUser);
-        blockedUsersRepository.delete(blockedUser);
-        return false;
-      }
-
+        user.getBlockedUsers()
+            .stream()
+            .filter(bUser -> Objects.equals(bUser.getBlockingUser().getUserId(), blockUser.getUserId()))
+            .findFirst();
+    if (first.isPresent()) {
+      BlockedUser blockedUser = first.get();
+      user.removeBlockedUser(blockedUser);
+      blockedUsersRepository.delete(blockedUser);
+      return false;
+    }
 
 
     BlockedUser blockedUser = BlockedUser.builder()
@@ -151,19 +151,23 @@ public class UsersService {
   }
 
   @Transactional(readOnly = true)
-  public List<User> getBlockedUsers(User user) {
+  public List<BlockedUserResponseDTO> getBlockedUsers(User user) {
     user = findUserByUserId(user.getUserId()); // 차단 목록을 가져올 사용자
     List<BlockedUser> blockedUsers = user.getBlockedUsers(); // 차단 목록
 
-    // 차단 목록에 있는 모든 사용자
-    List<User> blockedUsersList = new ArrayList<>();
-    for(BlockedUser blockedUser : blockedUsers) {
-      blockedUsersList.add(blockedUser.getBlockingUser());
+    List<BlockedUserResponseDTO> blockedUsersList = new ArrayList<>();
+    for (BlockedUser blockedUser : blockedUsers) {
+      BlockedUserResponseDTO dto = BlockedUserResponseDTO.from(
+          blockedUser.getUser(),
+          blockedUser.getBlockingUser(),
+          blockedUser.getCreatedAt(),
+          blockedUser.getUpdatedAt()
+      );
+      blockedUsersList.add(dto);
     }
 
     return blockedUsersList; // 차단된 사용자 목록을 반환
   }
-
 
 
 //    public List<ExchangeHistoryResponseDTO> findMyExchangeHistory(User user) {
@@ -211,7 +215,7 @@ public class UsersService {
 //    return UserAllProfileResponseDTO.from(user1);
 //  }
 
-  public Page<UserExchangePostResponseDTO> findMyExchangePostList(Pageable pageable, User user){
+  public Page<UserExchangePostResponseDTO> findMyExchangePostList(Pageable pageable, User user) {
     Page<ExchangePost> all = exchangePostRepository.findByUser_UserId(pageable, user.getUserId());
     return all
         .map(post -> {
@@ -234,7 +238,7 @@ public class UsersService {
         });
   }
 
-  public Page<CommunityPostListDTO> findMyCommunityPostList(Pageable pageable, User user){
+  public Page<CommunityPostListDTO> findMyCommunityPostList(Pageable pageable, User user) {
     Page<CommunityPost> posts = communityPostsRepository.findByUser_UserId(pageable, user.getUserId());
     List<CommunityPostListDTO> list = posts.stream().map(post -> CommunityPostListDTO.from(post, user)).toList();
     return new PageImpl<>(list, posts.getPageable(), posts.getTotalElements());

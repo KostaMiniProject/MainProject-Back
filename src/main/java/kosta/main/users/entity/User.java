@@ -39,10 +39,12 @@ public class User extends Auditable {
     private String name;
 
     @Column(columnDefinition = "TEXT")
-    private String address;
+    @Builder.Default
+    private String address = "OAuth2 User";
 
     @Column(length = 20)
-    private String phone;
+    @Builder.Default
+    private String phone = "OAuth2 User";
 
     @Column
     private String profileImage; // 사용자의 프로필 이미지

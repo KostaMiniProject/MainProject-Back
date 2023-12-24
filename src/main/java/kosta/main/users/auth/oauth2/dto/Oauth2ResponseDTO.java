@@ -8,4 +8,5 @@ import lombok.Getter;
 public class Oauth2ResponseDTO {
 
     private Integer userId;
+    private String userEmail;
 }

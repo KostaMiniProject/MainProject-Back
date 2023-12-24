@@ -9,5 +9,5 @@ public class Oauth2ResponseDTO {
 
     private Integer userId;
     private String userEmail;
-    private boolean additionalInfo;
+    private Boolean additionalInfo;
 }

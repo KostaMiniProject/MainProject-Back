@@ -126,11 +126,11 @@ public class User extends Auditable {
 
     public static User createUser(UserCreateDTO userCreateDto, String profileImage){
         return User.builder()
-                .name(userCreateDto.getName())
+                .name(userCreateDto.getNickName())
                 .password(userCreateDto.getPassword())
                 .email(userCreateDto.getEmail())
                 .phone(userCreateDto.getPhone())
-                .address(userCreateDto.getAddress())
+                .address(userCreateDto.getAddress().getRoadAddr() + " " + userCreateDto.getAddressDetail())
                 .profileImage(profileImage)
                 .build();
     }

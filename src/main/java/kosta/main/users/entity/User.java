@@ -58,6 +58,13 @@ public class User extends Auditable {
     @Builder.Default
     @Column(nullable = false)
     private Double rating = 3.0;
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean social =false;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private String provider = "OriginUser";
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -21,6 +21,8 @@ public enum CommonErrorCode implements ErrorCode {
     OTHER_ITEM_USE(HttpStatus.BAD_REQUEST, "본인의 물건만 입찰에 사용할 수 있습니다."),
     ALREADY_BIDDING_ITEM(HttpStatus.BAD_REQUEST,"이미 입찰에 사용중인 물건입니다."),
     ALREADY_WRITE_REVIEW(HttpStatus.BAD_REQUEST,"이미 교환 게시글에 대한 리뷰를 작성했습니다"),
+    ALREADY_EXIST_LOCAL_USER(HttpStatus.BAD_REQUEST,"해당 이메일로 회원가입한 유저가 존재합니다"),
+    ALREADY_EXIST_OAUTH2_USER(HttpStatus.BAD_REQUEST,"동일한 이메일로 다른 소셜을 이용해 회원가입한 기록이 존재합니다."),
     NOT_RESERVATED(HttpStatus.BAD_REQUEST,"예약 중이 아닙니다"),
     NOT_BID_OWNER(HttpStatus.BAD_REQUEST, "입찰을 작성한 유저가 아닙니다."),
     NOT_FINISHED_EXCHANGE(HttpStatus.BAD_REQUEST, "거래가 완료된 게시글이 아닙니다."),

@@ -57,7 +57,7 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
         response.getWriter().write(objectMapper.writeValueAsString(LoginResponse.of(user.getUserId())));   // Access Token과 Refresh Token을 포함한 URL을 생성
-        getRedirectStrategy().sendRedirect(request, response,"http://localhost:3000");   // sendRedirect() 메서드를 이용해 Frontend 애플리케이션 쪽으로 리다이렉트
+        getRedirectStrategy().sendRedirect(request, response,"http://localhost:3000/login/authcheck?token="+accessToken);   // sendRedirect() 메서드를 이용해 Frontend 애플리케이션 쪽으로 리다이렉트
     }
 
 

@@ -7,6 +7,7 @@ import kosta.main.global.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.items.entity.Item;
 import kosta.main.reviews.entity.Review;
+import kosta.main.users.auth.oauth2.dto.OauthSignUpDTO;
 import kosta.main.users.dto.request.UserCreateDTO;
 import kosta.main.users.dto.request.UserUpdateDTO;
 import lombok.*;
@@ -98,11 +99,11 @@ public class User extends Auditable {
 
     public User updateUser(UserUpdateDTO userUpdateDto) {
         this.userStatus = !nullCheck(userUpdateDto.getUserStatus()) ? userUpdateDto.getUserStatus(): this.userStatus;
-        this.address = !nullCheck(userUpdateDto.getAddress()) ? userUpdateDto.getAddress(): this.address;
+        this.address = userUpdateDto.getAddress() != null ? userUpdateDto.getAddress().getRoadAddr() + " " +userUpdateDto.getAddressDetail(): this.address;
         this.phone = !nullCheck(userUpdateDto.getPhone()) ? userUpdateDto.getPhone() : this.phone;
         this.password = !nullCheck(userUpdateDto.getPassword()) ? userUpdateDto.getPassword() : this.password;
         this.profileImage = !nullCheck(userUpdateDto.getProfileImage()) ? userUpdateDto.getProfileImage() : this.profileImage;
-        this.name = !nullCheck(userUpdateDto.getName()) ? userUpdateDto.getName() : this.name;
+        this.name = !nullCheck(userUpdateDto.getNickName()) ? userUpdateDto.getNickName() : this.name;
         return this;
     }
 
@@ -115,6 +116,13 @@ public class User extends Auditable {
     }
     private boolean nullCheck(String string) {
         return string == null;
+    }
+
+    public User oauthSignUp(OauthSignUpDTO oauthSignUpDTO) {
+        this.address = oauthSignUpDTO.getAddress() != null ? oauthSignUpDTO.getAddress().getRoadAddr() + " " +oauthSignUpDTO.getAddressDetail(): this.address;
+        this.phone = !nullCheck(oauthSignUpDTO.getPhone()) ? oauthSignUpDTO.getPhone() : this.phone;
+        this.name = !nullCheck(oauthSignUpDTO.getNickName()) ? oauthSignUpDTO.getNickName() : this.name;
+        return this;
     }
 
     public enum UserStatus{

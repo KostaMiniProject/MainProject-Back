@@ -56,6 +56,7 @@ public class ExchangePost extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+
     @Builder.Default
     @Column(length = 20, nullable = false)
     private ExchangePostStatus exchangePostStatus = ExchangePostStatus.EXCHANGING;
@@ -82,5 +83,9 @@ public class ExchangePost extends Auditable {
     }
     public void addBid(Bid bid){
         bids.add(bid);
+    }
+
+    public void setBids(List<Bid> bids) {
+        this.bids = bids;
     }
 }

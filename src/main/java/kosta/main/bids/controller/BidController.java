@@ -56,7 +56,7 @@ public class BidController {
     public ResponseEntity<?> completeExchange(@PathVariable Integer exchangePostId,
                                               @PathVariable Integer bidId,
                                               @LoginUser User user) {
-        bidService.completeExchange(exchangePostId, bidId, user.getUserId());
+        bidService.completeExchange(exchangePostId, bidId, user);
         return ResponseEntity.ok().build();
     }
 

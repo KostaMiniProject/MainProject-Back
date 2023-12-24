@@ -47,10 +47,10 @@ public class UsersController {
     return ResponseEntity.ok(usersService.findProfileByName(name));
   }
 
-  @GetMapping("/users/my-profile")
-  public ResponseEntity<?> findMyAllProfile(@LoginUser User user){
-    return new ResponseEntity<>(usersService.findMyAllProfile(user), HttpStatus.OK);
-  }
+//  @GetMapping("/users/my-profile")
+//  public ResponseEntity<?> findMyAllProfile(@LoginUser User user){
+//    return new ResponseEntity<>(usersService.findMyAllProfile(user), HttpStatus.OK);
+//  }
 
   @PostMapping("/signup")
   public ResponseEntity<?> signup(@Valid @RequestBody UserCreateDTO userCreateDto) {

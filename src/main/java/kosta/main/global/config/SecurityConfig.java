@@ -4,8 +4,12 @@ import kosta.main.users.auth.jwt.ExceptionHandlerFilter;
 import kosta.main.users.auth.jwt.JwtAuthenticationFilter;
 import kosta.main.users.auth.jwt.JwtVerificationFilter;
 import kosta.main.users.auth.jwt.TokenProvider;
+import kosta.main.users.auth.oauth2.CustomOAuth2UserService;
+import kosta.main.users.auth.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import kosta.main.users.auth.oauth2.OAuth2SuccessHandler;
 import kosta.main.users.auth.service.CustomUserDetailsService;
 import kosta.main.users.auth.service.TokenService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,21 +37,24 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService userDetailsService;
+    private final CustomOAuth2UserService oAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+
+
 //    private final TokenService tokenService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    public SecurityConfig(TokenProvider tokenProvider,CustomUserDetailsService userDetailsService) {
-        this.tokenProvider = tokenProvider;
-        this.userDetailsService = userDetailsService;
-//        this.tokenService = tokenService;
-    }
+
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -85,6 +92,14 @@ public class SecurityConfig {
                 new ExceptionHandlerFilter(),
                 UsernamePasswordAuthenticationFilter.class
         );
+        http.oauth2Login(
+                oauth2Login -> oauth2Login.authorizationEndpoint(authEndpoint ->
+                                authEndpoint.baseUri("/oauth2/authorization"))
+                        .userInfoEndpoint(userInfoEndpoint ->
+                                userInfoEndpoint.userService(oAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+        );
+
 
         http.headers((headers -> headers
                 .frameOptions(frameOptionsConfig ->

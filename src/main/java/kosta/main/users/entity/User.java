@@ -1,13 +1,12 @@
 package kosta.main.users.entity;
 import jakarta.persistence.*;
 import kosta.main.bids.entity.Bid;
-import kosta.main.chatrooms.entity.ChatRoom;
 import kosta.main.dibs.entity.Dib;
-import kosta.main.exchangehistories.entity.ExchangeHistory;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.global.audit.Auditable;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.items.entity.Item;
+import kosta.main.reviews.entity.Review;
 import kosta.main.users.dto.request.UserCreateDTO;
 import kosta.main.users.dto.request.UserUpdateDTO;
 import lombok.*;
@@ -40,10 +39,12 @@ public class User extends Auditable {
     private String name;
 
     @Column(columnDefinition = "TEXT")
-    private String address;
+    @Builder.Default
+    private String address = "OAuth2 User";
 
     @Column(length = 20)
-    private String phone;
+    @Builder.Default
+    private String phone = "OAuth2 User";
 
     @Column
     private String profileImage; // 사용자의 프로필 이미지
@@ -59,6 +60,13 @@ public class User extends Auditable {
     @Builder.Default
     @Column(nullable = false)
     private Double rating = 3.0;
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean social =false;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private String provider = "OriginUser";
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -71,6 +79,9 @@ public class User extends Auditable {
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Bid> bids = new ArrayList<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> reviews = new ArrayList<>();
 
 
 
@@ -79,13 +90,6 @@ public class User extends Auditable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BlockedUser> blockedUsers = new ArrayList<>(); // 클래스 이름을 단수형으로 변경
 
-
-    // 교환 내역에 대한 관계를 두 개의 별도 필드로 정의
-    @OneToMany(mappedBy = "exchangeInitiator")
-    private List<ExchangeHistory> initiatedExchanges;
-
-    @OneToMany(mappedBy = "exchangePartner")
-    private List<ExchangeHistory> participatedExchanges;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -137,14 +141,10 @@ public class User extends Auditable {
     public void removeBlockedUser(BlockedUser blockedUser){
         this.blockedUsers.remove(blockedUser);
     }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", email='" + email + '\'' +
-
-                ", blockedUsers=" + blockedUsers +
-                '}';
+    public void updateReviews(Review review){
+        this.reviews.add(review);
+    }
+    public void updateProfileImage(String profileImage){
+        this.profileImage = profileImage;
     }
 }

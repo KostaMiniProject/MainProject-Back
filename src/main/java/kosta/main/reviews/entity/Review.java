@@ -20,6 +20,9 @@ public class Review extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer reviewId;
 
+    @Column
+    private Integer exchangePostId;
+
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
     private User reviewer; // 평가를 하는 사람(입찰자)
@@ -33,6 +36,7 @@ public class Review extends Auditable {
 
     @Column(columnDefinition = "TEXT")
     private String review;
+
 
 
     // 게터와 세터

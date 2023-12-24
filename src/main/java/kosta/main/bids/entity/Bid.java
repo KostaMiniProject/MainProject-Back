@@ -44,22 +44,24 @@ public class Bid extends Auditable {
     @Builder.Default
     @OneToMany(mappedBy = "bid", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Item> items = new ArrayList<>();
-    @Builder.Default
-    @OneToMany(mappedBy = "bid", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    private List<Item> exchangeFinishedItems = new ArrayList<>();
 
     public void updateStatus(BidStatus status) {
         this.status = status;
     }
 
+    public void updateCompleteStatus(){
+        this.status = BidStatus.COMPLETED;
+    }
+
     public void updateItems(List<Item> items) {
         this.items = items;
     }
-    public void exchangeFinishedItems(List<Item> items) {
-        this.exchangeFinishedItems = items;
-    }
 
     public enum BidStatus {
-        BIDDING, DENIED, SELECTED, DELETED, RESERVATION
+        BIDDING, DENIED, SELECTED, DELETED, RESERVATION,COMPLETED
+    }
+
+    public void removeItem(Item item) {
+        this.items.remove(item);
     }
 }

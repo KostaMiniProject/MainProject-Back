@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,11 +21,13 @@ public class ReviewsController {
   private final ReviewsService reviewsService;
 
   // 리뷰 작성하기
-  @PostMapping("/api/reviews")
-  public ResponseEntity<?> addReviews(@RequestBody ReviewSaveDTO reviewSaveDto, @LoginUser User reviewer) {
+  @PostMapping("/api/reviews/{exchangePostId}")
+  public ResponseEntity<?> addReviews(@RequestBody ReviewSaveDTO reviewSaveDto,
+                                      @PathVariable("exchangePostId") Integer exchangePostId,
+                                      @LoginUser User reviewer) {
 //    TODO @LoginUser 값을 받아와서 new User() 수정
     log.info("{}=================================",reviewer);
-    reviewsService.addReviews(reviewSaveDto, reviewer);
+    reviewsService.addReviews(reviewSaveDto, reviewer,exchangePostId);
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 

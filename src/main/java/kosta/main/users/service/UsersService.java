@@ -204,12 +204,12 @@ public class UsersService {
     return null;
   }
 
-  public UserAllProfileResponseDTO findMyAllProfile(User user) {
-    // failed to lazily initialize a collection of role
-    Optional<User> findUser = usersRepository.findById(user.getUserId());
-    User user1 = findUser.get();
-    return UserAllProfileResponseDTO.from(user1);
-  }
+//  public UserAllProfileResponseDTO findMyAllProfile(User user) {
+//    // failed to lazily initialize a collection of role
+//    Optional<User> findUser = usersRepository.findById(user.getUserId());
+//    User user1 = findUser.get();
+//    return UserAllProfileResponseDTO.from(user1);
+//  }
 
   public Page<UserExchangePostResponseDTO> findMyExchangePostList(Pageable pageable, User user){
     Page<ExchangePost> all = exchangePostRepository.findByUser_UserId(pageable, user.getUserId());

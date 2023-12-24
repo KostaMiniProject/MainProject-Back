@@ -12,6 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ExchangeHistoriesResponseDTO {
     private LocalDateTime createdAt; // 2023-11-21 화요일 형태로 제공해줘야함
+    private Integer exchangePostId;
+    private Integer reviewedUserId;
+    private Boolean isWriteReview;
     private String posterName; // 나의 닉네임
     private String posterAddress; // 나의 주소
     private String posterProfileImage; // 나의 프로필 이미지

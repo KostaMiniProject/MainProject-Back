@@ -1,5 +1,7 @@
 package kosta.main.users.auth.oauth2;
 
+import kosta.main.global.error.exception.BusinessException;
+import kosta.main.global.error.exception.CommonErrorCode;
 import kosta.main.users.entity.OAuth2CustomUser;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
@@ -10,14 +12,10 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 //Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))
 @Service
@@ -39,7 +37,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             String provider = userRequest.getClientRegistration().getRegistrationId();
             //OAuthAttributes: OAuth2User의 attribute를 서비스 유형에 맞게 담아줄 클래스
             OAuthAttributes attributes = OAuthAttributes.of(provider, originAttributes);
-            User user = saveOrUpdate(attributes);
+            User user = saveOrUpdate(attributes,provider);
             String email = user.getEmail();
             List<GrantedAuthority> authorities = authorities(user.getRoles());
 
@@ -54,10 +52,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
         return authorities;
     }
-    private User saveOrUpdate(OAuthAttributes authAttributes) {
+    private User saveOrUpdate(OAuthAttributes authAttributes, String provider) {
         Optional<User> userByEmail = usersRepository.findUserByEmail(authAttributes.getEmail());
-        if(userByEmail.isPresent())
-            return userByEmail.get();
+        if(userByEmail.isPresent()){
+            User user = userByEmail.get();
+            Boolean social = user.getSocial();
+            if(!social) throw new BusinessException(CommonErrorCode.ALREADY_EXIST_LOCAL_USER);
+            if(social && !Objects.equals(user.getProvider(), provider))
+                throw new BusinessException(CommonErrorCode.ALREADY_EXIST_OAUTH2_USER);
+            return user;
+        }
         else {
             User user = authAttributes.toEntity();
             return usersRepository.save(user);

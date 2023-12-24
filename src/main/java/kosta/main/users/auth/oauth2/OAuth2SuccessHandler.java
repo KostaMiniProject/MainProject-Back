@@ -30,7 +30,7 @@ import static org.apache.http.client.utils.URIUtils.createURI;
 @Slf4j
 public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler{
     public static final String AUTHORIZATION = "Authorization";
-    public static final String BEARER = "Bearer";
+    public static final String BEARER = "Bearer ";
     public static final String REFRESH = "Refresh";
     public static final int ONLY_BEARER_LENGTH = 8;
         private final UsersRepository usersRepository;
@@ -50,8 +50,6 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
         String accessToken = delegateAccessToken(email, authorities);  // Access Token 생성
         String refreshToken = delegateRefreshToken(email);     // Refresh Token 생성
         User user = usersRepository.findUserByEmail(email).get();
-        Integer userId = user.getUserId();
-        String username = user.getName();
         usersRepository.save(user);
 
         response.setHeader(AUTHORIZATION,BEARER+accessToken);
@@ -59,7 +57,7 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
         response.getWriter().write(objectMapper.writeValueAsString(LoginResponse.of(user.getUserId())));   // Access Token과 Refresh Token을 포함한 URL을 생성
-        getRedirectStrategy().sendRedirect(request, response,"http://localhost:8080");   // sendRedirect() 메서드를 이용해 Frontend 애플리케이션 쪽으로 리다이렉트
+        getRedirectStrategy().sendRedirect(request, response,"http://localhost:3000");   // sendRedirect() 메서드를 이용해 Frontend 애플리케이션 쪽으로 리다이렉트
     }
 
 

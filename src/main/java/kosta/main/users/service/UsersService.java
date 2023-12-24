@@ -16,6 +16,7 @@ import kosta.main.global.s3upload.service.ImageService;
 import kosta.main.reports.dto.CreateReportDTO;
 import kosta.main.reports.entity.Report;
 import kosta.main.reports.repository.ReportsRepository;
+import kosta.main.users.auth.oauth2.dto.OauthSignUpDTO;
 import kosta.main.users.dto.request.UserCreateDTO;
 import kosta.main.users.dto.request.UserFindIdDTO;
 import kosta.main.users.dto.request.UserFindPasswordDTO;
@@ -82,7 +83,14 @@ public class UsersService {
 
     return UserCreateResponseDTO.of(usersRepository.save(user));
   }
-
+  @Transactional
+  public UsersResponseDTO oauthUpdateUser(OauthSignUpDTO oauthSignUpDTO) {
+    String email = oauthSignUpDTO.getEmail();
+    Optional<User> userByEmail = usersRepository.findUserByEmail(email);
+    User user = userByEmail.orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+    User updatedUser = user.oauthSignUp(oauthSignUpDTO);
+    return UsersResponseDTO.of(usersRepository.save(updatedUser));
+  }
   @Transactional
   public UsersResponseDTO updateUser(User user, UserUpdateDTO userUpdateDTO, MultipartFile file) {
     String imagePath = imageService.resizeToProfileSizeAndUpload(file);

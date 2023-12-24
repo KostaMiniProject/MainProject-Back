@@ -21,9 +21,10 @@ public class UserUpdateDTO {
 //  @Pattern(regexp = "^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$", message = "숫자, 문자, 특수문자를 모두 포함해야 합니다.")
   private String checkPassword;
 
-  private String name;
+  private String nickName;
 
-  private String address;
+  private AddressDTO address;
+  private String addressDetail;
 
   //  # 조건 : 숫자와 하이픈(-)만 작성가능
 //  @Pattern(regexp = "^[0-9-]+$", message = "숫자와 하이픈(-)만 입력해주세요.")

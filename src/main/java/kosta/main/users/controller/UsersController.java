@@ -1,6 +1,7 @@
 package kosta.main.users.controller;
 
 import jakarta.validation.Valid;
+import kosta.main.blockedusers.dto.BlockedUserResponseDTO;
 import kosta.main.communityposts.dto.CommunityPostDetailDTO;
 import kosta.main.communityposts.dto.CommunityPostListDTO;
 import kosta.main.exchangeposts.dto.ExchangePostListDTO;
@@ -88,8 +89,8 @@ public class UsersController {
   }
 
   @GetMapping("/users/blocked")
-  public ResponseEntity<List<User>> getBlockedUsers(@LoginUser User user) {
-    List<User> blockedUsers = usersService.getBlockedUsers(user);
+  public ResponseEntity<List<BlockedUserResponseDTO>> getBlockedUsers(@LoginUser User user) {
+    List<BlockedUserResponseDTO> blockedUsers = usersService.getBlockedUsers(user);
     return ResponseEntity.ok(blockedUsers); // 차단된 사용자의 목록을 반환
   }
 

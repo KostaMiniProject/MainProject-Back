@@ -161,9 +161,13 @@ class UsersControllerTest extends ControllerTest {
                         requestFields(
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("유저의 비밀번호"),
-                                fieldWithPath("checkPassword").type(JsonFieldType.STRING).description("유저의 확인 비밀번호"),
-                                fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
-                                fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
+                                fieldWithPath("passwordConfirm").type(JsonFieldType.STRING).description("유저의 확인 비밀번호"),
+                                fieldWithPath("nickName").type(JsonFieldType.STRING).description("유저의 닉네임"),
+                                fieldWithPath("address").type(JsonFieldType.OBJECT).description("유저의 주소정보를 담고있는객체"),
+                                fieldWithPath("address.jibunAddr").type(JsonFieldType.STRING).description("유저의 지번"),
+                                fieldWithPath("address.roadAddr").type(JsonFieldType.STRING).description("유저의 도로명 주소"),
+                                fieldWithPath("address.zcode").type(JsonFieldType.STRING).description("유저의 우편번호"),
+                                fieldWithPath("addressDetail").type(JsonFieldType.STRING).description("주소에 대한 상세정보"),
                                 fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호")
                         ),
                         responseFields(

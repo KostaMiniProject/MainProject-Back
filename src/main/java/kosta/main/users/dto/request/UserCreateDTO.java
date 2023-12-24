@@ -1,9 +1,6 @@
 package kosta.main.users.dto.request;
 
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,12 +25,13 @@ public class UserCreateDTO {
 //  @NotEmpty(message = "다시한번 작성해주세요.")
 //  @Size(min = 8, max = 15, message = "비밀번호는 8~15자리여야 합니다.")
 //  @Pattern(regexp = "^(?=.*\\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).*$", message = "숫자, 문자, 특수문자를 모두 포함해야 합니다.")
-  private String checkPassword;
+  private String passwordConfirm;
 
 //  @NotEmpty(message = "이름은 필수 항목입니다.")
-  private String name;
+  private String nickName;
 
-  private String address;
+  private AddressDTO address;
+  private String addressDetail;
 
   //    # 조건 : 숫자와 하이픈(-)만 작성가능
 //  @NotEmpty(message = "전화번호는 필수 항목입니다.")

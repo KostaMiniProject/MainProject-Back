@@ -1,5 +1,6 @@
 package kosta.main.users;
 
+import kosta.main.users.dto.request.AddressDTO;
 import kosta.main.users.dto.request.UserCreateDTO;
 import kosta.main.users.dto.response.UserCreateResponseDTO;
 import kosta.main.users.dto.request.UserUpdateDTO;
@@ -29,6 +30,10 @@ public class UserStubData {
     public static final String UPDATE_ADDRESS = "업데이트주소명";
     public static final String UPDATE_EMAIL = "seongsookim@naver.com";
     public static final String UPDATE_IMAGE_FILE = "수정이미지파일";
+    public static final String ADDRESS_DETAIL = "주소 상세";
+    public static final String JIBUN_ADDR = "지번주소";
+    public static final String ROAD_ADDR = "도로명주소";
+    public static final String ZCODE = "우편번호";
 
     public User getUser(){
         return User.builder()
@@ -65,11 +70,15 @@ public class UserStubData {
         return UserCreateDTO.builder()
                 .email(EMAIL)
                 .password(PASSWORD)
-                .checkPassword(PASSWORD)
-                .name(NAME)
-                .address(ADDRESS)
+                .passwordConfirm(PASSWORD)
+                .nickName(NAME)
+                .address(getAddressDTO())
+                .addressDetail(ADDRESS_DETAIL)
                 .phone(PHONE)
                 .build();
+    }
+    public AddressDTO getAddressDTO(){
+        return new AddressDTO(JIBUN_ADDR, ROAD_ADDR, ZCODE);
     }
 
     public UserCreateResponseDTO getUserCreateResponseDTO(){

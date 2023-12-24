@@ -8,6 +8,7 @@ import kosta.main.exchangeposts.dto.ExchangePostListDTO;
 import kosta.main.global.dto.PageInfo;
 import kosta.main.global.dto.PageResponseDto;
 import kosta.main.reports.dto.CreateReportDTO;
+import kosta.main.users.auth.oauth2.dto.OauthSignUpDTO;
 import kosta.main.users.dto.request.*;
 import kosta.main.users.dto.response.UserExchangePostResponseDTO;
 import kosta.main.users.entity.LoginUser;
@@ -57,11 +58,16 @@ public class UsersController {
   public ResponseEntity<?> signup(@Valid @RequestBody UserCreateDTO userCreateDto) {
     return new ResponseEntity(usersService.createUser(userCreateDto), HttpStatus.CREATED);
   }
+  @PutMapping("/oauth-signup")
+  public ResponseEntity<?> oauthSignup(@Valid @RequestBody OauthSignUpDTO oauthSignUpDTO) {
+    return ResponseEntity.ok(usersService.oauthUpdateUser(oauthSignUpDTO));
+  }
+
 
   @PutMapping("/users")
   public ResponseEntity<?> updateMyInfo(@LoginUser User user,
                                         @Valid @RequestPart("userUpdateDto") UserUpdateDTO userUpdateDTO,
-                                        @Valid @RequestPart(value = "file") MultipartFile file) {
+                                        @Valid @RequestPart(value = "file",required = false) MultipartFile file) {
 
     return ResponseEntity.ok(usersService.updateUser(user, userUpdateDTO, file));
   }

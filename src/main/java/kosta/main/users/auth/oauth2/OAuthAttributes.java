@@ -81,9 +81,9 @@ public class OAuthAttributes {
                 .build();
     }
 
-    public User toEntity() {
+    public User toEntity(String createdNickName) {
         return User.builder()
-                .name(name)
+                .name(createdNickName)
                 .email(email)
                 .password("temporary_password")
                 .social(true)
@@ -91,4 +91,5 @@ public class OAuthAttributes {
                 .roles("ROLE_USER")
                 .build();
     }
+
 }

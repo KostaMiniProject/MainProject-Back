@@ -91,7 +91,8 @@ public class UserStubData {
                 UPDATE_PASSWORD,
                 UPDATE_PASSWORD,
                 UPDATED_NAME,
-                UPDATE_ADDRESS,
+                getAddressDTO(),
+                ADDRESS_DETAIL,
                 UPDATED_PHONE,
                 UPDATE_IMAGE_FILE,
                 USER_STATUS

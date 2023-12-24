@@ -87,6 +87,13 @@ public class UsersController {
     else return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
+  @GetMapping("/users/blocked")
+  public ResponseEntity<List<User>> getBlockedUsers(@LoginUser User user) {
+    List<User> blockedUsers = usersService.getBlockedUsers(user);
+    return ResponseEntity.ok(blockedUsers); // 차단된 사용자의 목록을 반환
+  }
+
+
 //  @GetMapping("/users/exchange-history")
 //  public ResponseEntity<?> getExchangeHistories(@LoginUser User user) {
 //    return new ResponseEntity(usersService.findMyExchangeHistory(user), HttpStatus.OK);

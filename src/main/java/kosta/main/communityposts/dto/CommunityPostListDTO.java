@@ -46,7 +46,7 @@ public class CommunityPostListDTO { // stackoverflow에러로 인하여 조회 D
                 .postOwner(user != null && communityPost.getUser().getUserId().equals(user.getUserId()))
                 .title(communityPost.getTitle())
                 .content(communityPost.getContent())
-                .user(user != null ? UserItemResponseDTO.of(communityPost.getUser()) : UserItemResponseDTO.deletedOf())
+                .user(UserItemResponseDTO.of(communityPost.getUser()))
                 .imageUrl(communityPost.getImages())
                 .communityPostStatus(communityPost.getCommunityPostStatus())
                 .isPressLike(checkPressLike(user,communityPost))

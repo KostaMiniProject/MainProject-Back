@@ -57,7 +57,7 @@ public class CommunityPostsService {
     @Transactional(readOnly = true)
     public Page<CommunityPostListDTO> findPosts(Pageable pageable,User user) {
         Page<CommunityPost> posts = communityPostsRepository.findAll(pageable);
-        List<CommunityPostListDTO> list = posts.stream().map(post -> CommunityPostListDTO.from(post, user)).collect(Collectors.toList());
+        List<CommunityPostListDTO> list = posts.stream().map(post -> CommunityPostListDTO.from(post,user)).collect(Collectors.toList());
         return new PageImpl<>(list, posts.getPageable(), posts.getTotalElements());
     }
 

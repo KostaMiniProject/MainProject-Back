@@ -2,6 +2,7 @@ package kosta.main.bids.repository;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.exchangeposts.entity.ExchangePost;
+import kosta.main.users.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +19,5 @@ public interface BidRepository extends JpaRepository<Bid, Integer> {
   Integer countByExchangePostAndStatusNotDeleted(@Param("exchangePost") ExchangePost exchangePost);
   List<Bid> findByExchangePostAndStatus(ExchangePost exchangePost, Bid.BidStatus status);
 
+    List<Bid> findByUser_UserId(Integer userId);
 }

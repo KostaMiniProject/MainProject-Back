@@ -30,4 +30,15 @@ public class UserItemResponseDTO {
                 user.getProfileImage()
         );
     }
+    public static UserItemResponseDTO deletedOf(){
+        return new UserItemResponseDTO(
+                0,
+                "deleted",
+                "삭제된 유저",
+                "삭제된 주소",
+                "삭제된 전화번호",
+                0.0,
+                "https://d30zoz4y43tmi6.cloudfront.net/simpleProfile.jpg"
+        );
+    }
 }

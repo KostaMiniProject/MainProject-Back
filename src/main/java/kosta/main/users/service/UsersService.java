@@ -4,6 +4,7 @@ import kosta.main.bids.repository.BidRepository;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
 
+import kosta.main.comments.repository.CommentsRepository;
 import kosta.main.communityposts.dto.CommunityPostListDTO;
 import kosta.main.communityposts.entity.CommunityPost;
 import kosta.main.communityposts.repository.CommunityPostsRepository;
@@ -13,6 +14,7 @@ import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
 import kosta.main.global.error.exception.BusinessException;
 import kosta.main.global.s3upload.service.ImageService;
+import kosta.main.items.repository.ItemsRepository;
 import kosta.main.reports.dto.CreateReportDTO;
 import kosta.main.reports.entity.Report;
 import kosta.main.reports.repository.ReportsRepository;
@@ -46,15 +48,18 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 @RequiredArgsConstructor
 public class UsersService {
 
+  //repository
   private final UsersRepository usersRepository;
   private final ReportsRepository reportsRepository;
   private final ExchangePostsRepository exchangePostRepository;
   private final BlockedUsersRepository blockedUsersRepository;
+  private final CommunityPostsRepository communityPostsRepository;
+  private final BidRepository bidRepository;
+  private final ItemsRepository itemsRepository;
+  private final CommentsRepository commentsRepository;
   private final ImageService imageService;
   private final PasswordEncoder passwordEncoder;
   private final EmailSendService emailSendService;
-  private final CommunityPostsRepository communityPostsRepository;
-  private final BidRepository bidRepository;
 
 
   @Value("${profile}")
@@ -69,7 +74,7 @@ public class UsersService {
   @Transactional(readOnly = true)
   public UsersResponseDTO findProfileByName(String name) {
     UsersResponseDTO usersResponseDTO = usersRepository.findUserByUserName(name)
-        .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
     return usersResponseDTO;
   }
 
@@ -83,6 +88,7 @@ public class UsersService {
 
     return UserCreateResponseDTO.of(usersRepository.save(user));
   }
+
   @Transactional
   public UsersResponseDTO oauthUpdateUser(OauthSignUpDTO oauthSignUpDTO) {
     String email = oauthSignUpDTO.getEmail();
@@ -91,6 +97,7 @@ public class UsersService {
     User updatedUser = user.oauthSignUp(oauthSignUpDTO);
     return UsersResponseDTO.of(usersRepository.save(updatedUser));
   }
+
   @Transactional
   public UsersResponseDTO updateUser(User user, UserUpdateDTO userUpdateDTO, MultipartFile file) {
     String imagePath = imageService.resizeToProfileSizeAndUpload(file);
@@ -112,6 +119,20 @@ public class UsersService {
 
   @Transactional
   public void withdrawalUser(User user) {
+    //exchange delete
+    Optional<User> userByEmail = usersRepository.findUserByEmail(user.getEmail());
+    if (userByEmail.isEmpty()) throw new BusinessException(USER_NOT_FOUND);
+    else user = userByEmail.get();
+    Integer userId = user.getUserId();
+    //comment delete
+    commentsRepository.deleteAll(commentsRepository.findCommentByUser_UserId(userId));
+    //community delete
+    communityPostsRepository.deleteAll(communityPostsRepository.findByUser_UserId(userId));
+    //item delete
+    itemsRepository.deleteAll(user.getItems());
+    //bid Delete 처리
+    bidRepository.deleteAll(bidRepository.findByUser_UserId(userId));
+
     usersRepository.delete(user);
   }
 
@@ -122,11 +143,11 @@ public class UsersService {
   public void reportUser(Integer reportedUserId, User reporterUser, CreateReportDTO createReportDTO) {
     User reportedUser = findUserByUserId(reportedUserId);
     reportsRepository
-        .save(Report.builder()
-            .reporter(reporterUser)
-            .reportedUser(reportedUser)
-            .reason(createReportDTO.getReason())
-            .build());
+            .save(Report.builder()
+                    .reporter(reporterUser)
+                    .reportedUser(reportedUser)
+                    .reason(createReportDTO.getReason())
+                    .build());
   }
 
   @Transactional
@@ -135,23 +156,22 @@ public class UsersService {
     user = findUserByUserId(user.getUserId());
     System.out.println("User before blockUser: " + user.toString());
     Optional<BlockedUser> first =
-              user.getBlockedUsers()
-                      .stream()
-                      .filter(bUser -> Objects.equals(bUser.getBlockingUser().getUserId(), blockUser.getUserId()))
-                      .findFirst();
-      if(first.isPresent()){
-        BlockedUser blockedUser = first.get();
-        user.removeBlockedUser(blockedUser);
-        blockedUsersRepository.delete(blockedUser);
-        return false;
-      }
-
+            user.getBlockedUsers()
+                    .stream()
+                    .filter(bUser -> Objects.equals(bUser.getBlockingUser().getUserId(), blockUser.getUserId()))
+                    .findFirst();
+    if (first.isPresent()) {
+      BlockedUser blockedUser = first.get();
+      user.removeBlockedUser(blockedUser);
+      blockedUsersRepository.delete(blockedUser);
+      return false;
+    }
 
 
     BlockedUser blockedUser = BlockedUser.builder()
-        .user(user)
-        .blockingUser(blockUser)
-        .build();
+            .user(user)
+            .blockingUser(blockUser)
+            .build();
     BlockedUser save = blockedUsersRepository.save(blockedUser);
     user.addBlockedUser(save);
     return true;
@@ -168,7 +188,7 @@ public class UsersService {
 
   public String findIdByNamePhone(UserFindIdDTO userFindIdDTO) {
     UsersResponseDTO userInfo = usersRepository.findUserByUserName(userFindIdDTO.getName())
-        .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
 
     boolean userName = userFindIdDTO.getName().equals(userInfo.getName());
     boolean userPhone = userFindIdDTO.getPhone().equals(userInfo.getPhone());
@@ -180,7 +200,7 @@ public class UsersService {
 
   public String findIdByNamePhoneEmail(UserFindPasswordDTO userFindPasswordDTO) {
     UsersResponseDTO userInfo = usersRepository.findUserByUserName(userFindPasswordDTO.getName())
-        .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+            .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
 
     boolean userEmail = userFindPasswordDTO.getEmail().equals(userInfo.getEmail());
     boolean userName = userFindPasswordDTO.getName().equals(userInfo.getName());
@@ -202,30 +222,30 @@ public class UsersService {
 //    return UserAllProfileResponseDTO.from(user1);
 //  }
 
-  public Page<UserExchangePostResponseDTO> findMyExchangePostList(Pageable pageable, User user){
+  public Page<UserExchangePostResponseDTO> findMyExchangePostList(Pageable pageable, User user) {
     Page<ExchangePost> all = exchangePostRepository.findByUser_UserId(pageable, user.getUserId());
     return all
-        .map(post -> {
-          // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
-          String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
+            .map(post -> {
+              // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
+              String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : null;
 
-          // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
-          Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
+              // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
+              Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);
 
-          return UserExchangePostResponseDTO.builder()
-              .exchangePostId(post.getExchangePostId())
-              .title(post.getTitle())
-              .preferItem(post.getPreferItems())
-              .address(post.getAddress())
-              .exchangePostStatus(post.getExchangePostStatus().toString())
-              .createdAt(post.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)))
-              .imgUrl(imgUrl)
-              .bidCount(bidCount)
-              .build();
-        });
+              return UserExchangePostResponseDTO.builder()
+                      .exchangePostId(post.getExchangePostId())
+                      .title(post.getTitle())
+                      .preferItem(post.getPreferItems())
+                      .address(post.getAddress())
+                      .exchangePostStatus(post.getExchangePostStatus().toString())
+                      .createdAt(post.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)))
+                      .imgUrl(imgUrl)
+                      .bidCount(bidCount)
+                      .build();
+            });
   }
 
-  public Page<CommunityPostListDTO> findMyCommunityPostList(Pageable pageable, User user){
+  public Page<CommunityPostListDTO> findMyCommunityPostList(Pageable pageable, User user) {
     Page<CommunityPost> posts = communityPostsRepository.findByUser_UserId(pageable, user.getUserId());
     List<CommunityPostListDTO> list = posts.stream().map(post -> CommunityPostListDTO.from(post, user)).toList();
     return new PageImpl<>(list, posts.getPageable(), posts.getTotalElements());

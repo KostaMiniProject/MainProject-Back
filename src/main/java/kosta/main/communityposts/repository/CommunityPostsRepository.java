@@ -25,5 +25,6 @@ public interface CommunityPostsRepository extends JpaRepository<CommunityPost,In
     Page<CommunityPost> findAllTitleContaining(@Param("keyword") String keyword, Pageable pageable);
 
     Page<CommunityPost> findByUser_UserId(Pageable pageable, Integer userId);
+    List<CommunityPost> findByUser_UserId(Integer userId);
 
 }

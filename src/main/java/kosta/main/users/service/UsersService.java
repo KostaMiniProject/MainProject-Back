@@ -1,6 +1,7 @@
 package kosta.main.users.service;
 
 import kosta.main.bids.repository.BidRepository;
+import kosta.main.blockedusers.dto.BlockedUserResponseDTO;
 import kosta.main.blockedusers.entity.BlockedUser;
 import kosta.main.blockedusers.repository.BlockedUsersRepository;
 
@@ -38,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -156,10 +158,10 @@ public class UsersService {
     user = findUserByUserId(user.getUserId());
     System.out.println("User before blockUser: " + user.toString());
     Optional<BlockedUser> first =
-            user.getBlockedUsers()
-                    .stream()
-                    .filter(bUser -> Objects.equals(bUser.getBlockingUser().getUserId(), blockUser.getUserId()))
-                    .findFirst();
+        user.getBlockedUsers()
+            .stream()
+            .filter(bUser -> Objects.equals(bUser.getBlockingUser().getUserId(), blockUser.getUserId()))
+            .findFirst();
     if (first.isPresent()) {
       BlockedUser blockedUser = first.get();
       user.removeBlockedUser(blockedUser);
@@ -176,6 +178,26 @@ public class UsersService {
     user.addBlockedUser(save);
     return true;
   }
+
+  @Transactional(readOnly = true)
+  public List<BlockedUserResponseDTO> getBlockedUsers(User user) {
+    user = findUserByUserId(user.getUserId()); // 차단 목록을 가져올 사용자
+    List<BlockedUser> blockedUsers = user.getBlockedUsers(); // 차단 목록
+
+    List<BlockedUserResponseDTO> blockedUsersList = new ArrayList<>();
+    for (BlockedUser blockedUser : blockedUsers) {
+      BlockedUserResponseDTO dto = BlockedUserResponseDTO.from(
+          blockedUser.getUser(),
+          blockedUser.getBlockingUser(),
+          blockedUser.getCreatedAt(),
+          blockedUser.getUpdatedAt()
+      );
+      blockedUsersList.add(dto);
+    }
+
+    return blockedUsersList; // 차단된 사용자 목록을 반환
+  }
+
 
 //    public List<ExchangeHistoryResponseDTO> findMyExchangeHistory(User user) {
 //        return user.getExchangeHistories()

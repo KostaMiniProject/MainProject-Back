@@ -16,7 +16,7 @@ import java.util.List;
 public interface ExchangePostsRepository extends JpaRepository<ExchangePost, Integer> {
 
     @Query("SELECT ep FROM ExchangePost ep " +
-            "WHERE (LOWER(ep.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) OR (ep.item.category.categoryName = :keyword) " +
+            "WHERE (LOWER(ep.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) OR (ep.item.category.categoryName = :keyword) " +"OR (LOWER(ep.title) LIKE LOWER(CONCAT('%', :keyword, '%')))"+
             "ORDER BY ep.exchangePostId DESC")
     Page<ExchangePost> searchExchangePost(@Param("keyword") String keyword, Pageable pageable);
     @Query(value = "SELECT * FROM exchange_posts e WHERE ST_Distance_Sphere(point(e.longitude, e.latitude), point(:lon, :lat)) < 5000", nativeQuery = true)

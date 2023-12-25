@@ -18,6 +18,7 @@ public class ItemPageDTO {
   private String title;
   private String description;
   private Item.ItemStatus itemStatus;
+  private Item.IsBiding isBiding;
   private List<String> images; // 가장 첫번째 아이템 이미지 URL 1개만
   private LocalDateTime crateAt;
 
@@ -25,13 +26,15 @@ public class ItemPageDTO {
     this.images.add(imagePaths);
   }
 
-  public static ItemPageDTO from (Item item){ //from : 엔티티를 DTO로 생성
+  public static ItemPageDTO from(Item item) { //from : 엔티티를 DTO로 생성
+
     return new ItemPageDTO(
             item.getItemId(),
-        item.getTitle(),
-        item.getDescription(),
-        item.getItemStatus(),
-        item.getImages(),
+            item.getTitle(),
+            item.getDescription(),
+            item.getItemStatus(),
+            item.getIsBiding(),
+            item.getImages(),
             item.getCreatedAt()
     );
   }

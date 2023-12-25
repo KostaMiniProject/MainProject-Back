@@ -152,6 +152,10 @@ public class User extends Auditable {
     public void updateReviews(Review review){
         this.reviews.add(review);
     }
+    public void updateRating(Integer reviewPoint){
+        Integer reviewSize = reviews.size() + 1; //기본값 3을 위한 +1
+        this.rating = ((this.rating * reviewSize) + reviewPoint) / (reviewSize + 1); // 현재 rating에 reviews size만큼 수치를 더해줌 여기에 새로받은 포인트를 더해주고 size에 +1 한 값으로 나눔
+    }
     public void updateProfileImage(String profileImage){
         this.profileImage = profileImage;
     }

@@ -51,7 +51,6 @@ public class ReviewsService {
       throw new BusinessException(CommonErrorCode.NOT_JOIN_EXCHANGE);
 
     User reviewedUser = usersService.findUserByUserId(reviewSaveDto.getReviewedUserId());
-
     //현재 유저 점수와 리뷰 개수를 통해 리뷰 점수 평균치 계산 로직 필요
     Review newReview = Review.builder()
             .reviewer(reviewer)
@@ -61,6 +60,7 @@ public class ReviewsService {
             .review(reviewSaveDto.getReview())
             .build();
     //유저에 리뷰 저장
+    reviewedUser.updateRating(reviewSaveDto.getRating());
     reviewer.updateReviews(newReview);
 
     reviewsRepository.save(newReview);

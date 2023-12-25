@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.*;
@@ -37,6 +38,7 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 @AllArgsConstructor
 public class ItemsService {
 
+  private final UsersRepository usersRepository;
   private final ItemsRepository itemsRepository;
   private final ImageService imageService;
   private final CategoriesRepository categoriesRepository;
@@ -98,8 +100,10 @@ public class ItemsService {
    */
   @Transactional(readOnly = true)
   public PageResponseDto<List<ItemPageDTO>> getItems(User user, Pageable pageable) {
-    User userWithItems = itemsRepository.findUserWithItems(user);
-    List<Item> items = userWithItems.getItems();
+    Optional<User> userByEmail = usersRepository.findUserByEmail(user.getEmail());
+    if(userByEmail.isEmpty()) throw new BusinessException(USER_NOT_FOUND);
+    else user = userByEmail.get();
+    List<Item> items = user.getItems();
     int size = items.size();
     int start = (int) pageable.getOffset();
     int end = Math.min((start + pageable.getPageSize()), size);
@@ -109,6 +113,10 @@ public class ItemsService {
   }
   public Page<ItemPageDTO> getCanBidItems(Integer userId, Pageable pageable) {
     Page<Item> byUserUserId = itemsRepository.findByUser_UserIdAndIsBiding(userId, Item.IsBiding.NOT_BIDING ,pageable);
+    return byUserUserId.map(ItemPageDTO::from);
+  }
+  public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
+    Page<Item> byUserUserId = itemsRepository.findByUser_UserId(userId ,pageable);
     return byUserUserId.map(ItemPageDTO::from);
   }
 

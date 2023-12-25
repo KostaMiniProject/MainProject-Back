@@ -96,8 +96,8 @@ class DibsControllerTest extends ControllerTest {
         //given
         List<DibbedExchangePostDTO> dibbedExchangePostDTOs = dibStubData.getDibbedExchangePostDTOs();
         //when
-        given(dibsService.getUserDibs(Mockito.anyInt())).willReturn(dibbedExchangePostDTOs);
-        ResultActions result = mockMvc.perform(get(BASIC_URL + "/dibs/{userId}", USER_ID)
+        given(dibsService.getUserDibs(Mockito.any(User.class))).willReturn(dibbedExchangePostDTOs);
+        ResultActions result = mockMvc.perform(get(BASIC_URL + "/dibs")
                 .header("Authorization", "Bearer yourAccessToken")
                 );
         //then
@@ -105,9 +105,6 @@ class DibsControllerTest extends ControllerTest {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
-                        pathParameters(
-                                parameterWithName("userId").description("유저 ID")
-                        ),
                         responseFields(
                                 fieldWithPath("[].exchangePostId").type(JsonFieldType.NUMBER).description("교환 게시글 ID"),
                                 fieldWithPath("[].title").type(JsonFieldType.STRING).description("교환 게시글 제목"),

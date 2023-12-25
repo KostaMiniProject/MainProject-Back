@@ -23,9 +23,9 @@ public class DibsController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/dibs/{userId}")
-    public ResponseEntity<List<DibbedExchangePostDTO>> getUserDibs(@PathVariable("userId") Integer userId) {
-        return ResponseEntity.ok(dibsService.getUserDibs(userId));
+    @GetMapping("/dibs")
+    public ResponseEntity<List<DibbedExchangePostDTO>> getUserDibs(@LoginUser User user) {
+        return ResponseEntity.ok(dibsService.getUserDibs(user));
     }
 
 }

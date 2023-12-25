@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,8 +49,12 @@ public class DibsService {
 
     //찜 목록 조회 기능
     @Transactional(readOnly = true)
-    public List<DibbedExchangePostDTO> getUserDibs(Integer userId) {
-        return dibsRepository.findByUserUserId(userId).stream()
+    public List<DibbedExchangePostDTO> getUserDibs(User user) {
+
+        Optional<User> userByEmail = usersRepository.findUserByEmail(user.getEmail());
+         user = userByEmail.orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
+
+        return user.getDibs().stream()
             .map(Dib::getExchangePost)
             .map(exchangePost -> DibbedExchangePostDTO.builder()
                 //.exchangePostId(exchangePost.getExchangePostId())

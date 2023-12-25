@@ -76,6 +76,15 @@ public class ItemsController {
     List<ItemPageDTO> list = items.stream().toList();
     return new ResponseEntity<>(new PageResponseDto(list, PageInfo.of(items)), HttpStatus.OK);
   }
+  @GetMapping("/my-items")
+  public ResponseEntity<?> getMyItems(@LoginUser User user,
+                                    @PageableDefault(page = 0, size = 10, sort = "itemId", direction = Sort.Direction.DESC) Pageable pageable) {
+    Integer userId = 0;
+    if(user != null) userId = user.getUserId();
+    Page<ItemPageDTO> items = itemsService.getCanBidItems(userId, pageable);
+    List<ItemPageDTO> list = items.stream().toList();
+    return new ResponseEntity<>(new PageResponseDto(list, PageInfo.of(items)), HttpStatus.OK);
+  }
 
 
   /**

@@ -104,6 +104,7 @@ public class CommentsService {
         if(commentCreateDTO.getParentId() != null) {
             return addReply(user,communityPostId,commentCreateDTO);
         }
+        if (user == null) throw new BusinessException(USER_NOT_FOUND);
         CommunityPost communityPost = communityPostsService.findCommunityPostByCommunityPostId(communityPostId);
 
         Comment comment = Comment.builder()

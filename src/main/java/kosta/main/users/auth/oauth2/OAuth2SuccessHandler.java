@@ -12,6 +12,7 @@ import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,8 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer ";
     public static final String REFRESH = "Refresh";
+    @Value("${domain}")
+    private String domain;
     public static final int ONLY_BEARER_LENGTH = 8;
         private final UsersRepository usersRepository;
         private final TokenProvider tokenProvider;
@@ -56,7 +59,7 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
         response.getWriter().write(objectMapper.writeValueAsString(LoginResponse.of(user.getUserId())));   // Access Token과 Refresh Token을 포함한 URL을 생성
-        getRedirectStrategy().sendRedirect(request, response,"http://localhost:3000/login/authcheck?token="+accessToken);   // sendRedirect() 메서드를 이용해 Frontend 애플리케이션 쪽으로 리다이렉트
+        getRedirectStrategy().sendRedirect(request, response,domain+"/login/authcheck?token="+accessToken);   // sendRedirect() 메서드를 이용해 Frontend 애플리케이션 쪽으로 리다이렉트
     }
 
 

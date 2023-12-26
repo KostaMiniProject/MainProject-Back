@@ -35,8 +35,8 @@ public enum CommonErrorCode implements ErrorCode {
     NOT_EQUAL_COMMUNITY_POST(HttpStatus.BAD_REQUEST, "부모댓글과 자식댓글의 커뮤니티 게시글이 일치하지 않습니다"),
     NOT_JOIN_EXCHANGE(HttpStatus.BAD_REQUEST, "해당 물물교환에 참여한 유저가 아닙니다"),
     NOT_EQUAL_EXCHANGE_POST(HttpStatus.BAD_REQUEST, "입찰이 작성된 교환게시글과 해당 교환게시글이 일치하지 않습니다"),
-
-
+    POST_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 거래가 완료된 게시글은 수정할수 없습니다."),
+    TOO_MANY_ITEMS(HttpStatus.BAD_REQUEST, "입찰에 사용 가능한 물건의 개수는 최대 5개 입니다"),
     /**
      * 404 Not Found
      */

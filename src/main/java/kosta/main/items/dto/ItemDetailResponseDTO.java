@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 
 @Getter
@@ -18,7 +20,7 @@ public class ItemDetailResponseDTO {
     private Item.ItemStatus itemStatus;
     private List<String> images;
     private Item.IsBiding isBiding;
-    private LocalDateTime createAt;
+    private String createAt;
     private UserItemResponseDTO user;
 
     public static ItemDetailResponseDTO of(Item item){
@@ -29,7 +31,7 @@ public class ItemDetailResponseDTO {
                 item.getItemStatus(),
                 item.getImages(),
                 item.getIsBiding(),
-                item.getCreatedAt(),
+                item.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)),
                 UserItemResponseDTO.of(item.getUser())
         );
     }

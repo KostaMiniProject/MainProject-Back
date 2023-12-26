@@ -16,6 +16,7 @@ public class ExchangePostDetailDTO {
   private UserProfile profile;
   private ItemDetails item;
   private List<BidDetails> bidList;
+  private Boolean isDibs;
 
   @Getter
   @Builder

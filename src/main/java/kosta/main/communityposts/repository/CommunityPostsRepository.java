@@ -15,14 +15,22 @@ public interface CommunityPostsRepository extends JpaRepository<CommunityPost,In
 //    List<CommunityPost> findAllTitleContaining(@Param("keyword") String keyword);
 
     @Query("SELECT cp FROM CommunityPost cp " +
-            "WHERE (LOWER(cp.title) LIKE LOWER(CONCAT('%', :keyword, '%')) AND cp.communityPostStatus = 0) " +
-            "   OR (cp.communityPostStatus = 1 AND cp.user.userId = :userId) " +
-            "ORDER BY cp.communityPostId DESC")
-    Page<CommunityPost> findAllTitleContainingByUser(@Param("keyword") String keyword, @Param("userId") Integer userId, Pageable pageable);
+        "WHERE ((LOWER(cp.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(cp.content) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND cp.communityPostStatus = 0) " +
+        "   OR (cp.communityPostStatus = 1 AND cp.user.userId = :userId) " +
+        "ORDER BY cp.communityPostId DESC")
+    Page<CommunityPost> findAllTitleOrContentContainingByUser(@Param("keyword") String keyword, @Param("userId") Integer userId, Pageable pageable);
 
-    @Query("SELECT cp FROM CommunityPost cp WHERE LOWER(cp.title) LIKE LOWER(CONCAT('%', :keyword, '%')) AND cp.communityPostStatus = 0 " +
-            "ORDER BY cp.communityPostId DESC")
-    Page<CommunityPost> findAllTitleContaining(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT cp FROM CommunityPost cp WHERE (LOWER(cp.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(cp.content) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND cp.communityPostStatus = 0 " +
+        "ORDER BY cp.communityPostId DESC")
+    Page<CommunityPost> findAllTitleOrContentContaining(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT cp FROM CommunityPost cp " +
+        "WHERE cp.user.userId = :userId AND " +
+        "(LOWER(cp.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(cp.content) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+        "AND cp.communityPostStatus = 0 " +
+        "ORDER BY cp.communityPostId DESC")
+    Page<CommunityPost> findByUserAndKeyword(@Param("userId") Integer userId, @Param("keyword") String keyword, Pageable pageable);
 
     Page<CommunityPost> findByUser_UserId(Pageable pageable, Integer userId);
     List<CommunityPost> findByUser_UserId(Integer userId);

@@ -49,6 +49,11 @@ public class UsersController {
     return ResponseEntity.ok(usersService.findProfileByName(name));
   }
 
+  @GetMapping("/users/profile-id")
+  public ResponseEntity<?> findProfileByUserId(@LoginUser User user) {
+    return ResponseEntity.ok(usersService.findProfileByUserId(user.getUserId()));
+  }
+
 //  @GetMapping("/users/my-profile")
 //  public ResponseEntity<?> findMyAllProfile(@LoginUser User user){
 //    return new ResponseEntity<>(usersService.findMyAllProfile(user), HttpStatus.OK);

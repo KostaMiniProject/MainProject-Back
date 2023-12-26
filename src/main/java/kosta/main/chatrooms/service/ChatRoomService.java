@@ -79,7 +79,7 @@ public class ChatRoomService {
       // 초기 시스템 메시지 생성
       Chat initialChat = Chat.builder()
           .chatRoom(chatRoom)
-          .message(sender.getName() + "님이 " + receiver.getName() + "과의 방을 생성 하셨습니다.")
+          .message(sender.getName() + "님이 " + receiver.getName() + "님과의 방을 생성 하셨습니다.")
           .user(sender) // 시스템 메시지이므로 사용자는 null
           .isRead(false)
           .build();

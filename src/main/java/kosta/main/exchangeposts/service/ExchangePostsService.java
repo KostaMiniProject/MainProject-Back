@@ -2,6 +2,9 @@ package kosta.main.exchangeposts.service;
 
 import kosta.main.bids.entity.Bid;
 import kosta.main.bids.repository.BidRepository;
+import kosta.main.dibs.entity.Dib;
+import kosta.main.dibs.repository.DibsRepository;
+import kosta.main.dibs.service.DibsService;
 import kosta.main.exchangeposts.dto.*;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
@@ -34,6 +37,7 @@ public class ExchangePostsService {
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
   private final KakaoAPI kakaoAPI;
+  private final DibsRepository dibsRepository;
 
   // 공통메서드 : 게시글 삭제시 item들의 상태를 변경해주는 기능
   private void updateItemsBidingStatus(List<Item> items, Item.IsBiding status, Bid bid) {
@@ -112,10 +116,11 @@ public class ExchangePostsService {
   public List<ExchangePostListForMapDTO> getExchangePostForMap(String longitude, String latitude) {
     Double lat = latitude != null ? Double.parseDouble(latitude) : 37.338860;
     Double lon = longitude != null ? Double.parseDouble(longitude) : 127.109316;
-
-    List<ExchangePost> exchangePosts = exchangePostRepository.findPostsWithinDistance(lat, lon);
+    System.out.println(lat + lon);
+    List<ExchangePost> exchangePosts = exchangePostRepository.findActivePostsWithinDistance(lat, lon);
 
     return exchangePosts.stream()
+        .filter(post -> post.getLatitude() != null && post.getLongitude() != null)
         .sorted(Comparator.comparingDouble(post -> calculateDistance(lat, lon, Double.parseDouble(post.getLatitude()), Double.parseDouble(post.getLongitude()))))
         .map(exchangePost -> {
           String imgUrl = exchangePost.getItem().getImages().isEmpty() ? null : exchangePost.getItem().getImages().get(0);
@@ -194,6 +199,7 @@ public class ExchangePostsService {
 
     // 교환 게시글 작성자와 현재 로그인한 사용자가 같은지 확인 (로그인하지 않은 경우 고려)
     boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
+    boolean isDibs = dibsRepository.findByUserUserIdAndExchangePostExchangePostId(currentUser.getUserId(), exchangePostId).isPresent();
 
     // 사용자 프로필 정보 생성
     ExchangePostDetailDTO.UserProfile userProfile = ExchangePostDetailDTO.UserProfile.builder()
@@ -229,6 +235,7 @@ public class ExchangePostsService {
     // ExchangePostDetailDTO 구성
     return ExchangePostDetailDTO.builder()
         .postOwner(isOwner)
+        .isDibs(isDibs)
         .title(post.getTitle())
         .preferItems(post.getPreferItems())
         .address(post.getAddress())
@@ -266,6 +273,10 @@ public class ExchangePostsService {
   public ExchangePostUpdateResponseDTO updateExchangePost(User user, Integer exchangePostId, ExchangePostDTO updatedExchangePostDTO) {
     ExchangePost existingExchangePost = exchangePostRepository.findById(exchangePostId)
         .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
+    // 거래 완료된 게시글인지 확인
+    if (existingExchangePost.getExchangePostStatus() == ExchangePost.ExchangePostStatus.COMPLETED) {
+      throw new BusinessException(POST_ALREADY_COMPLETED);
+    }
 
     // 요청 사용자와 게시글 작성자가 동일한지 확인
     if (!existingExchangePost.getUser().getUserId().equals(user.getUserId())) {
@@ -304,6 +315,11 @@ public class ExchangePostsService {
   public void deleteExchangePost(Integer exchangePostId, User user) {
     ExchangePost existingExchangePost = exchangePostRepository.findById(exchangePostId)
         .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
+
+    // 거래 완료된 게시글인지 확인
+    if (existingExchangePost.getExchangePostStatus().equals(ExchangePost.ExchangePostStatus.COMPLETED)) {
+      throw new BusinessException(POST_ALREADY_COMPLETED);
+    }
 
     // 게시글 작성자와 삭제 요청자가 동일한지 확인
     if (!existingExchangePost.getUser().getUserId().equals(user.getUserId())) {

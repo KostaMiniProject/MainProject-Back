@@ -57,7 +57,7 @@ public class DibsService {
         return user.getDibs().stream()
             .map(Dib::getExchangePost)
             .map(exchangePost -> DibbedExchangePostDTO.builder()
-                //.exchangePostId(exchangePost.getExchangePostId())
+                .exchangePostId(exchangePost.getExchangePostId())
                 .title(exchangePost.getTitle())
                 .representativeImageUrl(exchangePost.getItem().getImages().isEmpty() ? null : exchangePost.getItem().getImages().get(0))
                 .createdAt(exchangePost.getCreatedAt())

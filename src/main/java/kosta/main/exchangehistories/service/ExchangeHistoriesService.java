@@ -141,11 +141,12 @@ public class ExchangeHistoriesService {
                       item.getImages().isEmpty() ? null : item.getImages()
               ))
               .collect(Collectors.toList());
-
+      User anotherUser = findAnotherUser(user, exchangePost);
       return new ExchangeHistoriesResponseDTO(
               exchangePost.getUpdatedAt(),
               exchangePost.getExchangePostId(),
-              findAnotherUser(user, exchangePost),
+              anotherUser.getUserId(),
+              anotherUser.getName(),
               checkWriteReview(user, exchangePost),
               exchangePost.getUser().getName(),
               exchangePost.getUser().getAddress(),
@@ -159,11 +160,11 @@ public class ExchangeHistoriesService {
     }).collect(Collectors.toList());
   }
 
-  private Integer findAnotherUser(User user, ExchangePost exchangePost) {
+  private User findAnotherUser(User user, ExchangePost exchangePost) {
     Bid first = exchangePost.getBids().stream().filter(b -> b.getStatus().equals(Bid.BidStatus.COMPLETED)).findFirst().get();
-    Integer bidderUserId = first.getUser().getUserId();
-    if(Objects.equals(bidderUserId, user.getUserId())) return exchangePost.getUser().getUserId();
-    else return bidderUserId;
+    User bidderUser = first.getUser();
+    if(Objects.equals(bidderUser.getUserId(), user.getUserId())) return exchangePost.getUser();
+    else return bidderUser;
   }
 
   private Boolean checkWriteReview(User user,ExchangePost exchangePost) {

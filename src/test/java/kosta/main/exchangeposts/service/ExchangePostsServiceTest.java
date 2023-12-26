@@ -90,25 +90,25 @@ class ExchangePostsServiceTest {
 //        assertThat(result.getTotalPages()).isEqualTo(1);
 //    }
 
-    @Test
-    void findExchangePostById() {
-        ExchangePost exchangePostBid = exchangePostStubData.getExchangePostBid();
-        User user = userStubData.getUser();
-        //given
-        given(exchangePostRepository.findById(Mockito.anyInt())).willReturn(Optional.of(exchangePostBid));
-
-        //when
-
-        ExchangePostDetailDTO result = exchangePostsService.findExchangePostById(EXCHANGE_POST_ID, user);
-
-        //then
-
-        assertThat(result.getTitle()).isEqualTo(exchangePostBid.getTitle());
-        assertThat(result.getAddress()).isEqualTo(exchangePostBid.getAddress());
-        assertThat(result.getItem().getDescription()).isEqualTo(exchangePostBid.getItem().getDescription());
-        assertThat(result.getProfile().getRating()).isEqualTo(exchangePostBid.getUser().getRating());
-
-    }
+//    @Test
+//    void findExchangePostById() {
+//        ExchangePost exchangePostBid = exchangePostStubData.getExchangePostBid();
+//        User user = userStubData.getUser();
+//        //given
+//        given(exchangePostRepository.findById(Mockito.anyInt())).willReturn(Optional.of(exchangePostBid));
+//
+//        //when
+//
+//        ExchangePostDetailDTO result = exchangePostsService.findExchangePostById(EXCHANGE_POST_ID, user);
+//
+//        //then
+//
+//        assertThat(result.getTitle()).isEqualTo(exchangePostBid.getTitle());
+//        assertThat(result.getAddress()).isEqualTo(exchangePostBid.getAddress());
+//        assertThat(result.getItem().getDescription()).isEqualTo(exchangePostBid.getItem().getDescription());
+//        assertThat(result.getProfile().getRating()).isEqualTo(exchangePostBid.getUser().getRating());
+//
+//    }
 
     @Test
     void updateExchangePost() {

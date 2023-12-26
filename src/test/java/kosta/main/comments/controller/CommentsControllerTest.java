@@ -83,6 +83,7 @@ class CommentsControllerTest extends ControllerTest {
                         responseFields(
                                 fieldWithPath("[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("[].content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("[].date").type(JsonFieldType.NULL).description("날짜"),
                                 fieldWithPath("[].profile").type(JsonFieldType.OBJECT).description("유저 정보를 담고있는 객체"),
                                 fieldWithPath("[].profile.userId").type(JsonFieldType.NUMBER).description("유저 Id"),
                                 fieldWithPath("[].profile.name").type(JsonFieldType.STRING).description("유저이름"),
@@ -148,7 +149,8 @@ class CommentsControllerTest extends ControllerTest {
                         responseFields(
                                 fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티 게시글 ID"),
                                 fieldWithPath("commentId").type(JsonFieldType.NUMBER).description("댓글의 ID"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글의 내용")
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글의 내용"),
+                                fieldWithPath("date").type(JsonFieldType.STRING).description("댓글 작성일")
                         )
 
                 ));
@@ -188,7 +190,9 @@ class CommentsControllerTest extends ControllerTest {
                         responseFields(
                                 fieldWithPath("communityPostId").type(JsonFieldType.NUMBER).description("커뮤니티 게시글 ID"),
                                 fieldWithPath("commentId").type(JsonFieldType.NUMBER).description("댓글의 ID"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글의 내용")
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글의 내용"),
+                                fieldWithPath("date").type(JsonFieldType.STRING).description("댓글 작성일")
+
                         )
                         ));
 

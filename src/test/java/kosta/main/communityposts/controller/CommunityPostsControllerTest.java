@@ -41,6 +41,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -136,6 +137,7 @@ class CommunityPostsControllerTest extends ControllerTest {
     void findPost() throws Exception {
         // given
         CommunityPostDetailDTO communityPostDetailDto = communityPostStubData.getCommunityPostDetailDto();
+        communityPostDetailDto.updateDate(LocalDateTime.now());
         // when
         when(communityPostsService.findPost(Mockito.any(User.class),Mockito.anyInt())).thenReturn(communityPostDetailDto);
 
@@ -172,6 +174,7 @@ class CommunityPostsControllerTest extends ControllerTest {
                                 fieldWithPath("comments.[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("comments.[].content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("comments.[].isOwner").type(JsonFieldType.BOOLEAN).description("댓글 주인 여부"),
+                                fieldWithPath("comments.[].date").type(JsonFieldType.NULL).description("댓글생성시간"),
                                 fieldWithPath("comments.[].profile").type(JsonFieldType.OBJECT).description("유저 정보를 담고있는 객체"),
                                 fieldWithPath("comments.[].profile.userId").type(JsonFieldType.NUMBER).description("유저 Id"),
                                 fieldWithPath("comments.[].profile.name").type(JsonFieldType.STRING).description("유저이름"),
@@ -295,7 +298,8 @@ class CommunityPostsControllerTest extends ControllerTest {
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("커뮤니티게시글 내용"),
                                 fieldWithPath("views").type(JsonFieldType.NUMBER).description("커뮤니티게시글 조회수"),
                                 fieldWithPath("communityPostStatus").type(JsonFieldType.STRING).description("커뮤니티게시글 상태(PUBLIC, PRIVATE, REPORTED, DELETED)"),
-                                fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수")
+                                fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("커뮤니티게시글 좋아요 수"),
+                                fieldWithPath("date").type(JsonFieldType.STRING).description("날짜에 대한 정보")
                                 )
                 ));
     }

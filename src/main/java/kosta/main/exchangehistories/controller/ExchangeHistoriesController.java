@@ -1,6 +1,5 @@
 package kosta.main.exchangehistories.controller;
 
-import kosta.main.exchangehistories.dto.ExchangeHistoryCreateDTO;
 import kosta.main.exchangehistories.dto.ExchangeHistoriesResponseDTO;
 import kosta.main.exchangehistories.service.ExchangeHistoriesService;
 import kosta.main.global.dto.PageInfo;

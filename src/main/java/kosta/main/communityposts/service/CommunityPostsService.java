@@ -19,6 +19,8 @@ import kosta.main.likes.repository.LikesRepository;
 import kosta.main.users.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +47,8 @@ public class CommunityPostsService {
     private final LikesRepository likesRepository;
     private final ImageService imageService;
     private final CommentsRepository commentsRepository;
+    private static final Logger logger = LoggerFactory.getLogger(CommunityPostsService.class);
+
     /* RuntimeException 추상 메소드 */
 
     public CommunityPost findCommunityPostByCommunityPostId(Integer communityPostId) {
@@ -92,7 +96,13 @@ public class CommunityPostsService {
             if (comment.getParent() == null) {
                 result.put(comment.getCommentId(), CommentParentDTO.from(comment, userId));
             } else {
-                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment, userId));
+                CommentParentDTO parentDto = result.get(comment.getParent().getCommentId());
+                if (parentDto != null) {
+                    parentDto.addChild(CommentChildDTO.from(comment, userId));
+                } else {
+                    // 부모 댓글이 맵에 없는 경우의 처리
+                    logger.error("Parent comment not found for child comment ID: " + comment.getCommentId());
+                }
             }
         }
         return new ArrayList<>(result.values());

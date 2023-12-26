@@ -21,6 +21,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -143,7 +145,7 @@ public class ExchangeHistoriesService {
               .collect(Collectors.toList());
       User anotherUser = findAnotherUser(user, exchangePost);
       return new ExchangeHistoriesResponseDTO(
-              exchangePost.getUpdatedAt(),
+              exchangePost.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
               exchangePost.getExchangePostId(),
               anotherUser.getUserId(),
               anotherUser.getName(),

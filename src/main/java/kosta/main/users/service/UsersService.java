@@ -116,22 +116,38 @@ public class UsersService {
 
   @Transactional
   public UsersResponseDTO updateUser(User user, UserUpdateDTO userUpdateDTO, MultipartFile file) {
-    String imagePath = imageService.resizeToProfileSizeAndUpload(file);
-    userUpdateDTO.updateProfileImage(imagePath);
+    // 프로필 이미지 업로드 및 경로 설정
+    if (file != null && !file.isEmpty()) {
+      String imagePath = imageService.resizeToProfileSizeAndUpload(file);
+      userUpdateDTO.updateProfileImage(imagePath);
+    } else {
+      userUpdateDTO.updateProfileImage(user.getProfileImage());
+    }
 
-    //만약 비밀번호가 하나라도 널일경우 비밀번호는 통과
-    //만약 두 비밀번호가 일치할 경우 userUpdateDto의 비밀번호를 encode한 비밀번호로 변경
-    //일치하지 않을 경우 비밀번호가 다르다는 에러를 던짐
+    // 비밀번호 처리
     if (userUpdateDTO.getPassword() != null && userUpdateDTO.getCheckPassword() != null) {
       if (Objects.equals(userUpdateDTO.getPassword(), userUpdateDTO.getCheckPassword())) {
         String encodePassword = passwordEncoder.encode(userUpdateDTO.getPassword());
         userUpdateDTO.updatePassword(encodePassword);
-      } else throw new BusinessException(INVALID_PASSWORD);
+      } else {
+        throw new BusinessException(INVALID_PASSWORD);
+      }
+    } else {
+      userUpdateDTO.updatePassword(user.getPassword());
+    }
 
+
+    // 나머지 필드 업데이트
+    if (userUpdateDTO.getNickName()== null) {
+      userUpdateDTO.updateNickName(user.getName());
+    }
+    if (userUpdateDTO.getPhone() == null) {
+      userUpdateDTO.updatePhone(user.getPhone());
     }
     User updatedUser = user.updateUser(userUpdateDTO);
     return UsersResponseDTO.of(usersRepository.save(updatedUser));
   }
+
 
   @Transactional
   public void withdrawalUser(User user) {

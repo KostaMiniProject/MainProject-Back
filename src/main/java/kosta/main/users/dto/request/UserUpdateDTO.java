@@ -1,8 +1,5 @@
 package kosta.main.users.dto.request;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,4 +38,25 @@ public class UserUpdateDTO {
     public void updatePassword(String encodePassword){
         this.password = encodePassword;
     }
+
+  // 추가된 업데이트 메서드들
+  public void updateNickName(String nickName) {
+    this.nickName = nickName;
+  }
+
+  public void updateAddress(AddressDTO address) {
+    this.address = address;
+  }
+
+  public void updateAddressDetail(String addressDetail) {
+    this.addressDetail = addressDetail;
+  }
+
+  public void updatePhone(String phone) {
+    this.phone = phone;
+  }
+
+  public void updateUserStatus(User.UserStatus userStatus) {
+    this.userStatus = userStatus;
+  }
 }

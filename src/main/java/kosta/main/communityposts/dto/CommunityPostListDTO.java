@@ -9,7 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -71,22 +73,22 @@ public class CommunityPostListDTO { // stackoverflow에러로 인하여 조회 D
         LocalDateTime createdAt = post.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
 
-        if (now.getYear() - createdAt.getYear() > 1) {
-            return (now.getYear() - createdAt.getYear()) + BEFORE_YEAR;
+        Duration duration = Duration.between(createdAt, now);
+        Period period = Period.between(createdAt.toLocalDate(), now.toLocalDate());
+
+        if (period.getYears() > 0) {
+            return period.getYears() + BEFORE_YEAR;
+        } else if (period.getMonths() > 0) {
+            return period.getMonths() + BEFORE_MONTH;
+        } else if (period.getDays() > 0) {
+            return period.getDays() + BEFORE_DATE;
+        } else if (duration.toHours() > 0) {
+            return duration.toHours() + BEFORE_HOUR;
+        } else if (duration.toMinutes() > 0) {
+            return duration.toMinutes() + BEFORE_MINUTE;
+        } else {
+            return BEFORE_SECOND;
         }
-        if (now.getMonthValue() - createdAt.getMonthValue() >1) {
-            return (now.getMonthValue() - createdAt.getMonthValue()) + BEFORE_MONTH;
-        }
-        if (now.getDayOfMonth() - createdAt.getMonthValue() > 1) {
-            return (now.getDayOfMonth() - createdAt.getDayOfMonth()) + BEFORE_DATE;
-        }
-        if (now.getHour() - createdAt.getHour() > 1) {
-            return (now.getHour() - createdAt.getHour()) + BEFORE_HOUR;
-        }
-        if(now.getMinute() - createdAt.getMinute() > 1) {
-            return (now.getMinute() - createdAt.getMinute()) + BEFORE_MINUTE;
-        }
-        return BEFORE_SECOND;
     }
 
 }

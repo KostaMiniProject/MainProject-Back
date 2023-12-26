@@ -22,6 +22,14 @@ public interface ExchangePostsRepository extends JpaRepository<ExchangePost, Int
         "ORDER BY ep.exchangePostId DESC")
     Page<ExchangePost> searchExchangePost(@Param("keyword") String keyword, Pageable pageable);
 
+    @Query("SELECT ep FROM ExchangePost ep " +
+        "WHERE ep.user.userId = :userId AND " +
+        "((LOWER(ep.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) OR " +
+        "(ep.item.category.categoryName = :keyword) OR " +
+        "(LOWER(ep.content) LIKE LOWER(CONCAT('%', :keyword, '%')))) " +
+        "ORDER BY ep.exchangePostId DESC")
+    Page<ExchangePost> searchMyExchangePost(@Param("keyword") String keyword, @Param("userId") Integer userId, Pageable pageable);
+
     @Query(value = "SELECT ep FROM ExchangePost ep WHERE (ep.exchangePostStatus = 0 OR ep.exchangePostStatus = 1) AND ep.latitude IS NOT NULL AND ep.longitude IS NOT NULL AND ST_Distance_Sphere(point(ep.longitude, ep.latitude), point(:lon, :lat)) < 5000")
     List<ExchangePost> findActivePostsWithinDistance(@Param("lat") double lat, @Param("lon") double lon);
 

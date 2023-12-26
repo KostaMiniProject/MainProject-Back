@@ -80,6 +80,13 @@ public class UsersService {
     return usersResponseDTO;
   }
 
+  @Transactional(readOnly = true)
+  public UsersResponseDTO findProfileByUserId(Integer userId) {
+    UsersResponseDTO usersResponseDTO = usersRepository.findUserByUserId(userId)
+        .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+    return usersResponseDTO;
+  }
+
   @Transactional
   public UserCreateResponseDTO createUser(UserCreateDTO userCreateDTO) {
     if (!Objects.equals(userCreateDTO.getPassword(), userCreateDTO.getPasswordConfirm()))

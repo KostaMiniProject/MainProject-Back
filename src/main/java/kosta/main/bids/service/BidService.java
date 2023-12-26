@@ -74,6 +74,12 @@ public class BidService {
         }
 
         List<Item> items = itemsRepository.findAllById(bidDTO.getItemIds());
+
+        // 아이템 개수가 5개를 초과하는지 검증
+        if (items.size() > 5) {
+            throw new BusinessException(CommonErrorCode.TOO_MANY_ITEMS);
+        }
+
         validateItemsForBidding(items); // 'DELETED' 상태의 아이템 확인 및 최소 하나의 아이템 확인
 
         for (Item item : items) {

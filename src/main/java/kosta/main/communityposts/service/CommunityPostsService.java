@@ -52,21 +52,20 @@ public class CommunityPostsService {
     }
 
 
-
     /* 커뮤니티 목록 조회 */
     @Transactional(readOnly = true)
-    public Page<CommunityPostListDTO> findPosts(Pageable pageable,User user) {
+    public Page<CommunityPostListDTO> findPosts(Pageable pageable, User user) {
         Page<CommunityPost> posts = communityPostsRepository.findAll(pageable);
-        List<CommunityPostListDTO> list = posts.stream().map(post -> CommunityPostListDTO.from(post,user)).collect(Collectors.toList());
+        List<CommunityPostListDTO> list = posts.stream().map(post -> CommunityPostListDTO.from(post, user)).collect(Collectors.toList());
         return new PageImpl<>(list, posts.getPageable(), posts.getTotalElements());
     }
 
     /* 커뮤니티 게시글 상세 조회 */
     @Transactional(readOnly = true)
-    public CommunityPostDetailDTO findPost(User currentUser, Integer communityPostId){
+    public CommunityPostDetailDTO findPost(User currentUser, Integer communityPostId) {
         CommunityPost post = findCommunityPostByCommunityPostId(communityPostId);
         Integer userId = NOT_LOGIN;
-        if(currentUser != null) userId = currentUser.getUserId();
+        if (currentUser != null) userId = currentUser.getUserId();
         boolean isOwner = currentUser != null && post.getUser().getUserId().equals(userId);
 
 
@@ -74,40 +73,40 @@ public class CommunityPostsService {
         if (post.getCommunityPostStatus() == CommunityPost.CommunityPostStatus.PRIVATE && !isOwner) {
             throw new RuntimeException(ErrorCode.ACCESS_DENIED.getMessage());
         }
-        List<CommentParentDTO> commentsByPostId = findCommentsByPostId(post.getCommunityPostId(),userId);
+        List<CommentParentDTO> commentsByPostId = findCommentsByPostId(post.getCommunityPostId(), userId);
 
-        return CommunityPostDetailDTO.from(post, currentUser,commentsByPostId);
+        return CommunityPostDetailDTO.from(post, currentUser, commentsByPostId);
     }
 
 
     @Transactional(readOnly = true)
-    public List<CommentParentDTO>findCommentsByPostId(Integer communityPostId,Integer userId) {
+    public List<CommentParentDTO> findCommentsByPostId(Integer communityPostId, Integer userId) {
         findCommunityPostByCommunityPostId(communityPostId); // 커뮤니티 게시글이 존재하는지 확인
         List<Comment> comments = commentsRepository.findComments(communityPostId);
-        return convert(comments,userId);
+        return convert(comments, userId);
     }
 
-    private List<CommentParentDTO> convert(List<Comment> comments,Integer userId) {
-        Map<Integer,CommentParentDTO> result = new HashMap<>();
+    private List<CommentParentDTO> convert(List<Comment> comments, Integer userId) {
+        Map<Integer, CommentParentDTO> result = new HashMap<>();
         for (Comment comment : comments) {
-            if(comment.getParent() == null) {
-                result.put(comment.getCommentId(),CommentParentDTO.from(comment,userId));
-            }
-            else {
-                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment,userId));
+            if (comment.getParent() == null) {
+                result.put(comment.getCommentId(), CommentParentDTO.from(comment, userId));
+            } else {
+                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment, userId));
             }
         }
         return new ArrayList<>(result.values());
     }
+
     /* 커뮤니티 게시글 작성 */
     public CommunityPostDTO addPost(User user, CommunityPostCreateDTO communityPostCreateDTO, List<MultipartFile> files) {
         List<String> imagePaths = files.stream().map(imageService::resizeToBasicSizeAndUpload).toList();
         CommunityPost communityPost = CommunityPost.builder()
-                .user(user)
-                .title(communityPostCreateDTO.getTitle())
-                .content(communityPostCreateDTO.getContent())
-                .images(imagePaths)
-                .build();
+            .user(user)
+            .title(communityPostCreateDTO.getTitle())
+            .content(communityPostCreateDTO.getContent())
+            .images(imagePaths)
+            .build();
         return new CommunityPostDTO(communityPostsRepository.save(communityPost));
     }
 
@@ -154,7 +153,7 @@ public class CommunityPostsService {
         }
 
         // 좋아요와 좋아요 취소 로직
-        if(targetLike != null) { // 좋아요 목록에 좋아요가 있다면
+        if (targetLike != null) { // 좋아요 목록에 좋아요가 있다면
             communityPost.getLikePostList().remove(targetLike); // 엔티티의 좋아요 목록에서 targetLike를 제거하여 like와 communityPost의 연관관계를 제거한다.
             targetLike.setCommunityPost(null); // targetLike가 CommunityPost를 더 이상 참조하지 않도록 설정하여 CommunityPost 엔티티에서 Like 엔티티를 제거한다.
             likesRepository.delete(targetLike); // targetLike 객체를 데이터베이스에서 제거한다.
@@ -171,19 +170,36 @@ public class CommunityPostsService {
     }
 
     /* 커뮤니티 게시글 검색 */
-    public Page<CommunityPostListDTO> search(String keyword,Pageable pageable,User user) {
-        if(user != null) {
+    public Page<CommunityPostListDTO> search(String keyword, Pageable pageable, User user) {
+        if (user != null) {
             Page<CommunityPost> allTitleContaining =
-                    communityPostsRepository.findAllTitleContainingByUser(keyword, user.getUserId(), pageable);
+                communityPostsRepository.findAllTitleOrContentContainingByUser(keyword, user.getUserId(), pageable);
 
-            List<CommunityPostListDTO> list = allTitleContaining.map(a-> CommunityPostListDTO.from(a,user)).stream().toList();
+            List<CommunityPostListDTO> list = allTitleContaining.map(a -> CommunityPostListDTO.from(a, user)).stream().toList();
             return new PageImpl<CommunityPostListDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
         } else {
 
             Page<CommunityPost> allTitleContaining =
-                    communityPostsRepository.findAllTitleContaining(keyword, pageable);
-            List<CommunityPostListDTO> list = allTitleContaining.map(a-> CommunityPostListDTO.from(a,user)).stream().toList();
+                communityPostsRepository.findAllTitleOrContentContaining(keyword, pageable);
+            List<CommunityPostListDTO> list = allTitleContaining.map(a -> CommunityPostListDTO.from(a, user)).stream().toList();
             return new PageImpl<CommunityPostListDTO>(list, allTitleContaining.getPageable(), allTitleContaining.getTotalElements());
         }
     }
+
+    // 내 커뮤니티 게시글 검색
+    public Page<CommunityPostListDTO> searchMyCommunityPost(String keyword, Pageable pageable, User user) {
+        Page<CommunityPost> communityPosts;
+
+        if (user != null) {
+            communityPosts = communityPostsRepository.findByUserAndKeyword(user.getUserId(), keyword, pageable);
+        } else {
+            communityPosts = communityPostsRepository.findAllTitleOrContentContaining(keyword, pageable);
+        }
+
+        List<CommunityPostListDTO> list = communityPosts.stream()
+            .map(post -> CommunityPostListDTO.from(post, user))
+            .collect(Collectors.toList());
+        return new PageImpl<>(list, pageable, communityPosts.getTotalElements());
+    }
+
 }

@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 
 
@@ -20,7 +22,7 @@ public class ItemPageDTO {
   private Item.ItemStatus itemStatus;
   private Item.IsBiding isBiding;
   private List<String> images; // 가장 첫번째 아이템 이미지 URL 1개만
-  private LocalDateTime crateAt;
+  private String crateAt;
 
   public void updateImagePath(String imagePaths){
     this.images.add(imagePaths);
@@ -35,7 +37,7 @@ public class ItemPageDTO {
             item.getItemStatus(),
             item.getIsBiding(),
             item.getImages(),
-            item.getCreatedAt()
+            item.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
     );
   }
 }

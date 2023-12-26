@@ -91,5 +91,14 @@ public class CommunityPostsController {
         List<CommunityPostListDTO> list = search.stream().toList();
         return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(search)), HttpStatus.OK);
     }
+    // 내 커뮤니티 게시글 검색
+    @GetMapping("/search-my-community-posts")
+    public ResponseEntity<?> searchMyCommunityPost(@RequestParam String keyword,
+                                    @PageableDefault(page = 0, size = 10) Pageable pageable,
+                                    @LoginUser User user) {
+        Page<CommunityPostListDTO> search = communityPostsService.searchMyCommunityPost(keyword, pageable, user);
+        List<CommunityPostListDTO> list = search.stream().toList();
+        return new ResponseEntity<>(new PageResponseDto<>(list, PageInfo.of(search)), HttpStatus.OK);
+    }
 }
 

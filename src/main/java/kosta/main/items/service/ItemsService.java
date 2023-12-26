@@ -224,14 +224,17 @@ public class ItemsService {
    */
   public void deleteItem(Integer itemId, Integer userId) {
     Item item = findItemByItemId(itemId);
-    //입찰중이면 삭제 불가
-    //물건 게시중이면 삭제 불가
     
     // 사용자 ID 일치 여부 확인
     if (!item.getUser().getUserId().equals(userId)) {
       // 여기서 사용자 ID가 일치하지 않으면 오류를 발생
       throw new BusinessException(NOT_ITEM_OWNER);
     }
+    // 입찰중인 경우 삭제 불가 + 교환 게시글에 사용중이어도 삭제 불가
+    if (item.getIsBiding() == Item.IsBiding.BIDING) {
+      throw new BusinessException(ALREADY_BIDDING_ITEM);
+    }
+
     itemsRepository.delete(item);
   }
 
@@ -247,7 +250,7 @@ public class ItemsService {
       throw new BusinessException(USER_NOT_FOUND);
     }
     Page<Item> searchItemsByUser
-              = itemsRepository.findByTitleContainingAndItemStatusOrUserId(keyword, user.getUserId(), pageable);
+              = itemsRepository.findByTitleOrDescriptionContainingAndItemStatusOrUserId(keyword, user.getUserId(), pageable);
       List<ItemPageDTO> list = searchItemsByUser.map(ItemPageDTO::from).stream().toList();
       return new PageImpl<ItemPageDTO>(list, searchItemsByUser.getPageable(), searchItemsByUser.getTotalElements());
     }

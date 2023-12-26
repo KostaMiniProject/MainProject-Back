@@ -106,6 +106,13 @@ public class User extends Auditable {
         this.name = !nullCheck(userUpdateDto.getNickName()) ? userUpdateDto.getNickName() : this.name;
         return this;
     }
+    public User updateUser(UserCreateDTO userCreateDTO) {
+        this.address = userCreateDTO.getAddress() != null ? userCreateDTO.getAddress().getRoadAddr() + " " +userCreateDTO.getAddressDetail(): this.address;
+        this.phone = !nullCheck(userCreateDTO.getPhone()) ? userCreateDTO.getPhone() : this.phone;
+        this.password = !nullCheck(userCreateDTO.getPassword()) ? userCreateDTO.getPassword() : this.password;
+        this.name = !nullCheck(userCreateDTO.getNickName()) ? userCreateDTO.getNickName() : this.name;
+        return this;
+    }
 
     public void updatePassword(String password){
         this.password = password;
@@ -123,6 +130,10 @@ public class User extends Auditable {
         this.phone = !nullCheck(oauthSignUpDTO.getPhone()) ? oauthSignUpDTO.getPhone() : this.phone;
         this.name = !nullCheck(oauthSignUpDTO.getNickName()) ? oauthSignUpDTO.getNickName() : this.name;
         return this;
+    }
+
+    public void updateStatus() {
+        this.userStatus = UserStatus.ACTIVATE;
     }
 
     public enum UserStatus{

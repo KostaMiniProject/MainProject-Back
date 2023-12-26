@@ -110,23 +110,23 @@ public class SecurityConfig {
 
         return http.build();
     }
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(
-                List.of("http://localhost:3000",
-                        "http://localhost:8080",
-                        "https://main-project-front.vercel.app",
-                        "https://www.itsop.shop",
-                "https://kosta-mini-project.vercel.app"));
-        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Set-Cookie", "*"));
-        corsConfiguration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
-        corsConfiguration.setAllowedMethods(List.of("POST", "GET", "PATCH", "DELETE", "OPTIONS","PUT"));
-        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-        return urlBasedCorsConfigurationSource;
-    }
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration corsConfiguration = new CorsConfiguration();
+//        corsConfiguration.setAllowCredentials(true);
+//        corsConfiguration.setAllowedOrigins(
+//                List.of("http://localhost:3000",
+//                        "http://localhost:8080",
+//                        "https://main-project-front.vercel.app",
+//                        "https://www.itsop.shop",
+//                "https://kosta-mini-project.vercel.app"));
+//        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Set-Cookie", "*"));
+//        corsConfiguration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+//        corsConfiguration.setAllowedMethods(List.of("POST", "GET", "PATCH", "DELETE", "OPTIONS","PUT"));
+//        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+//        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+//        return urlBasedCorsConfigurationSource;
+//    }
 
     public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity>{
         @Override

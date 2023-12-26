@@ -86,8 +86,15 @@ public class UsersService {
       throw new BusinessException(INVALID_PASSWORD);
     String encryptedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
     userCreateDTO.updatePassword(encryptedPassword);
-    User user = User.createUser(userCreateDTO, basicProfileImage);
-
+    Optional<User> userByEmail = usersRepository.findUserByEmail(userCreateDTO.getEmail());
+    User user = null;
+    if(userByEmail.isEmpty()) {
+      user = User.createUser(userCreateDTO, basicProfileImage);
+    } else{
+      user = userByEmail.get();
+      user.updateUser(userCreateDTO);
+      user.updateStatus();
+    }
     return UserCreateResponseDTO.of(usersRepository.save(user));
   }
 

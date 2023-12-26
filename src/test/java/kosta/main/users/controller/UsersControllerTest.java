@@ -92,7 +92,9 @@ class UsersControllerTest extends ControllerTest {
                                 headerWithName("Authorization").description("액세스 토큰")
                         ),
                         responseFields(
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저 ID"),
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
+                                fieldWithPath("rating").type(JsonFieldType.NUMBER).description("유저의 평점"),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
                                 fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
                                 fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호"),
@@ -125,9 +127,11 @@ class UsersControllerTest extends ControllerTest {
                                 parameterWithName("name").description("유저 프로필조회용 이름")
                         ),
                         responseFields(
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저의 ID"),
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
                                 fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
+                                fieldWithPath("rating").type(JsonFieldType.NUMBER).description("유저의 평점"),
                                 fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호"),
                                 fieldWithPath("profileImage").type(JsonFieldType.STRING).description("유저의 프로필 이미지"),
                                 fieldWithPath("userStatus").type(JsonFieldType.STRING).description("유저의 상태(ACTIVATE, BANNED ,DELETED)")
@@ -236,7 +240,9 @@ class UsersControllerTest extends ControllerTest {
                                 fieldWithPath("userStatus").type(JsonFieldType.STRING).description("유저의 상태(ACTIVATE, BANNED ,DELETED)")
                         )
                         ,responseFields(
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저의 ID"),
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
+                                fieldWithPath("rating").type(JsonFieldType.NUMBER).description("유저의 평점"),
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("유저의 이름"),
                                 fieldWithPath("address").type(JsonFieldType.STRING).description("유저의 주소지"),
                                 fieldWithPath("phone").type(JsonFieldType.STRING).description("유저의 전화번호"),

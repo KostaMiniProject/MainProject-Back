@@ -250,7 +250,8 @@ class ExchangePostsControllerTest extends ControllerTest {
                                 fieldWithPath("bidList.[].bidId").type(JsonFieldType.NUMBER).description("입찰 ID"),
                                 fieldWithPath("bidList.[].name").type(JsonFieldType.STRING).description("사용자 이름"),
                                 fieldWithPath("bidList.[].imageUrl").type(JsonFieldType.STRING).description("사용자 프로필 이미지"),
-                                fieldWithPath("bidList.[].items").type(JsonFieldType.STRING).description("입찰에 사용된 아이템 목록을 문자열로 표현")
+                                fieldWithPath("bidList.[].items").type(JsonFieldType.STRING).description("입찰에 사용된 아이템 목록을 문자열로 표현"),
+                                fieldWithPath("isDibs").type(JsonFieldType.BOOLEAN).description("찜한상품인지 확인")
 
                         )
 

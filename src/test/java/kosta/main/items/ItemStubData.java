@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class ItemStubData {
         ArrayList<String> images = new ArrayList<>();
         images.add("주소1");
         images.add("주소2");
-        return Item.builder()
+        Item build = Item.builder()
                 .itemId(ITEM_ID)
                 .user(userStubData.getUser())
                 .category(Category.builder()
@@ -48,13 +49,16 @@ public class ItemStubData {
                 .description(DESCRIPTION)
                 .images(images)
                 .build();
+        build.setCreatedAt(LocalDateTime.now());
+        build.setUpdatedAt(LocalDateTime.now());
+        return build;
     }
     public Item getAnotherNoBidItem(){
         UserStubData userStubData = new UserStubData();
         ArrayList<String> images = new ArrayList<>();
         images.add("주소1");
         images.add("주소2");
-        return Item.builder()
+        Item build = Item.builder()
                 .itemId(ANOTHER_ITEM_ID)
                 .user(userStubData.getUser())
                 .category(Category.builder()
@@ -65,6 +69,9 @@ public class ItemStubData {
                 .description(ANOTHER_DESCRIPTION)
                 .images(images)
                 .build();
+        build.setCreatedAt(LocalDateTime.now());
+        build.setUpdatedAt(LocalDateTime.now());
+        return build;
     }
     public Bid getBid(){
         UserStubData userStubData = new UserStubData();
@@ -139,6 +146,8 @@ public class ItemStubData {
 
     public ItemDetailResponseDTO getItemDetailResponse() {
         Item bidItem = getBidItem();
+        bidItem.setCreatedAt(LocalDateTime.now());
+        bidItem.setUpdatedAt(LocalDateTime.now());
         return ItemDetailResponseDTO.of(bidItem);
     }
 

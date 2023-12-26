@@ -174,6 +174,7 @@ public class ExchangePostStubData {
                                         .items(Arrays.toString(bid.getItems().stream().map(Item::getTitle).toArray()).replace("[","").replace("]",""))
                                         .build()
                         ).toList())
+                .isDibs(true)
                 .build();
     }
 }

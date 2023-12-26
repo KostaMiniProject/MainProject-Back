@@ -174,7 +174,7 @@ class BidControllerTest extends ControllerTest {
                                 fieldWithPath("items.[].title").type(JsonFieldType.STRING).description("아이템 제목"),
                                 fieldWithPath("items.[].description").type(JsonFieldType.STRING).description("아이템 설명"),
                                 fieldWithPath("items.[].imageUrls").type(JsonFieldType.ARRAY).description("물건의 첫번째이미지(요청상배열)"),
-                                fieldWithPath("items.[].createdAt").type(JsonFieldType.NULL).description("아이템 생성 시간")
+                                fieldWithPath("items.[].createdAt").type(JsonFieldType.STRING).description("아이템 생성 시간")
                         )
                 ));
     }

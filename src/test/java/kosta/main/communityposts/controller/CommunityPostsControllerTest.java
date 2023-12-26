@@ -283,7 +283,9 @@ class CommunityPostsControllerTest extends ControllerTest {
                                 ),
                         responseFields(
                                 fieldWithPath("user").type(JsonFieldType.OBJECT).description("유저에 대한 정보"),
+                                fieldWithPath("user.userId").type(JsonFieldType.NUMBER).description("유저의 ID값"),
                                 fieldWithPath("user.email").type(JsonFieldType.STRING).description("유저의 아이디로 사용되는 이메일"),
+                                fieldWithPath("user.rating").type(JsonFieldType.NUMBER).description("유저 평점"),
                                 fieldWithPath("user.name").type(JsonFieldType.STRING).description("유저의 이름"),
                                 fieldWithPath("user.address").type(JsonFieldType.STRING).description("유저의 주소지"),
                                 fieldWithPath("user.phone").type(JsonFieldType.STRING).description("유저의 전화번호"),

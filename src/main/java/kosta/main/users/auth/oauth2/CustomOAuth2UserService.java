@@ -60,6 +60,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Optional<User> userByEmail = usersRepository.findUserByEmail(authAttributes.getEmail());
         if(userByEmail.isPresent()){
             User user = userByEmail.get();
+            if(user.getUserStatus() == User.UserStatus.DELETED) user.updateStatus();
             Boolean social = user.getSocial();
             if(!social) throw new BusinessException(CommonErrorCode.ALREADY_EXIST_LOCAL_USER);
             if(social && !Objects.equals(user.getProvider(), provider))

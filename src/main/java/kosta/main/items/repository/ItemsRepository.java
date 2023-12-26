@@ -28,6 +28,12 @@ public interface ItemsRepository extends JpaRepository<Item, Integer> {
       "ORDER BY i.itemId DESC")
   Page<Item> findByTitleOrDescriptionContainingAndItemStatusOrUserId(@Param("searchTerm") String searchTerm, @Param("userId") Integer userId, Pageable pageable);
 
+  @Query(value = "SELECT i FROM Item i JOIN i.category c " +
+      "WHERE ((LOWER(i.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(i.description) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) " +
+      "AND i.itemStatus = 0 AND i.isBiding != 1 AND i.user.userId = :userId)" +
+      "ORDER BY i.itemId DESC")
+  Page<Item> findByTitleOrDescriptionOrCategoryNameContainingAndItemStatusAndIsBidingAndUserId(@Param("searchTerm") String searchTerm, @Param("userId") Integer userId, Pageable pageable);
+
 
   @Query("SELECT DISTINCT u FROM User u JOIN FETCH u.items WHERE u = :user")
   User findUserWithItems(@Param("user") User user);

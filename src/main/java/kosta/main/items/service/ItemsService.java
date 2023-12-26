@@ -245,12 +245,13 @@ public class ItemsService {
    * @param keyword
    * @return
    */
+  @Transactional(readOnly = true)
   public Page<ItemPageDTO> searchItems(String keyword,User user,Pageable pageable) {
     if(user == null) {
       throw new BusinessException(USER_NOT_FOUND);
     }
     Page<Item> searchItemsByUser
-              = itemsRepository.findByTitleOrDescriptionContainingAndItemStatusOrUserId(keyword, user.getUserId(), pageable);
+              = itemsRepository.findByTitleOrDescriptionOrCategoryNameContainingAndItemStatusAndIsBidingAndUserId(keyword, user.getUserId(), pageable);
       List<ItemPageDTO> list = searchItemsByUser.map(ItemPageDTO::from).stream().toList();
       return new PageImpl<ItemPageDTO>(list, searchItemsByUser.getPageable(), searchItemsByUser.getTotalElements());
     }

@@ -96,4 +96,7 @@ public class CommunityPostDetailDTO {
         }
     }
 
+    public void updateDate(LocalDateTime now) {
+        this.date = now.toString();
+    }
 }

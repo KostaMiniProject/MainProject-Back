@@ -5,6 +5,7 @@ import kosta.main.comments.entity.Comment;
 import kosta.main.communityposts.CommunityPostStubData;
 import kosta.main.communityposts.entity.CommunityPost;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,10 @@ public class CommentStubData {
                 .user(parentComment.getUser())
                 .content(CHILD_COMMENT_CONTENT)
                 .build();
+        parentComment.setCreatedAt(LocalDateTime.now());
+        parentComment.setUpdatedAt(LocalDateTime.now());
+        childComment.setCreatedAt(LocalDateTime.now());
+        childComment.setUpdatedAt(LocalDateTime.now());
 
         parentComment.getChildren().add(childComment);
         List<Comment> comments = new ArrayList<>();
@@ -63,7 +68,8 @@ public class CommentStubData {
     }
 
     public CommentDTO getCommentDTO() {
-        return new CommentDTO(getParentComment());
+        Comment parentComment = getParentComment();
+        return new CommentDTO(parentComment.getCommentId(),parentComment.getCommentId(),parentComment.getContent(),"1일전");
     }
     public CommentCreateDTO getCommentCreateDTO() {
         return new CommentCreateDTO(PARENT_COMMENT_CONTENT, PARENT_COMMENT_ID);

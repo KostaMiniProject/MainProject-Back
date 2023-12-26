@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,12 +25,13 @@ public class CommentParentDTO{
     private Boolean isOwner;
 
     private UserCommentResponseDTO profile;
+    private String date;
 
 
 
     private List<CommentChildDTO> children = new ArrayList<>();
 
-    public CommentParentDTO(Integer commentId, String content,Boolean isOwner,UserCommentResponseDTO profile ) {
+    public CommentParentDTO(Integer commentId, String content,Boolean isOwner,UserCommentResponseDTO profile) {
         this.commentId = commentId;
         this.content = content;
         this.isOwner = isOwner;
@@ -41,5 +45,6 @@ public class CommentParentDTO{
     public void addChild(CommentChildDTO childDTO){
         this.children.add(childDTO);
     }
+
 
 }

@@ -1,17 +1,26 @@
 package kosta.main.exchangehistories.dto;
 
 import jakarta.persistence.Embeddable;
+import kosta.main.items.entity.Item;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
 public class ExchangeHistoriesResponseDTO {
-    private LocalDateTime createdAt; // 2023-11-21 화요일 형태로 제공해줘야함
+    public static final String BEFORE_SECOND = "방금전";
+    public static final String BEFORE_MINUTE = "분전";
+    public static final String BEFORE_DATE = "일전";
+    public static final String BEFORE_MONTH = "개월전";
+    public static final String BEFORE_YEAR = "년전";
+    public static final String BEFORE_HOUR = "시간전";
+    private String createdAt; // 2023-11-21 화요일 형태로 제공해줘야함
     private Integer exchangePostId;
     private Integer reviewedUserId;
     private String reviewedUserName;
@@ -42,5 +51,30 @@ public class ExchangeHistoriesResponseDTO {
         private String description;
         private List<String> imageUrl;
     }
+
+    public static String makeDate(Item item) {
+        LocalDateTime createdAt = item.getCreatedAt();
+        LocalDateTime now = LocalDateTime.now();
+
+        Duration duration = Duration.between(createdAt, now);
+        Period period = Period.between(createdAt.toLocalDate(), now.toLocalDate());
+
+        if (period.getYears() > 0) {
+            return period.getYears() + BEFORE_YEAR;
+        } else if (period.getMonths() > 0) {
+            return period.getMonths() + BEFORE_MONTH;
+        } else if (period.getDays() > 0) {
+            return period.getDays() + BEFORE_DATE;
+        } else if (duration.toHours() > 0) {
+            return duration.toHours() + BEFORE_HOUR;
+        } else if (duration.toMinutes() > 0) {
+            return duration.toMinutes() + BEFORE_MINUTE;
+        } else {
+            return BEFORE_SECOND;
+        }
+    }
+
+
+
 
 }

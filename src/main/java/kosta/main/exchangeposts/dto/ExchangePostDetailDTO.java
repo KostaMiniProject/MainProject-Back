@@ -1,5 +1,6 @@
 package kosta.main.exchangeposts.dto;
 
+import kosta.main.exchangeposts.entity.ExchangePost;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,6 +16,7 @@ public class ExchangePostDetailDTO {
   private String content;
   private UserProfile profile;
   private ItemDetails item;
+  private ExchangePost.ExchangePostStatus exchangePostStatus;
   private List<BidDetails> bidList;
   private Boolean isDibs;
 

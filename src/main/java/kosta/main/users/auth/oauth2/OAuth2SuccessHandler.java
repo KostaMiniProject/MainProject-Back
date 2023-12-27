@@ -42,6 +42,7 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
 
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+            log.info("authentication.getPrincipal() {}",authentication.getPrincipal());
             OAuth2CustomUser oAuth2User = (OAuth2CustomUser) authentication.getPrincipal();
             String email = oAuth2User.getEmail(); // OAuth2User로부터 Resource Owner의 이메일 주소를 얻음 객체로부터
 

@@ -23,7 +23,8 @@ public class UsersRepositoryImpl implements UsersRepositoryCustom {
 
     @Override
     public Optional<UsersResponseDTO> findUserByUserId(Integer userId){
-        UsersResponseDTO result = queryFactory.select(Projections.constructor(UsersResponseDTO.class,
+        UsersResponseDTO result =
+                queryFactory.select(Projections.constructor(UsersResponseDTO.class,
                 user.userId,
                 user.rating,
                 user.email,

@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 @Builder
 @SQLDelete(sql = "UPDATE items SET item_status = 2 WHERE item_id = ? ")
-@Where(clause = "item_status = 0 AND item_status = 1")
+@Where(clause = "item_status <> 2")
 public class Item extends Auditable {
 
   @Id

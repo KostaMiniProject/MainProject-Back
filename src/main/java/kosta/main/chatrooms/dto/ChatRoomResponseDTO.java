@@ -25,18 +25,30 @@ public class ChatRoomResponseDTO {
   private LocalDateTime lastMessageDateTime; // 실제 마지막 메시지의 시간을 저장하는 필드
   private String lastMessageContent;
   private String participantProfileImg;
+  private String anotherParticipantName;
+  private String anotherParticipantProfileImg;
   private String exchangePostAddress;
 
   public static ChatRoomResponseDTO of(ChatRoom chatRoom, User currentUser) {
     ChatRoomResponseDTO dto = new ChatRoomResponseDTO();
 
     dto.setChatRoomId(chatRoom.getChatRoomId());
-
+    User participant = null;
+    User anotherParticipant = null;
     // 참여 대상 식별을 위해 Optional 사용
-    User participant = Optional.ofNullable(chatRoom.getSender())
+    participant = Optional.ofNullable(chatRoom.getSender())
         .filter(sender -> !sender.equals(currentUser))
         .orElse(chatRoom.getReceiver());
-
+    Optional<User> user = Optional.ofNullable(chatRoom.getSender());
+    if(participant.equals(currentUser)) {
+      participant = user.get();
+      anotherParticipant = chatRoom.getReceiver();
+    } else{
+      participant = chatRoom.getReceiver();
+      anotherParticipant = user.get();
+    }
+    dto.setAnotherParticipantName(anotherParticipant.getName());
+    dto.setAnotherParticipantProfileImg(anotherParticipant.getProfileImage());
     if (participant != null) {
       dto.setParticipantName(participant.getName());
       dto.setParticipantProfileImg(participant.getProfileImage());

@@ -20,7 +20,6 @@ import kosta.main.users.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static kosta.main.global.error.exception.CommonErrorCode.*;
 
@@ -116,7 +114,7 @@ public class ItemsService {
     return byUserUserId.map(ItemPageDTO::from);
   }
   public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
-    Page<Item> byUserUserId = itemsRepository.findItemByItemStatusAndItemStatus(Item.ItemStatus.PUBLIC, Item.ItemStatus.PRIVATE);
+    Page<Item> byUserUserId = itemsRepository.findItemByItemStatusNotContainingAndUser_UserId(Item.ItemStatus.DELETED,userId,pageable);
     return byUserUserId.map(ItemPageDTO::from);
   }
 

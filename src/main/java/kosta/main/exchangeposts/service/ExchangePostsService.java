@@ -263,6 +263,7 @@ public class ExchangePostsService {
         .title(post.getTitle())
         .preferItems(post.getPreferItems())
         .address(post.getAddress())
+            .exchangePostStatus(post.getExchangePostStatus())
         .content(post.getContent())
         .profile(userProfile)
         .item(itemDetails)

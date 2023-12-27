@@ -114,7 +114,7 @@ public class ItemsService {
     return byUserUserId.map(ItemPageDTO::from);
   }
   public Page<ItemPageDTO> getItems(Integer userId, Pageable pageable) {
-    Page<Item> byUserUserId = itemsRepository.findItemByItemStatusNotContainingAndUser_UserId(Item.ItemStatus.COMPLETED,userId,pageable);
+    Page<Item> byUserUserId = itemsRepository.findMyItem(userId,pageable);
     return byUserUserId.map(ItemPageDTO::from);
   }
 

@@ -14,6 +14,8 @@ import java.util.List;
 
 public interface ItemsRepository extends JpaRepository<Item, Integer> {
   Page<Item> findByUser_UserId(Integer userId, Pageable pageable);
+
+  Page<Item> findItemByItemStatusAndItemStatus(Item.ItemStatus status1, Item.ItemStatus status2);
   Page<Item> findByUser_UserIdAndIsBiding(Integer userId, Item.IsBiding isBiding, Pageable pageable);
 
 //  @Query("SELECT i FROM Item i " +

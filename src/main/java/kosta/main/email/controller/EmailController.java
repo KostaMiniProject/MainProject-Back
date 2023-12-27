@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import kosta.main.email.dto.EmailCheckDto;
 import kosta.main.email.dto.EmailSendDto;
 import kosta.main.email.service.EmailSendService;
+import kosta.main.global.aop.TimeTrace;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class EmailController {
    * @return
    */
 
+  @TimeTrace
   @PostMapping("/api/email-verification")
   public ResponseEntity<?> mailSend(@RequestBody @Valid EmailSendDto emailSendDto) {
     log.info("이메일 :" + emailSendDto.getEmail());

@@ -129,6 +129,9 @@ public class CommunityPostsService {
         }
 
         List<String> imagePaths = new ArrayList<>(files.stream().map(imageService::resizeToBasicSizeAndUpload).toList());
+        if(!communityPostUpdateDTO.getImagePaths().isEmpty()) {
+            imagePaths.addAll(communityPostUpdateDTO.getImagePaths());
+        }
         // 변경 불가능한 리스트를 반환하는 toList() 메소드
         // toList()로 생성한 리스트를 new ArrayList<>를 이용해 새로운 ArrayList로 변환
         // ArrayList는 필요에 따라 요소를 추가하거나 삭제하는 등의 작업을 할 수 있다.

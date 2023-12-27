@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 public interface ItemsRepository extends JpaRepository<Item, Integer> {
   Page<Item> findByUser_UserId(Integer userId, Pageable pageable);
 
-  @Query("SELECT i FROM Item i WHERE i.itemStatus = 3 AND i.user.userId = :userId")
+  @Query("SELECT i FROM Item i WHERE i.itemStatus <> 3 AND i.user.userId = :userId")
   Page<Item> findMyItem(Integer userId, Pageable pageable);
   Page<Item> findByUser_UserIdAndIsBiding(Integer userId, Item.IsBiding isBiding, Pageable pageable);
 

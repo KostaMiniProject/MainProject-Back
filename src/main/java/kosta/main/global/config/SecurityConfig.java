@@ -64,10 +64,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
-
         http.apply(new CustomFilterConfigurer());
-
-
         // 세션을 사용하지 않기 때문에 STATELESS로 설정해야함
         http.sessionManagement((sessionManagement) ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

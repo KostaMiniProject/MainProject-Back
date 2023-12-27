@@ -37,7 +37,7 @@ import java.util.List;
 *                      이 어노테이션은 'WebSecurityConfigurerAdapter' 클래스를 상속한 구성 클래스에 사용됨
 */
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {

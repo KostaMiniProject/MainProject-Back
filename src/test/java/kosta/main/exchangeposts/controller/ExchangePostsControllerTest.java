@@ -235,6 +235,7 @@ class ExchangePostsControllerTest extends ControllerTest {
                                 fieldWithPath("preferItems").type(JsonFieldType.STRING).description("선호하는 물건"),
                                 fieldWithPath("address").type(JsonFieldType.STRING).description("물건을 교환할 위치"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("물물교환 게시글 내용"),
+                                fieldWithPath("exchangePostStatus").type(JsonFieldType.NULL).description("물물교환 게시글 내용"),
                                 fieldWithPath("profile").type(JsonFieldType.OBJECT).description("물물교환 게시글을 올린 유저의 정보"),
                                 fieldWithPath("profile.userId").type(JsonFieldType.NUMBER).description("유저 ID"),
                                 fieldWithPath("profile.name").type(JsonFieldType.STRING).description("유저 이름"),

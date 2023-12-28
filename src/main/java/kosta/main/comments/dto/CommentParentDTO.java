@@ -39,7 +39,11 @@ public class CommentParentDTO{
     }
 
     public static CommentParentDTO from(Comment comment, Integer userId){
-        return new CommentParentDTO(comment.getCommentId(), comment.getContent(), Objects.equals(userId, comment.getUser().getUserId()), UserCommentResponseDTO.from(comment.getUser()));
+        if(comment.getCommentStatus() != Comment.CommentStatus.DELETED) {
+           return new CommentParentDTO(comment.getCommentId(), comment.getContent(), Objects.equals(userId, comment.getUser().getUserId()), UserCommentResponseDTO.from(comment.getUser()));
+        } else {
+            return new CommentParentDTO(comment.getCommentId(), "삭제된 댓글입니다.", false, UserCommentResponseDTO.from(comment.getUser()));
+        }
     }
 
     public void addChild(CommentChildDTO childDTO){

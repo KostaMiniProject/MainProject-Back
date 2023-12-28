@@ -39,7 +39,7 @@ public class CommentsService {
         Integer userId = user.getUserId();
         for (Comment comment : comments) {
             if(comment.getParent() == null) {
-                result.put(comment.getCommentId(),CommentParentDTO.from(comment,userId));
+                    result.put(comment.getCommentId(), CommentParentDTO.from(comment, userId));
             }
             else {
                 result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment,userId));

@@ -22,7 +22,8 @@ public interface ExchangePostsRepository extends JpaRepository<ExchangePost, Int
         "ORDER BY ep.exchangePostId DESC")
     Page<ExchangePost> searchExchangePost(@Param("keyword") String keyword, Pageable pageable);
 
-
+    @Query("SELECT ep FROM ExchangePost ep WHERE ep.exchangePostStatus <> 2 AND ep.user.userId = :userId")
+    Page<ExchangePost> findMyExchangePost(Integer userId, Pageable pageable);
     @Query("SELECT ep FROM ExchangePost ep " +
         "WHERE ep.user.userId = :userId AND " +
         "((LOWER(ep.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) OR " +

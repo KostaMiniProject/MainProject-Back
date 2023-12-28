@@ -275,7 +275,7 @@ public class UsersService {
 //  }
 
   public Page<UserExchangePostResponseDTO> findMyExchangePostList(Pageable pageable, User user) {
-    Page<ExchangePost> all = exchangePostRepository.findByUser_UserId(pageable, user.getUserId());
+    Page<ExchangePost> all = exchangePostRepository.findMyExchangePost(user.getUserId(), pageable);
     return all
             .map(post -> {
               // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)

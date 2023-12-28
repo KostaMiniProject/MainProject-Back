@@ -144,7 +144,7 @@ public class ExchangeHistoriesService {
               .collect(Collectors.toList());
       User anotherUser = findAnotherUser(user, exchangePost);
       return new ExchangeHistoriesResponseDTO(
-              exchangePost.getCreatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
+              exchangePost.getUpdatedAt().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
               exchangePost.getExchangePostId(),
               anotherUser.getUserId(),
               anotherUser.getName(),

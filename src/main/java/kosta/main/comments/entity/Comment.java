@@ -22,7 +22,6 @@ import java.util.List;
 @Getter
 @Builder
 @SQLDelete(sql = "UPDATE comments SET comment_status = 2 WHERE community_post_id = ?")
-@Where(clause = "comment_status = 'PUBLIC'") //문제있을수도있음
 public class Comment extends Auditable {
 
     @Id

@@ -112,7 +112,6 @@ public class ExchangeHistoriesService {
     int end = Math.min((start + pageRequest.getPageSize()), exchangeHistoriesResponseDTOS.size());
     return new PageImpl<>(exchangeHistoriesResponseDTOS.subList(start, end), pageRequest, exchangeHistoriesResponseDTOS.size());
   }
-//서비스 10분, 15분 기술발표
 
   private List<ExchangeHistoriesResponseDTO> makeExchangeHistoriesResponseDTO(User user, Page<ExchangePost> exchangePosts) {
 

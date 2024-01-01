@@ -33,6 +33,7 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 @AllArgsConstructor
 public class ExchangePostsService {
 
+  public static final int NONE_CURRENT_USER_ID = 0;
   private final ExchangePostsRepository exchangePostRepository;
   private final ItemsRepository itemsRepository;
   private final BidRepository bidRepository;
@@ -219,11 +220,12 @@ public class ExchangePostsService {
   public ExchangePostDetailDTO findExchangePostById(Integer exchangePostId, User currentUser) {
     ExchangePost post = exchangePostRepository.findById(exchangePostId)
         .orElseThrow(() -> new BusinessException(EXCHANGE_POST_NOT_FOUND));
-
+    Integer currentUserId = NONE_CURRENT_USER_ID;
+    if(currentUser != null) currentUserId = currentUser.getUserId();
 
     // 교환 게시글 작성자와 현재 로그인한 사용자가 같은지 확인 (로그인하지 않은 경우 고려)
-    boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUser.getUserId());
-    boolean isDibs = dibsRepository.findByUserUserIdAndExchangePostExchangePostId(currentUser.getUserId(), exchangePostId).isPresent();
+    boolean isOwner = currentUser != null && post.getUser().getUserId().equals(currentUserId);
+    boolean isDibs = dibsRepository.findByUserUserIdAndExchangePostExchangePostId(NONE_CURRENT_USER_ID, exchangePostId).isPresent();
 
     // 사용자 프로필 정보 생성
     ExchangePostDetailDTO.UserProfile userProfile = ExchangePostDetailDTO.UserProfile.builder()

@@ -23,6 +23,7 @@ import static kosta.main.global.error.exception.CommonErrorCode.*;
 @Transactional
 public class CommentsService {
 
+    public static final int NONE_USER_ID = 0;
     private final CommunityPostsService communityPostsService;
     private final CommentsRepository commentsRepository;
 
@@ -36,13 +37,14 @@ public class CommentsService {
 
     private List<CommentParentDTO> convert(List<Comment> comments,User user) {
         Map<Integer,CommentParentDTO> result = new HashMap<>();
-        Integer userId = user.getUserId();
+        Integer userId = NONE_USER_ID;
+        if(user != null) userId = user.getUserId();
         for (Comment comment : comments) {
-            if(comment.getParent() == null) {
-                    result.put(comment.getCommentId(), CommentParentDTO.from(comment, userId));
+            if(comment.getParent() != null) {
+                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment,userId));
             }
             else {
-                result.get(comment.getParent().getCommentId()).addChild(CommentChildDTO.from(comment,userId));
+                result.put(comment.getCommentId(), CommentParentDTO.from(comment, userId));
             }
         }
         return new ArrayList<>(result.values());

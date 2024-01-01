@@ -174,7 +174,7 @@ class CommunityPostsControllerTest extends ControllerTest {
                                 fieldWithPath("comments.[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("comments.[].content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("comments.[].isOwner").type(JsonFieldType.BOOLEAN).description("댓글 주인 여부"),
-                                fieldWithPath("comments.[].date").type(JsonFieldType.NULL).description("댓글생성시간"),
+                                fieldWithPath("comments.[].date").type(JsonFieldType.STRING).description("댓글생성시간"),
                                 fieldWithPath("comments.[].profile").type(JsonFieldType.OBJECT).description("유저 정보를 담고있는 객체"),
                                 fieldWithPath("comments.[].profile.userId").type(JsonFieldType.NUMBER).description("유저 Id"),
                                 fieldWithPath("comments.[].profile.name").type(JsonFieldType.STRING).description("유저이름"),

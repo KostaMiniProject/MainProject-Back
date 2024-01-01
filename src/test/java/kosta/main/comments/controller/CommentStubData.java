@@ -6,6 +6,7 @@ import kosta.main.communityposts.CommunityPostStubData;
 import kosta.main.communityposts.entity.CommunityPost;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ public class CommentStubData {
     public static final String CHILD_COMMENT_CONTENT = "자식댓글";
     public static final int ANOTHER_PARENT_COMMENT_ID = 3;
     public static final String ANOTHER_PARENT_COMMENT_CONTENT = "새로운 부모 댓글";
+    public static final LocalDateTime MAKE_FIX_DATE = LocalDateTime.of(2023, Month.DECEMBER, 25, 10, 10);
 
     private CommunityPostStubData communityPostStubData;
     public Comment getParentComment() {
@@ -43,16 +45,18 @@ public class CommentStubData {
                 .user(parentComment.getUser())
                 .content(CHILD_COMMENT_CONTENT)
                 .build();
-        parentComment.setCreatedAt(LocalDateTime.now());
-        parentComment.setUpdatedAt(LocalDateTime.now());
-        childComment.setCreatedAt(LocalDateTime.now());
-        childComment.setUpdatedAt(LocalDateTime.now());
-
+        parentComment.setCreatedAt(MAKE_FIX_DATE);
+        parentComment.setUpdatedAt(MAKE_FIX_DATE);
+        childComment.setCreatedAt(MAKE_FIX_DATE);
+        childComment.setUpdatedAt(MAKE_FIX_DATE);
+        Comment anotherParentComment = getAnotherParentComment();
+        anotherParentComment.setCreatedAt(MAKE_FIX_DATE);
+        anotherParentComment.setUpdatedAt(MAKE_FIX_DATE);
         parentComment.getChildren().add(childComment);
         List<Comment> comments = new ArrayList<>();
         comments.add(parentComment);
         comments.add(childComment);
-        comments.add(getAnotherParentComment());
+        comments.add(anotherParentComment);
         return comments;
     }
 

@@ -6,6 +6,7 @@ import kosta.main.chats.entity.Chat;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.users.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -19,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Builder
 @SQLDelete(sql = "UPDATE chat_rooms SET status = 'DELETED' WHERE chat_room_id = ?")
 @Where(clause = "status <> 'DELETED'")
 public class ChatRoom extends Auditable {
@@ -44,9 +46,11 @@ public class ChatRoom extends Auditable {
     @JoinColumn(name = "receiver_id", nullable = true) // 채팅방 나가기 기능을 위해 Not Null이 가능하도록 변경
     private User receiver; // 입찰자에 해당
 
+    @Builder.Default
     @OneToMany(mappedBy = "chatRoom")
     private List<Chat> chats = new ArrayList<>();
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ChatRoomStatus status = ChatRoomStatus.ACTIVE; // 기본 상태는 ACTIVE

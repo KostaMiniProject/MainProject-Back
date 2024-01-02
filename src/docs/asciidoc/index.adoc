@@ -146,9 +146,30 @@ operation::bid-controller-test/undo-deny-bid[snippet='curl-request,request-heade
 
 operation::bid-controller-test/get-denied-bids-for-post[snippets='curl-request,path-parameters,http-request,http-response,response-fields']
 
+
+== 채팅방
+
+=== 채팅방 생성
+
+operation::chat-rooms-controller-test/create-chat-room[snippets='request-headers,http-request,http-response']
+
+=== 내 채팅방 목록 조회하기
+
+operation::chat-rooms-controller-test/get-chat-rooms[snippets='curl-request,request-headers,http-request,http-response,response-fields']
+
+=== 현재 채팅방 채팅 가져오기
+
+operation::chat-rooms-controller-test/get-chat-list[snippets='curl-request,request-headers,path-parameters,http-request,http-response,response-fields']
+
+=== 채팅방 알리기
+
+operation::chat-rooms-controller-test/leave-chat-room[snippets='request-headers,path-parameters,http-request,http-response']
+=== 채팅방 나가기
+
+operation::chat-rooms-controller-test/leave-chat-room[snippets='request-headers,path-parameters,http-request,http-response']
 == 물건
 
-== 물건 생성
+=== 물건 생성
 
 operation::items-controller-test/add-item[snippets='curl-request,request-headers,request-parts,request-part-itemSaveDTO-fields,http-response']
 

@@ -257,7 +257,7 @@ class UsersControllerTest extends ControllerTest {
     @DisplayName("회원탈퇴")
     void withdrawal() throws Exception {
         //given
-        doNothing().when(usersService).withdrawalUser(Mockito.any());
+        doNothing().when(usersService).withdrawalUser(Mockito.any(User.class));
         //when
         ResultActions result = mockMvc.perform(
                 delete(BASIC_URL+"/withdrawal")

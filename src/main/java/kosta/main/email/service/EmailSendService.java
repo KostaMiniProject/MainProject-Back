@@ -81,7 +81,7 @@ public class EmailSendService {
    * @param email
    * @return
    */
-  public String sendEmailAuthNumber(String email) {
+  public void sendEmailAuthNumber(String email) {
     //    1. 임의의 6자리 수 생성
     String authNumber = makeRandomValue("email");
 
@@ -102,7 +102,6 @@ public class EmailSendService {
             "<br>" +
             "인증번호를 제대로 입력해주세요!!!";
     mailSend(toMail, title, content);
-    return authNumber;
   }
 
 

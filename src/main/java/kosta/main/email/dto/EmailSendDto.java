@@ -2,9 +2,12 @@ package kosta.main.email.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class EmailSendDto {
   // 1. @기호를 포함해야 한다.
   // 2. @기호를 기준으로 이메일 주소를 이루는 로컬호스트와 도메인으로 구분
@@ -12,4 +15,8 @@ public class EmailSendDto {
   @Email
   @NotEmpty(message = "이메일을 입력해 주세요")
   private String email;
+
+  public static EmailSendDto of(String email){
+    return new EmailSendDto(email);
+  }
 }

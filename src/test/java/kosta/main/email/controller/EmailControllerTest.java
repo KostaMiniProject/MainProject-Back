@@ -84,7 +84,7 @@ class EmailControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("인증번호 이메일 전송 성공 테스트")
+    @DisplayName("인증번호 확인 테스트")
     void authNumCheck() throws Exception {
         //given
         EmailCheckDto emailCheckDto = emailStubData.getEmailCheckDto();

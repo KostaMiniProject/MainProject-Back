@@ -1,9 +1,8 @@
 package kosta.main.users;
 
-import kosta.main.users.dto.request.AddressDTO;
-import kosta.main.users.dto.request.UserCreateDTO;
+import kosta.main.blockedusers.entity.BlockedUser;
+import kosta.main.users.dto.request.*;
 import kosta.main.users.dto.response.UserCreateResponseDTO;
-import kosta.main.users.dto.request.UserUpdateDTO;
 import kosta.main.users.dto.response.UsersResponseDTO;
 import kosta.main.users.entity.User;
 import org.springframework.mock.web.MockMultipartFile;
@@ -11,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class UserStubData {
 
@@ -34,9 +34,13 @@ public class UserStubData {
     public static final String JIBUN_ADDR = "지번주소";
     public static final String ROAD_ADDR = "도로명주소";
     public static final String ZCODE = "우편번호";
+    public static final int ANOTHER_USER_ID = 2;
+    public static final String ANOTHER_USER_NAME = "홍길서";
+    public static final String ANOTHER_PHONE = "010-1234-1111";
+    public static final int BLOCKED_USER_ID = 1;
 
     public User getUser(){
-        return User.builder()
+        User build = User.builder()
                 .userId(USER_ID)
                 .name(NAME)
                 .phone(PHONE)
@@ -46,13 +50,47 @@ public class UserStubData {
                 .profileImage(PROFILE_IMAGE)
                 .userStatus(USER_STATUS)
                 .build();
+        return build;
+    }
+    public User getHaveBlockUser(){
+        User build = User.builder()
+                .userId(USER_ID)
+                .name(NAME)
+                .phone(PHONE)
+                .password(PASSWORD)
+                .address(ADDRESS)
+                .email(EMAIL)
+                .profileImage(PROFILE_IMAGE)
+                .userStatus(USER_STATUS)
+                .build();
+        User anotherUser = getAnotherUser();
+        BlockedUser blockedUser = BlockedUser.builder()
+                .blockedUserId(BLOCKED_USER_ID)
+                .user(build)
+                .blockingUser(anotherUser)
+                .build();
+        build.addBlockedUser(blockedUser);
+        return build;
     }
 
     public User getUpdateUser(){
-        return User.builder()
+        User build = User.builder()
                 .userId(USER_ID)
                 .name(UPDATED_NAME)
                 .phone(UPDATED_PHONE)
+                .password(UPDATE_PASSWORD)
+                .address(UPDATE_ADDRESS)
+                .email(UPDATE_EMAIL)
+                .profileImage(UPDATE_IMAGE_FILE)
+                .userStatus(USER_STATUS)
+                .build();
+        return build;
+    }
+    public User getAnotherUser(){
+        return User.builder()
+                .userId(ANOTHER_USER_ID)
+                .name(ANOTHER_USER_NAME)
+                .phone(ANOTHER_PHONE)
                 .password(UPDATE_PASSWORD)
                 .address(UPDATE_ADDRESS)
                 .email(UPDATE_EMAIL)
@@ -85,6 +123,9 @@ public class UserStubData {
         return new UserCreateResponseDTO
                 (EMAIL, NAME, ADDRESS, PHONE);
     }
+    public UserFindIdDTO getUserFindIdDTO(){
+        return new UserFindIdDTO(NAME, PHONE);
+    }
 
     public UserUpdateDTO getUserUpdateDTO() {
         return new UserUpdateDTO(
@@ -97,6 +138,9 @@ public class UserStubData {
                 UPDATE_IMAGE_FILE,
                 USER_STATUS
         );
+    }
+    public UserFindPasswordDTO getUserFindPasswordDTO(){
+        return UserFindPasswordDTO.from(EMAIL, NAME, PHONE);
     }
 
     public MockMultipartFile getMockMultipartFile() throws IOException {

@@ -242,9 +242,10 @@ public class UsersService {
     UsersResponseDTO userInfo = usersRepository.findUserByUserName(userFindIdDTO.getName())
             .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
 
-    boolean userName = userFindIdDTO.getName().equals(userInfo.getName());
+//    boolean userName = userFindIdDTO.getName().equals(userInfo.getName());
+    //userName의 경우 아이디를 찾는데 사용했기 때문에 불필요
     boolean userPhone = userFindIdDTO.getPhone().equals(userInfo.getPhone());
-    if (userName && userPhone) {
+    if (userPhone) {
       return userInfo.getEmail();
     }
     return null;
@@ -255,10 +256,10 @@ public class UsersService {
             .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
 
     boolean userEmail = userFindPasswordDTO.getEmail().equals(userInfo.getEmail());
-    boolean userName = userFindPasswordDTO.getName().equals(userInfo.getName());
+//    boolean userName = userFindPasswordDTO.getName().equals(userInfo.getName()); 위에서 이름을 통해 찾아오기 때문에 굳이 체크할 필요없음
     boolean userPhone = userFindPasswordDTO.getPhone().equals(userInfo.getPhone());
 
-    if (userEmail && userName && userPhone) {
+    if (userEmail && userPhone) {
       // 임시비번생성 및 커밋
       // 변경된 비번 해당 메일로 전송
       emailSendService.sendEmailNewPassword(userInfo.getEmail());

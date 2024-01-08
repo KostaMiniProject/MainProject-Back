@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ExchangePostStubData {
     public ExchangePost getExchangePostNoBid(){
         UserStubData userStubData = new UserStubData();
         ItemStubData itemStubData = new ItemStubData();
-        return ExchangePost.builder()
+        ExchangePost build = ExchangePost.builder()
                 .exchangePostId(EXCHANGE_POST_ID)
                 .title(TITLE)
                 .user(userStubData.getUser())
@@ -48,7 +49,9 @@ public class ExchangePostStubData {
                 .address(ADDRESS)
                 .content(CONTENT)
                 .build();
-
+        build.setCreatedAt(LocalDateTime.now());
+        build.setUpdatedAt(LocalDateTime.now());
+        return build;
     }
 
     public ExchangePost getExchangePostBid(){
@@ -57,7 +60,7 @@ public class ExchangePostStubData {
         Bid bid = itemStubData.getBid();
         ArrayList<Bid> bids = new ArrayList<>();
         bids.add(bid);
-        return ExchangePost.builder()
+        ExchangePost build = ExchangePost.builder()
                 .exchangePostId(EXCHANGE_POST_ID)
                 .title(TITLE)
                 .user(userStubData.getUser())
@@ -69,7 +72,9 @@ public class ExchangePostStubData {
                 .content(CONTENT)
                 .bids(bids)
                 .build();
-
+        build.setCreatedAt(LocalDateTime.now());
+        build.setUpdatedAt(LocalDateTime.now());
+        return build;
     }
     public ExchangePost getAnotherExchangePostNoBid(){
         UserStubData userStubData = new UserStubData();

@@ -104,13 +104,17 @@ public class CommunityPostStubData {
         int end = Math.min((start + pageRequest.getPageSize()), communityPostListDto.size());
         return new PageImpl<>(communityPostListDto.subList(start, end), pageRequest, communityPostListDto.size());
     }
-    public Page<CommunityPostDetailDTO> getCommunityPostDetailDTOPage(){
-        List<CommunityPostDetailDTO> communityPostDetailDTO = getCommunityPostDetailDTO();
-        // 요청으로 들어온 page와 한 page당 원하는 데이터의 갯수
+    public Page<CommunityPost> getCommunityPostPage(){
+        CommunityPost communityPost = getCommunityPost();
+        CommunityPost anotherCommunityPost = getAnotherCommunityPost();
+        List<CommunityPost> communityPostLists = new ArrayList<>();
+        communityPostLists.add(communityPost);
+        communityPostLists.add(anotherCommunityPost);
         PageRequest pageRequest = PageRequest.of(0, 10);
         int start = (int) pageRequest.getOffset();
-        int end = Math.min((start + pageRequest.getPageSize()), communityPostDetailDTO.size());
-        return new PageImpl<>(communityPostDetailDTO.subList(start, end), pageRequest, communityPostDetailDTO.size());
+        int end = Math.min((start + pageRequest.getPageSize()), communityPostLists.size());
+        return new PageImpl<>(communityPostLists.subList(start, end), pageRequest, communityPostLists.size());
+
     }
 
     public CommunityPostResponseDTO getCommunityPostResponseDTO(){

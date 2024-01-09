@@ -91,6 +91,7 @@ public class ItemsService {
   }
 
   /**
+   *
    * 물건 목록 조회
    *
    * @param pageable
@@ -131,7 +132,7 @@ public class ItemsService {
   }
 
   private Item findItemByItemId(int itemId) {
-    return itemsRepository.findById(itemId).orElseThrow(() -> new BusinessException(CommonErrorCode.USER_NOT_FOUND));
+    return itemsRepository.findById(itemId).orElseThrow(() -> new BusinessException(ITEM_NOT_FOUND));
   }
 
 

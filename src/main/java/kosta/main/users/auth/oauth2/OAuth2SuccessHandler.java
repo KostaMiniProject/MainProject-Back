@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kosta.main.global.dto.LoginResponse;
 import kosta.main.users.auth.jwt.TokenProvider;
+import kosta.main.users.auth.service.TokenService;
 import kosta.main.users.entity.OAuth2CustomUser;
 import kosta.main.users.entity.Role;
 import kosta.main.users.entity.User;
@@ -37,7 +38,7 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
     private String domain;
     public static final int ONLY_BEARER_LENGTH = 8;
         private final UsersRepository usersRepository;
-        private final TokenProvider tokenProvider;
+        private final TokenService tokenService;
     private final ObjectMapper objectMapper;
 
         @Override
@@ -51,8 +52,8 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
         }
     private void redirect(HttpServletRequest request, HttpServletResponse response, String email, List<String> authorities) throws IOException {
         log.info("Token 생성 시작");
-        String accessToken = delegateAccessToken(email, authorities);  // Access Token 생성
-        String refreshToken = delegateRefreshToken(email);     // Refresh Token 생성
+        String accessToken = tokenService.delegateAccessToken(email, authorities);  // Access Token 생성
+        String refreshToken = tokenService.delegateRefreshToken();     // Refresh Token 생성
         User user = usersRepository.findUserByEmail(email).get();
 
         response.setHeader(AUTHORIZATION,BEARER+accessToken);
@@ -64,23 +65,4 @@ public class OAuth2SuccessHandler extends  SimpleUrlAuthenticationSuccessHandler
     }
 
 
-    private String delegateAccessToken(String email, List<String> authorities){
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("email", email);
-        claims.put("roles", authorities);
-
-        String subject = email;
-        Date expiration = tokenProvider.getTokenExpiration(tokenProvider.getAccessTokenExpirationMinutes());
-
-        String base64EncodedSecretKey = tokenProvider.encodeBase64SecretKey(tokenProvider.getSecretKey());
-        String accessToken = tokenProvider.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
-        return accessToken;
-    }
-    private String delegateRefreshToken(String email){
-        String subject = email;
-        Date expiration = tokenProvider.getTokenExpiration(tokenProvider.getRefreshTokenExpirationMinutes());
-        String base64EncodedSecretKey = tokenProvider.encodeBase64SecretKey(tokenProvider.getSecretKey());
-        String refreshToken = tokenProvider.generateRefreshToken(subject, expiration, base64EncodedSecretKey);
-        return refreshToken;
-    }
 }

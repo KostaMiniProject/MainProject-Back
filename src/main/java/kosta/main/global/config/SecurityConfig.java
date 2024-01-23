@@ -46,10 +46,7 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final CustomOAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
-
-
-
-//    private final TokenService tokenService;
+    private final TokenService tokenService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -109,25 +106,25 @@ public class SecurityConfig {
 
         return http.build();
     }
-//    @Bean
-//    CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration corsConfiguration = new CorsConfiguration();
-//        corsConfiguration.setAllowCredentials(true);
-//        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
-////        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
-////        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Set-Cookie", "*"));
-////        corsConfiguration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
-////        corsConfiguration.setAllowedMethods(List.of("POST", "GET", "PATCH", "DELETE", "OPTIONS","PUT"));
-//        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-//        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-//        return urlBasedCorsConfigurationSource;
-//    }
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Set-Cookie", "*"));
+        corsConfiguration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+        corsConfiguration.setAllowedMethods(List.of("POST", "GET", "PATCH", "DELETE", "OPTIONS","PUT"));
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return urlBasedCorsConfigurationSource;
+    }
 
     public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity>{
         @Override
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenProvider, authenticationManager);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenProvider, authenticationManager,tokenService);
             jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
             JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(tokenProvider,userDetailsService);
             builder.addFilter(jwtAuthenticationFilter)

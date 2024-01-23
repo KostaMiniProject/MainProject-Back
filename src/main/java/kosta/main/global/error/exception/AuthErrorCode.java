@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum AuthErrorCode implements ErrorCode {
 
+    // 400 값이 일치하지 않는 경우
+    INVALID_IP(HttpStatus.BAD_REQUEST,400, "접속한 위치가 동일하지 않습니다"),
+
+
     // 401 UNAUTHORIZED 인증 정보가 없는 경우
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, 401,"유효한 인증 정보가 없습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, 4011,"유효하지 않은 JWT 서명입니다."),

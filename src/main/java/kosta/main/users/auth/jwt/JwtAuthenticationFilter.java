@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kosta.main.global.dto.LoginResponse;
+import kosta.main.global.utils.Helper;
 import kosta.main.users.auth.dto.LoginDTO;
 import kosta.main.users.auth.service.TokenService;
 import kosta.main.users.entity.User;
@@ -16,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,12 +38,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public static final String REFRESH = "Refresh";
     private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
-//    private final TokenService tokenService;
+    private final TokenService tokenService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @SneakyThrows //Java에서 메서드 선언부에 Throws를 정의하지 않고도, 검사 된 예외를 Throw 할 수 있도록 하는 Lombok에서 제공하는 어노테이션임
     @Override //throws나 try-catch 구문을 통해서 Exception에 대해 번거롭게 명시적으로 예외 처리를 해 줘야 하는 경우에 @SneakyThrows 어노테이션을사용하여 명시적인 예외 처리를 생략할 수 있음
-
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         LoginDTO loginDto = objectMapper.readValue(request.getInputStream(), LoginDTO.class);
 
@@ -57,10 +56,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         UserAdapter userDetails = (UserAdapter) authResult.getPrincipal();
         User user = userDetails.getUser();
-        String accessToken = delegateAccessToken(user);
-        String refreshToken = delegateRefreshToken(user);
+        String accessToken = tokenService.delegateAccessToken(user);
+        String refreshToken = tokenService.delegateRefreshToken();
 
-//        tokenService.saveTokenInfo(user.getUserId(), accessToken,refreshToken);
+        tokenService.removeRefreshToken(user.getUserId());
+        tokenService.saveTokenInfo(user.getUserId(), Helper.getClientIp(request),refreshToken);
         response.setHeader(AUTHORIZATION,BEARER+accessToken);
         response.setHeader(REFRESH, refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -69,24 +69,4 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     }
 
-    private String delegateAccessToken(User user){
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("email", user.getEmail());
-        claims.put("roles", user.getRoles());
-
-        String subject = user.getEmail();
-        Date expiration = tokenProvider.getTokenExpiration(tokenProvider.getAccessTokenExpirationMinutes());
-
-        String base64EncodedSecretKey = tokenProvider.encodeBase64SecretKey(tokenProvider.getSecretKey());
-        String accessToken = tokenProvider.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
-        return accessToken;
-    }
-
-    private String delegateRefreshToken(User user){
-        String subject = user.getEmail();
-        Date expiration = tokenProvider.getTokenExpiration(tokenProvider.getRefreshTokenExpirationMinutes());
-        String base64EncodedSecretKey = tokenProvider.encodeBase64SecretKey(tokenProvider.getSecretKey());
-        String refreshToken = tokenProvider.generateRefreshToken(subject, expiration, base64EncodedSecretKey);
-        return refreshToken;
-    }
 }

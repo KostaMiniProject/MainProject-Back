@@ -22,7 +22,7 @@ import java.util.List;
 @Getter
 @Builder
 @SQLDelete(sql = "UPDATE bids SET status = 3 WHERE bid_id = ? ")
-@Where(clause = "status <> 3")
+//@Where(clause = "status <> 3")
 public class Bid extends Auditable {
 
     @Id

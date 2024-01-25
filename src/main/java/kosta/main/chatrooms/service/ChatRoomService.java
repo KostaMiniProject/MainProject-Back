@@ -9,6 +9,8 @@ import kosta.main.chats.entity.Chat;
 import kosta.main.chats.repository.ChatsRepository;
 import kosta.main.exchangeposts.entity.ExchangePost;
 import kosta.main.exchangeposts.repository.ExchangePostsRepository;
+import kosta.main.global.error.exception.BusinessException;
+import kosta.main.global.error.exception.CommonErrorCode;
 import kosta.main.items.entity.Item;
 import kosta.main.users.entity.User;
 import kosta.main.users.repository.UsersRepository;
@@ -123,7 +125,7 @@ public class ChatRoomService {
 
   // 채팅방 목록 조회
   public List<ChatRoomResponseDTO> getChatRooms(User currentUser) {
-    List<ChatRoom> chatRooms = chatRoomsRepository.findBySenderUserIdOrReceiverUserId(currentUser.getUserId(), currentUser.getUserId());
+    List<ChatRoom> chatRooms = chatRoomsRepository.findBySenderUserId(currentUser.getUserId(), currentUser.getUserId());
 
     // 채팅방을 마지막 메시지 시간에 따라 내림차순으로 정렬
     return chatRooms.stream()

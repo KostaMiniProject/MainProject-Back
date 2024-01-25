@@ -23,7 +23,7 @@ import java.util.List;
 @Getter
 @Builder
 @SQLDelete(sql = "UPDATE users SET user_status = 2 WHERE user_id = ?")
-@Where(clause = "user_status = 'ACTIVATE'") //문제있을수도있음
+//@Where(clause = "user_status = 'ACTIVATE'") //문제있을수도있음
 public class User extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

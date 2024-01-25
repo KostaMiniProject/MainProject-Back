@@ -94,7 +94,7 @@ public class ExchangePostsService {
     return all
         .map(post -> {
           // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)
-          String imgUrl = !post.getItem().getImages().isEmpty() ? post.getItem().getImages().get(0) : "https://d30zoz4y43tmi6.cloudfront.net/BasicItemImage.png";
+          String imgUrl = post.getItem() == null ? "https://d30zoz4y43tmi6.cloudfront.net/BasicItemImage.png" : post.getItem().getImages().get(0);
 
           // 해당 교환 게시글에 입찰된 Bid의 갯수를 세는 로직 + BidStatus가 DELETED인 것은 세지 않도록 하는 로직
           Integer bidCount = bidRepository.countByExchangePostAndStatusNotDeleted(post);

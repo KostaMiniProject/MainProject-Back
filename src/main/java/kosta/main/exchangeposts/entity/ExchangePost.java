@@ -23,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @SQLDelete(sql = "UPDATE exchange_posts SET exchange_post_status = 3 WHERE exchange_post_id = ? ")
-@Where(clause = "exchange_post_status <> 3")
+//@Where(clause = "exchange_post_status <> 3")
 public class ExchangePost extends Auditable {
 
     @Id

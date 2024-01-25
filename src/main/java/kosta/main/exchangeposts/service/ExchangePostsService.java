@@ -90,7 +90,7 @@ public class ExchangePostsService {
   // 전체 게시글 불러오기 (23.12.04 : 최신순으로 제공, 페이지 네이션으로 10개씩 제공)
   @Transactional(readOnly = true)
   public Page<ExchangePostListDTO> findAllExchangePosts(Pageable pageable) {
-    Page<ExchangePost> all = exchangePostRepository.findAll(pageable);
+    Page<ExchangePost> all = exchangePostRepository.findAllExchangePostNotDelete(pageable);
     return all
         .map(post -> {
           // 아이템 대표 이미지 URL을 가져오는 로직 (첫 번째 이미지를 대표 이미지로 사용)

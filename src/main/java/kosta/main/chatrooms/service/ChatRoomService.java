@@ -144,8 +144,12 @@ public class ChatRoomService {
 
     ExchangePost exchangePost = chatRoom.getExchangePost();
     Item exchangePostItem = exchangePost.getItem();
-    String exchangePostImage = exchangePostItem.getImages().isEmpty() ? null : exchangePostItem.getImages().get(0);
-    String exchangePostCategory = exchangePostItem.getCategory() != null ? exchangePostItem.getCategory().getCategoryName() : null;
+    String exchangePostImage = "https://d30zoz4y43tmi6.cloudfront.net/BasicItemImage.png";
+    String exchangePostCategory = "삭제된 물건";
+    if(exchangePostItem != null) {
+      exchangePostImage = exchangePostItem.getImages().isEmpty() ? null : exchangePostItem.getImages().get(0);
+      exchangePostCategory = exchangePostItem.getCategory() != null ? exchangePostItem.getCategory().getCategoryName() : null;
+    }
     Bid bid = findEntityById(bidRepository, chatRoom.getBid().getBidId(), "bid Not Found");
     Page<Chat> chats = chatsRepository.findByChatRoom(chatRoom, pageable);
 
